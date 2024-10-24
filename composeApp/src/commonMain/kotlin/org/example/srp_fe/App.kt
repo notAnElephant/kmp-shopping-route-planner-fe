@@ -10,8 +10,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.openapitools.client.apis.DefaultApi
 
 import shoppingrouteplanner_fe.composeapp.generated.resources.Res
 import shoppingrouteplanner_fe.composeapp.generated.resources.compose_multiplatform
@@ -21,6 +25,17 @@ import shoppingrouteplanner_fe.composeapp.generated.resources.compose_multiplatf
 fun App() {
     MaterialTheme {
         var showContent by remember { mutableStateOf(false) }
+
+        val api = DefaultApi()
+
+//        //run in default coroutine scope
+//        CoroutineScope(Dispatchers.Default).launch {
+//            api.mapsIdGet(1).body().let {
+//                println("API response:")
+//                println(it)
+//            }
+//        }
+
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
             Button(onClick = { showContent = !showContent }) {
                 Text("Click me!")
