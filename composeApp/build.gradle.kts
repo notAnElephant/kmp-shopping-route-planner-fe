@@ -45,6 +45,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+
         }
         commonMain {
             dependencies {
@@ -65,6 +66,8 @@ kotlin {
                 implementation(libs.ktor.serialization.kotlinx.json)
                 implementation(libs.kotlintest.runner.junit5)
 
+                implementation(compose.materialIconsExtended)
+                implementation(libs.core)
             }
 
 //            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")
