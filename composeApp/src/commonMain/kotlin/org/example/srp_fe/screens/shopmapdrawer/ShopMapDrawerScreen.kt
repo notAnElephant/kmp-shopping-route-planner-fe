@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
@@ -32,6 +33,7 @@ import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.ZoomOutMap
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -49,6 +51,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.composables.core.rememberMenuState
+import org.example.ApiRepository
 import kotlin.random.Random
 
 data class Rectangle(val topLeft: Offset, val size: Size, val color: Color)
@@ -59,20 +62,36 @@ enum class FunctionType(val label: String) {
 	DEPARTMENT("Department"), WALL("Wall"), DELETE("Delete"), MOVE("Move")
 }
 
+
 @Composable
-fun ShopMapDrawerScreen() {
+fun ShopMapDrawerScreen(apiRepository: ApiRepository) {
 	Column(
 		modifier = Modifier.fillMaxSize().padding(16.dp)
 	) {
 		var selectedFunction by remember { mutableStateOf(FunctionType.WALL) }
 		var selectedDepartment by remember { mutableStateOf<Department?>(null) }
 
-		FunctionSelector(selectedFunctionType = selectedFunction,
+		FunctionSelector(
+			selectedFunctionType = selectedFunction,
 			onFunctionSelected = { selectedFunction = it })
 		DepartmentControls(
 			selectedDepartment = selectedDepartment,
 			onDepartmentSelected = { selectedDepartment = it })
-		ShopMapCanvas(selectedFunctionType = selectedFunction)
+		ShopMapCanvas(
+			selectedFunctionType = selectedFunction,
+			selectedDepartment = selectedDepartment
+		)
+
+		var text by remember { mutableStateOf("No data") }
+		Button(onClick = {
+			LaunchedEffect(Unit) {
+				val departments = apiRepository.getDepartmentsByMapId(1)
+				text = departments.joinToString { it.name }
+			}
+		}) {
+			Text("Backend call")
+		}
+		Text("backend's answer: ${text}")
 	}
 }
 
@@ -159,9 +178,10 @@ fun DepartmentControls(
 						addDepartment(departmentName.text)
 						departmentName = TextFieldValue("")  // Reset input
 						onDepartmentSelected(departments.last())
+
 					}
 				}) {
-					Icon(Icons.Default.Add, contentDescription = "Add .Department")
+					Icon(Icons.Default.Add, contentDescription = "Add Department")
 				}
 			}
 			DepartmentDropdown(
@@ -173,6 +193,8 @@ fun DepartmentControls(
 	}
 }
 
+//TODO app mas platformokon valo futtatasahoz
+//https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-create-first-app.html#next-step
 @Composable
 fun DepartmentDropdown(
 	departments: List<Department>,
@@ -184,6 +206,7 @@ fun DepartmentDropdown(
 	// Toggle the menu state
 	val arrowIcon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
 
+	// TODO disable this somehow when not the Department is the selected function
 	// Use a custom Menu button with color and selected department label
 	Box(modifier = Modifier.fillMaxWidth()) {
 		Row(
@@ -248,40 +271,44 @@ fun DepartmentDropdown(
 }
 
 @Composable
-fun ShopMapCanvas(selectedFunctionType: FunctionType, selectedDepartment: Department? = null) {
+fun ShopMapCanvas(
+	selectedFunctionType: FunctionType,
+	selectedDepartment: Department? = null,
+) {
 	val scale by remember { mutableStateOf(1f) }
 	val rectangles = remember { mutableStateListOf<Rectangle>() }
 
 	var startPoint: Offset? by remember { mutableStateOf(null) }
 	var currentPoint: Offset? by remember { mutableStateOf(null) }
 
-	// Add rectangle function
-	fun addRectangle(topLeft: Offset, bottomRight: Offset) {
-		val size = Size(
-			width = bottomRight.x - topLeft.x, height = bottomRight.y - topLeft.y
-		)
-		val departmentColor = selectedDepartment?.color
-			?: if (selectedFunctionType == FunctionType.WALL) Color.Black else Color.White
-		rectangles.add(Rectangle(topLeft, size, departmentColor))
-	}
-
 	// Canvas for drawing
-	Canvas(modifier = Modifier.fillMaxSize().background(Color.LightGray).pointerInput(Unit) {
-		detectTapGestures(onPress = { offset ->
-			if (startPoint == null) {
-				// First click: Set top-left corner
-				startPoint = offset
-			} else {
-				// Second click: Set bottom-right corner
-				currentPoint = offset
-				if (startPoint != null && currentPoint != null) {
-					addRectangle(startPoint!!, currentPoint!!)
-					startPoint = null
-					currentPoint = null
-				}
-			}
-		})
-	}) {
+	Canvas(
+		modifier = Modifier.fillMaxSize().background(Color.LightGray)
+			.pointerInput(selectedDepartment, selectedFunctionType) {
+				detectTapGestures(onPress = { offset ->
+					if (startPoint == null) {
+						// First click: Set top-left corner
+						startPoint = offset
+					} else {
+						// Second click: Set bottom-right corner
+						currentPoint = offset
+						if (startPoint != null && currentPoint != null) {
+							val size1 = Size(
+								width = currentPoint!!.x - startPoint!!.x,
+								height = currentPoint!!.y - startPoint!!.y
+							)
+							val departmentColor = when (selectedFunctionType) {
+								FunctionType.WALL -> Color.Black
+								FunctionType.DEPARTMENT -> selectedDepartment?.color ?: Color.White
+								else -> Color.Transparent //TODO just shouldn't let the user draw
+							}
+							rectangles.add(Rectangle(startPoint!!, size1, departmentColor))
+							startPoint = null
+							currentPoint = null
+						}
+					}
+				})
+			}) {
 		scale(scale) {
 			rectangles.forEach { rect ->
 				drawRect(
