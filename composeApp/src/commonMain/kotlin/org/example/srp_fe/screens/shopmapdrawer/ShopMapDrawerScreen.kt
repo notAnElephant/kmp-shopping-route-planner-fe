@@ -84,14 +84,11 @@ fun ShopMapDrawerScreen(apiRepository: ApiRepository) {
 
 		var text by remember { mutableStateOf("No data") }
 		Button(onClick = {
-			LaunchedEffect(Unit) {
-				val departments = apiRepository.getDepartmentsByMapId(1)
-				text = departments.joinToString { it.name }
-			}
+			//TODO call by viewmodel
 		}) {
 			Text("Backend call")
 		}
-		Text("backend's answer: ${text}")
+		Text("backend's answer: $text")
 	}
 }
 
