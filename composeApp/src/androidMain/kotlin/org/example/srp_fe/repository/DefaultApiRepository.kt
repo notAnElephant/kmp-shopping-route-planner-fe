@@ -3,11 +3,13 @@ package org.example.srp_fe.repository
 import org.openapitools.client.apis.DefaultApi
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import commonMain.kotlin.org.openapitools.client.models.Store
+import org.openapitools.client.models.Store
 import org.openapitools.client.models.WallBlock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.example.ApiRepository
+import org.example.srp_fe.R
+import org.openapitools.client.models.RoutePlanning
 
 class DefaultApiRepository(private val api: DefaultApi = DefaultApi()) : ApiRepository {
 
@@ -69,5 +71,10 @@ class DefaultApiRepository(private val api: DefaultApi = DefaultApi()) : ApiRepo
 	override suspend fun deleteWallBlockById(wallBlockId: Int): String = withContext(Dispatchers.IO) {
 		val response = api.wallBlocksWallBlockIdDelete(wallBlockId)
 		response.body() ?: "Error"
+	}
+
+	override suspend fun calculateRoute(routePlanning: RoutePlanning): List<String> = withContext(Dispatchers.IO) {
+		val response = api.calculateRoutePost(routePlanning)
+		response.body() ?: emptyList()
 	}
 }

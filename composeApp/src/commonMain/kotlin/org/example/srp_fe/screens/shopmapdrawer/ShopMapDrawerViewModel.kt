@@ -6,9 +6,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import org.example.ApiRepository
-import commonMain.kotlin.org.openapitools.client.models.Store
+import org.openapitools.client.models.Store
 import org.openapitools.client.models.WallBlock
 import org.openapitools.client.models.Map
+import org.openapitools.client.models.RoutePlanning
 
 
 class ShopMapDrawerViewModel(private val apiRepository: ApiRepository) : ViewModel() {
@@ -43,4 +44,17 @@ class ShopMapDrawerViewModel(private val apiRepository: ApiRepository) : ViewMod
 			}
 		}
 	}
+
+	fun calculateRoute() {
+		viewModelScope.launch {
+			apiRepository.calculateRoute(
+				RoutePlanning(
+					departmentIds = listOf(1, 2, 3),
+					mapId = 1
+				)
+			).let {
+				val returnvalue = it
+		}
+	}
 }
+	}

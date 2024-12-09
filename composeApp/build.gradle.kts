@@ -7,25 +7,22 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-//    alias(libs.plugins.kotlinJvm)
    alias(libs.plugins.kotlinSerialization)
 
+
+
     id("org.openapi.generator") version "7.9.0"
-    //newly added
-//    application
-//    kotlin("jvm") version "1.4.21"
-//    kotlin("plugin.serialization") version "1.4.21"
 }
 
 openApiGenerate{
-    inputSpec.set("C:/Users/roiol/Downloads/com_example_ktor_db_app-openapi_1.yaml")
+    inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
     generatorName.set("kotlin")
     library.set("multiplatform")
     configOptions.put("dateLibrary", "kotlinx-datetime")
 }
 
 openApiValidate{
-    inputSpec.set("C:/Users/roiol/Downloads/com_example_ktor_db_app-openapi_1.yaml")
+    inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
 }
 kotlin {
     androidTarget {

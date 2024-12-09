@@ -2,7 +2,8 @@ package org.example
 
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import commonMain.kotlin.org.openapitools.client.models.Store
+import org.openapitools.client.models.RoutePlanning
+import org.openapitools.client.models.Store
 import org.openapitools.client.models.WallBlock
 
 interface ApiRepository {
@@ -25,4 +26,6 @@ interface ApiRepository {
 	suspend fun postWallBlock(wallBlock: WallBlock): String
 
 	suspend fun deleteWallBlockById(wallBlockId: Int): String
+
+	suspend fun calculateRoute(routePlanning: RoutePlanning): List<String>  //TODO list<pair<int, int>> (theoretically)
 }
