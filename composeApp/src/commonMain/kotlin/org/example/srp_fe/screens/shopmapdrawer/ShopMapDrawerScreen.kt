@@ -62,33 +62,34 @@ enum class FunctionType(val label: String) {
 	DEPARTMENT("Department"), WALL("Wall"), DELETE("Delete"), MOVE("Move")
 }
 
-
 @Composable
 fun ShopMapDrawerScreen(apiRepository: ApiRepository) {
+	var viewmodel by remember { mutableStateOf(ShopMapDrawerViewModel(apiRepository)) }
 	Column(
 		modifier = Modifier.fillMaxSize().padding(16.dp)
 	) {
 		var selectedFunction by remember { mutableStateOf(FunctionType.WALL) }
 		var selectedDepartment by remember { mutableStateOf<Department?>(null) }
 
-		FunctionSelector(
-			selectedFunctionType = selectedFunction,
-			onFunctionSelected = { selectedFunction = it })
-		DepartmentControls(
-			selectedDepartment = selectedDepartment,
-			onDepartmentSelected = { selectedDepartment = it })
-		ShopMapCanvas(
-			selectedFunctionType = selectedFunction,
-			selectedDepartment = selectedDepartment
-		)
 
 		var text by remember { mutableStateOf("No data") }
 		Button(onClick = {
-			//TODO call by viewmodel
+			viewmodel.fetchMapById(1)
 		}) {
 			Text("Backend call")
 		}
-		Text("backend's answer: $text")
+//		FunctionSelector(
+//			selectedFunctionType = selectedFunction,
+//			onFunctionSelected = { selectedFunction = it })
+//		DepartmentControls(
+//			selectedDepartment = selectedDepartment,
+//			onDepartmentSelected = { selectedDepartment = it })
+//		ShopMapCanvas(
+//			selectedFunctionType = selectedFunction,
+//			selectedDepartment = selectedDepartment
+//		)
+
+		Text("backend's answer: ${viewmodel.map}")
 	}
 }
 

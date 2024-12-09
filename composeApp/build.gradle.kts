@@ -7,8 +7,14 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
+//    alias(libs.plugins.kotlinJvm)
+   alias(libs.plugins.kotlinSerialization)
 
     id("org.openapi.generator") version "7.9.0"
+    //newly added
+//    application
+//    kotlin("jvm") version "1.4.21"
+//    kotlin("plugin.serialization") version "1.4.21"
 }
 
 openApiGenerate{
@@ -61,6 +67,10 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.serialization)
+                implementation(libs.kotlinx.serialization.json) // Ensure this is included
+                //TODO    implementation(kotlin("stdlib-common"))
+                //                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion")
+                //should it be added?
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
@@ -106,7 +116,7 @@ android {
 }
 
 dependencies {
-    implementation(project(":composeApp"))
+//    implementation(project(":composeApp"))
     debugImplementation(compose.uiTooling)
 }
 

@@ -2,7 +2,7 @@ package org.example
 
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import org.openapitools.client.models.Store
+import commonMain.kotlin.org.openapitools.client.models.Store
 import org.openapitools.client.models.WallBlock
 
 interface ApiRepository {

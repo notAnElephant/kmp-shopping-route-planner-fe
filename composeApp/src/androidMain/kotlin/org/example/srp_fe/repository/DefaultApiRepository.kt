@@ -3,7 +3,7 @@ package org.example.srp_fe.repository
 import org.openapitools.client.apis.DefaultApi
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import org.openapitools.client.models.Store
+import commonMain.kotlin.org.openapitools.client.models.Store
 import org.openapitools.client.models.WallBlock
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
