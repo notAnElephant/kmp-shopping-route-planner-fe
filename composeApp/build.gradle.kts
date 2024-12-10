@@ -1,6 +1,8 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.awt.SystemColor.desktop
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -25,10 +27,17 @@ openApiValidate{
     inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
 }
 kotlin {
+
+
     androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
+
+    jvm("desktop") { // This adds the JVM target for desktop
+        compilations.all {
+            kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
         }
     }
     
@@ -44,12 +53,12 @@ kotlin {
     }
     
     sourceSets {
-        
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
         }
+
         commonMain {
             dependencies {
                 implementation(compose.runtime)
@@ -64,10 +73,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.serialization)
-                implementation(libs.kotlinx.serialization.json) // Ensure this is included
-                //TODO    implementation(kotlin("stdlib-common"))
-                //                implementation("org.jetbrains.kotlinx:kotlinx-serialization-runtime:$serializationVersion")
-                //should it be added?
+                implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
@@ -75,6 +81,8 @@ kotlin {
 
                 implementation(compose.materialIconsExtended)
                 implementation(libs.core)
+
+                implementation(libs.logging)
             }
 
 //            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")
@@ -116,4 +124,15 @@ dependencies {
 //    implementation(project(":composeApp"))
     debugImplementation(compose.uiTooling)
 }
+
+//compose.desktop {
+//    application {
+//        mainClass = "org.example.srp_fe.MainKt"
+//        nativeDistributions {
+//            targetFormats(TargetFormat.Exe)
+//            packageName = "ComposeApp"
+//            packageVersion = "1.0.0"
+//        }
+//    }
+//}
 
