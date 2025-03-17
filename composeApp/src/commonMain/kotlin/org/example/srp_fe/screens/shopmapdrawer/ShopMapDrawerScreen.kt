@@ -33,7 +33,6 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.ArrowDropUp
 import androidx.compose.material.icons.filled.Business
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Navigation
 import androidx.compose.material.icons.filled.Wallpaper
 import androidx.compose.material.icons.filled.ZoomOutMap
 import androidx.compose.runtime.Composable
@@ -56,6 +55,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import com.composables.core.rememberMenuState
 import org.example.ApiRepository
 import org.example.srp_fe.model.DepartmentType
@@ -69,7 +69,7 @@ enum class FunctionType(val label: String) {
 }
 
 @Composable
-fun ShopMapDrawerScreen(apiRepository: ApiRepository) {
+fun ShopMapDrawerScreen(apiRepository: ApiRepository, navController: NavHostController) {
 	val viewModel by remember { mutableStateOf(ShopMapDrawerViewModel(apiRepository)) }
 	Column(
 		modifier = Modifier.fillMaxSize().padding(16.dp)

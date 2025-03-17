@@ -83,6 +83,8 @@ kotlin {
                 implementation(libs.core)
 
                 implementation(libs.logging)
+                implementation(libs.navigation)
+                implementation(libs.firebase.auth)
             }
 
 //            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")
