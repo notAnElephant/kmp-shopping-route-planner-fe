@@ -9,9 +9,8 @@ plugins {
     alias(libs.plugins.androidApplication)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
-   alias(libs.plugins.kotlinSerialization)
-
-
+    alias(libs.plugins.kotlinSerialization)
+    alias(libs.plugins.google.services)
 
     id("org.openapi.generator") version "7.9.0"
 }
@@ -57,6 +56,9 @@ kotlin {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
 
+            implementation(project.dependencies.platform(libs.firebase.android.bom))
+            implementation(libs.firebase.android.auth.ktx)
+            implementation(libs.firebase.android.firestore.ktx)
         }
 
         commonMain {
@@ -84,7 +86,6 @@ kotlin {
 
                 implementation(libs.logging)
                 implementation(libs.navigation)
-                implementation(libs.firebase.auth)
             }
 
 //            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")

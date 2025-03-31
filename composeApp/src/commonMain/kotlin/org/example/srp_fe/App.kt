@@ -10,9 +10,12 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import io.ktor.util.PlatformUtils
 import org.example.ApiRepository
 import org.example.srp_fe.navigation.Screen
+import org.example.srp_fe.screens.physicallist.PhysicalListScreen
 import org.example.srp_fe.screens.profile.ProfileScreen
+import org.example.srp_fe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
@@ -46,6 +49,8 @@ fun MainScreen(apiRepository: ApiRepository) {
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
             composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
+            if (isMobile())
+                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) }
         }
     }
 }
