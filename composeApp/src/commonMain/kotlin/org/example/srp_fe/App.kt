@@ -13,10 +13,12 @@ import androidx.navigation.compose.rememberNavController
 import io.ktor.util.PlatformUtils
 import org.example.ApiRepository
 import org.example.srp_fe.navigation.Screen
+import org.example.srp_fe.screens.camera.CameraSetupScreen
 import org.example.srp_fe.screens.physicallist.PhysicalListScreen
 import org.example.srp_fe.screens.profile.ProfileScreen
 import org.example.srp_fe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.lighthousegames.logging.logging
 
 @Composable
 @Preview
@@ -32,6 +34,9 @@ fun App(apiRepository : ApiRepository) {
 
         MainScreen(apiRepository)
     }
+}
+object logger{
+    val log = logging()
 }
 
 @Composable
@@ -49,15 +54,17 @@ fun MainScreen(apiRepository: ApiRepository) {
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
             composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
-            if (isMobile())
-                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) }
+            logger.log.d { "is mobile? " + isMobile() }
+            if (isMobile()) //TODO currently its actually "isandroid"
+//                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) }
+                composable(Screen.PhysicalList.route) { CameraSetupScreen() }
         }
     }
 }
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    val items = listOf(Screen.MapDrawer, Screen.ShoppingList)
+    val items = listOf(Screen.MapDrawer, Screen.ShoppingList, Screen.Profile, Screen.PhysicalList)
 
     BottomNavigation {
         items.forEach { screen ->

@@ -86,6 +86,8 @@ kotlin {
 
                 implementation(libs.logging)
                 implementation(libs.navigation)
+
+                implementation("io.github.kashif-mehmood-km:camerak:+")
             }
 
 //            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")

@@ -1,5 +1,6 @@
 package org.example.srp_fe.screens.physicallist
 
+import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
