@@ -13,10 +13,13 @@ import kotlinx.coroutines.launch
 import org.example.ApiRepository
 
 @Composable
-fun PhysicalListScreen(apiRepository: ApiRepository, navController: NavHostController) {
-    val viewModel by remember { mutableStateOf(PhysicalListViewModel(apiRepository)) }
-    val uiState by viewModel.uiState.collectAsState()
-
+fun PhysicalListScreen(
+    viewModel: PhysicalListViewModel,
+    onLaunchCamera: () -> Unit,
+    apiRepository: ApiRepository,
+    navController: NavHostController
+) {
+    val uiState by viewModel.uiState.collectAsState() //TODO why isn't this available?
     val coroutineScope = rememberCoroutineScope()
 
     Column(
@@ -28,16 +31,17 @@ fun PhysicalListScreen(apiRepository: ApiRepository, navController: NavHostContr
         if (uiState.imageBitmap == null) {
             Text("No image captured yet")
         } else {
-            Image(bitmap = uiState.imageBitmap ?: return@Column, contentDescription = null)
+            Image(bitmap = uiState.imageBitmap!!, contentDescription = null)
         }
 
-        Button(onClick = { viewModel.openCamera() }) {
+        Button(onClick = onLaunchCamera) {
             Text("Take Photo")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
-            coroutineScope.launch { viewModel.sendImageForOCR() }
+//            coroutineScope.launch { viewModel.sendImageForOCR() }
+            //TODO send image for ocr?
         }) {
             Text("Extract Text")
         }

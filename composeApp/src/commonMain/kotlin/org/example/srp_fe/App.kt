@@ -17,6 +17,7 @@ import org.example.ApiRepository
 import org.example.srp_fe.navigation.Screen
 import org.example.srp_fe.screens.camera.CameraSetupScreen
 import org.example.srp_fe.screens.physicallist.PhysicalListScreen
+import org.example.srp_fe.screens.physicallist.PlatformPhysicalListScreen
 import org.example.srp_fe.screens.profile.ProfileScreen
 import org.example.srp_fe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
@@ -48,15 +49,14 @@ fun MainScreen(apiRepository: ApiRepository) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = Screen.MapDrawer.route,
+            startDestination = Screen.Profile.route, //TODO not this?
             modifier = Modifier.padding(paddingValues)
         ) {
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
             composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
-            if (isMobile()) //TODO currently its actually "isandroid"
-//                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) }
-                composable(Screen.PhysicalList.route) { CameraSetupScreen() }
+            if (isMobile())
+                composable(Screen.PhysicalList.route) { PlatformPhysicalListScreen(apiRepository, navController) }
         }
     }
 }
