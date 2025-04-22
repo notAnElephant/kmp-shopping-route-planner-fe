@@ -447,8 +447,10 @@ fun ShopMapCanvas(
 				val coords = viewModel.convertToCanvasCoordinates(
 					canvasSize = Size(size.width, size.height),
 					size = Size(20f, 10f),
-					x = route.first,
-					y = route.second
+					x = 0,
+					y = 0,
+//					x = route.first,
+//					y = route.second
 				)
 
 				// Calculate color transition from light green to dark green

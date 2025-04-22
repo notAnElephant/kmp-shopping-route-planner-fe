@@ -11,6 +11,7 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
+camerak = "0.0.11"
 compose-plugin = "1.6.11"
 core = "1.19.1"
 junit = "4.13.2"
@@ -26,6 +27,7 @@ gradlePlugins-google-services = "4.4.2"
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 core = { module = "com.composables:core", version.ref = "core" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }

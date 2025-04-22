@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.example.ApiRepository
+import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.RoutePlan
 import org.openapitools.client.models.RoutePlanning
 import org.openapitools.client.models.Till
@@ -117,8 +118,18 @@ class DefaultApiRepository @OptIn(ExperimentalSerializationApi::class) construct
 		response.body()
 	}
 
+	override suspend fun googleOcr(image: List<Base64ByteArray>):  String = withContext(Dispatchers.IO) {
+		val response = api.googleocrPost(image)
+		response.body()
+	}
+
 	override suspend fun calculateRoute(routePlanning: RoutePlanning): RoutePlan = withContext(Dispatchers.IO) {
 		val response = api.calculateRoutePost(routePlanning)
 		response.body()
 	}
+//
+//	override suspend fun googleOcr(image: ByteArray): String = withContext(Dispatchers.IO) {
+//		val response = api.googleOcrPost(image)
+//		response.body()
+//	}
 }

@@ -1,0 +1,679 @@
+openapi: "3.1.0"
+info:
+  title: "com_example_ktor_db_app API"
+  description: "com_example_ktor_db_app API"
+  version: "1.0.0"
+servers:
+- url: "https://com_example_ktor_db_app"
+paths:
+  /calculate-route:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RoutePlanning"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RoutePlan"
+  /departments:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Department"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "Invalid position, there is no path to the tills"
+                Example#2:
+                  value: "Invalid position"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Department"
+  /departments/{departmentId}:
+    delete:
+      description: ""
+      parameters:
+      - name: "departmentId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /departments/{mapId}:
+    get:
+      description: ""
+      parameters:
+      - name: "mapId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Department"
+  /departments/{id}:
+    put:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Department"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid position, there is no path to the tills"
+                Example#2:
+                  value: "Invalid position"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Department"
+  /googleocr:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: "array"
+              items:
+                type: "string"
+                format: "byte"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+  /maps:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Map"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Map"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /maps/{id}:
+    delete:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Map"
+    put:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Map"
+        required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Map"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Map resizing would cause collision"
+  /ocr:
+    get:
+      description: ""
+      parameters:
+      - name: "file"
+        in: "query"
+        required: false
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  description: ""
+                  value: ""
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No text found in image"
+  /store:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Store"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Store"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /store/{id}:
+    delete:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Store"
+  /tills:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Till"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "Invalid position"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Till"
+  /tills/{tillId}:
+    delete:
+      description: ""
+      parameters:
+      - name: "tillId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+      - name: "tillId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Till"
+  /tills/{id}:
+    put:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Till"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid position"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Till"
+  /wall-blocks:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WallBlock"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "Invalid position, there is no path to the tills"
+                Example#2:
+                  value: "Invalid position"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/WallBlock"
+  /wall-blocks/{wallBlockId}:
+    delete:
+      description: ""
+      parameters:
+      - name: "wallBlockId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /wall-blocks/{mapId}:
+    get:
+      description: ""
+      parameters:
+      - name: "mapId"
+        in: "path"
+        required: true
+        schema:
+          type: "integer"
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/WallBlock"
+  /wall-blocks/{id}:
+    put:
+      description: ""
+      parameters:
+      - name: "id"
+        in: "path"
+        required: true
+        schema:
+          type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WallBlock"
+        required: true
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "Invalid position, there is no path to the tills"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/WallBlock"
+components:
+  schemas:
+    RoutePlanning:
+      type: "object"
+      properties:
+        mapId:
+          type: "integer"
+          format: "int32"
+        departmentIds:
+          type: "array"
+          items:
+            type: "integer"
+            format: "int32"
+      required:
+      - "mapId"
+      - "departmentIds"
+    Pair:
+      type: "object"
+      properties: {}
+    RoutePlan:
+      type: "object"
+      properties:
+        route:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Pair"
+      required:
+      - "route"
+    Department:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        mapId:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+      required:
+      - "mapId"
+      - "name"
+      - "width"
+      - "height"
+      - "startX"
+      - "startY"
+    Map:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        storeId:
+          type: "integer"
+          format: "int32"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        entranceX:
+          type: "number"
+          format: "double"
+        entranceY:
+          type: "number"
+          format: "double"
+        exitX:
+          type: "number"
+          format: "double"
+        exitY:
+          type: "number"
+          format: "double"
+      required:
+      - "storeId"
+      - "width"
+      - "height"
+      - "entranceX"
+      - "entranceY"
+      - "exitX"
+      - "exitY"
+    Store:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+        location:
+          type: "string"
+      required:
+      - "name"
+      - "location"
+    Till:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        mapId:
+          type: "integer"
+          format: "int32"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+      required:
+      - "mapId"
+      - "width"
+      - "height"
+      - "startX"
+      - "startY"
+    WallBlock:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        mapId:
+          type: "integer"
+          format: "int32"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+      required:
+      - "mapId"
+      - "width"
+      - "height"
+      - "startX"
+      - "startY"

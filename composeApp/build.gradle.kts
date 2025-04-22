@@ -15,15 +15,16 @@ plugins {
     id("org.openapi.generator") version "7.9.0"
 }
 
-openApiGenerate{
-    inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
+openApiGenerate {
+    inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
     generatorName.set("kotlin")
     library.set("multiplatform")
     configOptions.put("dateLibrary", "kotlinx-datetime")
+    //TODO keep in mind that this generates some test files that conflict with existing implementation, so the current solution to that now is just to delete these folders after generation
 }
 
-openApiValidate{
-    inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
+openApiValidate {
+    inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
 }
 kotlin {
 
@@ -39,7 +40,7 @@ kotlin {
             kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -50,7 +51,7 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
@@ -86,10 +87,10 @@ kotlin {
 
                 implementation(libs.logging)
                 implementation(libs.navigation)
+                implementation(libs.camerak)
             }
 
-//            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")
-            kotlin.srcDir("C:\\Users\\roiol\\source\\repos\\Kotlin\\kmp-shopping-route-planner-fe\\composeApp\\build\\generate-resources\\main\\src")
+            kotlin.srcDir(buildDir.resolve("generate-resources/main/src"))
         }
     }
 }
@@ -107,8 +108,8 @@ android {
     }
     packaging {
         resources {
-	        excludes += "META-INF/LICENSE.md"
-	        excludes += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }

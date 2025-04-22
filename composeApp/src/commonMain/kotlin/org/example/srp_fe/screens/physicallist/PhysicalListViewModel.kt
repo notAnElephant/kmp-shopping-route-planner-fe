@@ -1,34 +1,13 @@
 package org.example.srp_fe.screens.physicallist
 
 import androidx.compose.ui.graphics.ImageBitmap
-import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import org.example.ApiRepository
-import org.lighthousegames.logging.logging
 
-data class UiState(
+data class PhysicalListUiState(
     val imageBitmap: ImageBitmap? = null,
-    val ocrText: String = ""
+    val ocrResult: String? = null
 )
 
-class PhysicalListViewModel(apiRepository: ApiRepository) : ViewModel() {
-    companion object {
-        val log = logging()
-    }
 
-    private val _uiState = MutableStateFlow(UiState())
-    val uiState: StateFlow<UiState> = _uiState
-
-
-    fun openCamera() {
-        log.d { "openCamera" }
-        TODO("Not yet implemented")
-    }
-
-    fun sendImageForOCR() {
-        log.d { "sendImageForOCR" }
-        TODO("Not yet implemented")
-    }
-
-}
+@Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
+expect class PhysicalListViewModel(apiRepository: ApiRepository)
