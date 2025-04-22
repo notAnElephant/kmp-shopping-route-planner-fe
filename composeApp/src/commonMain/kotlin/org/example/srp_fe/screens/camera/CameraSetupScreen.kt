@@ -63,8 +63,10 @@ fun CameraScreen(cameraController: CameraController) {
 			scope.launch {
 				when (val result = cameraController.takePicture()) {
 					is ImageCaptureResult.Success -> {
-//						use result.byteArray
+						println("Captured Image Byte Array: ${result.byteArray.size} bytes")
+
 						// TODO Handle the captured image - send it to backend later on
+						// backend needs a byte array anyways (afaik)
 					}
 					is ImageCaptureResult.Error -> {
 						println("Image Capture Error: ${result.exception.message}")

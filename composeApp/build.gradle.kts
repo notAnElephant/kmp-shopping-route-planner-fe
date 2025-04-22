@@ -87,7 +87,11 @@ kotlin {
                 implementation(libs.logging)
                 implementation(libs.navigation)
 
-                implementation("io.github.kashif-mehmood-km:camerak:+")
+                implementation(libs.camerak)
+
+                implementation(libs.kmpauth.google)
+                implementation(libs.kmpauth.firebase)
+                implementation(libs.kmpauth.uihelper)
             }
 
 //            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")
@@ -126,7 +130,8 @@ android {
 }
 
 dependencies {
-//    implementation(project(":composeApp"))
+implementation(libs.firebase.auth.ktx)
+    //    implementation(project(":composeApp"))
     debugImplementation(compose.uiTooling)
 }
 

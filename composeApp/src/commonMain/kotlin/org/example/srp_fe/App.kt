@@ -10,6 +10,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
 import io.ktor.util.PlatformUtils
 import org.example.ApiRepository
 import org.example.srp_fe.navigation.Screen
@@ -18,7 +20,6 @@ import org.example.srp_fe.screens.physicallist.PhysicalListScreen
 import org.example.srp_fe.screens.profile.ProfileScreen
 import org.example.srp_fe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
-import org.lighthousegames.logging.logging
 
 @Composable
 @Preview
@@ -32,11 +33,10 @@ fun App(apiRepository : ApiRepository) {
 //            }
 //        }
 
+        //TODO maybe don't hardcode the web api key here
+        GoogleAuthProvider.create(credentials = GoogleAuthCredentials(serverId = "AIzaSyAug1ohAVBvOavKiBX7yTc8UWqOXHkl8tw"))
         MainScreen(apiRepository)
     }
-}
-object logger{
-    val log = logging()
 }
 
 @Composable
@@ -54,7 +54,6 @@ fun MainScreen(apiRepository: ApiRepository) {
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
             composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
-            logger.log.d { "is mobile? " + isMobile() }
             if (isMobile()) //TODO currently its actually "isandroid"
 //                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) }
                 composable(Screen.PhysicalList.route) { CameraSetupScreen() }

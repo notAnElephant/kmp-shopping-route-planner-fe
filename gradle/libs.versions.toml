@@ -11,9 +11,11 @@ androidx-espresso-core = "3.6.1"
 androidx-lifecycle = "2.8.3"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
+camerak = "0.0.11"
 compose-plugin = "1.6.11"
 core = "1.19.1"
 junit = "4.13.2"
+kmpauth = "2.3.1"
 kotlin = "2.0.21"
 kotlinJvm = "2.1.0"
 kotlintestRunnerJunit5 = "3.4.2"
@@ -23,10 +25,15 @@ ktorClientSerialization = "2.3.12"
 materialIconsExtended = "<compose_version>"
 firebase-android-bom = "33.11.0"
 gradlePlugins-google-services = "4.4.2"
+firebaseAuthKtx = "23.2.0"
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
+camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 core = { module = "com.composables:core", version.ref = "core" }
+kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
+kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
+kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -51,6 +58,7 @@ navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-c
 firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
 firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth" }
 firebase-android-firestore-ktx = { module = "com.google.firebase:firebase-firestore" }
+firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 
 [plugins]
