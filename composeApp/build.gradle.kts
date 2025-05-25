@@ -57,6 +57,7 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.plugins)
 
             //firebase auth - won't be needed probs
 //            implementation(project.dependencies.platform(libs.firebase.android.bom))
@@ -78,6 +79,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.serialization)
+                implementation(libs.ktor.client.plugins)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.client.content.negotiation)
@@ -161,4 +163,3 @@ dependencies {
 //        }
 //    }
 //}
-
