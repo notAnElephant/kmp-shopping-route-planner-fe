@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.example.ApiRepository
+import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.RoutePlan
 import org.openapitools.client.models.RoutePlanning
 import org.openapitools.client.models.Till
@@ -19,7 +20,7 @@ class DefaultApiRepository @OptIn(ExperimentalSerializationApi::class) construct
 		encodeDefaults = true
 		explicitNulls = true
 	},
-	baseUrl = "http://10.0.2.2:8080"
+	baseUrl = "http://10.0.2.2:8081"
 )) : ApiRepository {
 
 	override suspend fun getDepartmentsByMap(mapId: Int): List<Department> = withContext(Dispatchers.IO) {
@@ -114,6 +115,11 @@ class DefaultApiRepository @OptIn(ExperimentalSerializationApi::class) construct
 
 	override suspend fun deleteWallBlock(wallBlockId: Int): String = withContext(Dispatchers.IO) {
 		val response = api.wallBlocksWallBlockIdDelete(wallBlockId)
+		response.body()
+	}
+
+	override suspend fun googleOcr(image: List<Base64ByteArray>): String = withContext(Dispatchers.IO) {
+		val response = api.googleocrPost(image)
 		response.body()
 	}
 

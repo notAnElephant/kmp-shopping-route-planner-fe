@@ -10,20 +10,22 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
-    alias(libs.plugins.google.services)
+//    alias(libs.plugins.google.services)
 
     id("org.openapi.generator") version "7.9.0"
 }
 
-openApiGenerate{
-    inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
+openApiGenerate {
+    inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
     generatorName.set("kotlin")
     library.set("multiplatform")
     configOptions.put("dateLibrary", "kotlinx-datetime")
+    configOptions.put("generateTests", "false")
+    //TODO keep in mind that this generates some test files that conflict with existing implementation, so the current solution to that now is just to delete these folders after generation
 }
 
-openApiValidate{
-    inputSpec.set("C:/Users/roiol/Downloads/documentation.yaml")
+openApiValidate {
+    inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
 }
 kotlin {
 
@@ -39,7 +41,7 @@ kotlin {
             kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -50,15 +52,17 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.plugins)
 
-            implementation(project.dependencies.platform(libs.firebase.android.bom))
-            implementation(libs.firebase.android.auth.ktx)
-            implementation(libs.firebase.android.firestore.ktx)
+            //firebase auth - won't be needed probs
+//            implementation(project.dependencies.platform(libs.firebase.android.bom))
+//            implementation(libs.firebase.android.auth.ktx)
+//            implementation(libs.firebase.android.firestore.ktx)
         }
 
         commonMain {
@@ -75,6 +79,7 @@ kotlin {
                 implementation(libs.ktor.client.core)
                 implementation(libs.ktor.client.cio)
                 implementation(libs.ktor.client.serialization)
+                implementation(libs.ktor.client.plugins)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.client.content.negotiation)
@@ -89,13 +94,16 @@ kotlin {
 
                 implementation(libs.camerak)
 
-                implementation(libs.kmpauth.google)
-                implementation(libs.kmpauth.firebase)
-                implementation(libs.kmpauth.uihelper)
+                implementation(libs.filekit.core)
+                implementation(libs.filekit.dialogs)
+                implementation(libs.filekit.dialogs.compose)
+
+//                implementation(libs.kmpauth.google)
+//                implementation(libs.kmpauth.firebase)
+//                implementation(libs.kmpauth.uihelper)
             }
 
-//            kotlin.srcDir("${layout.buildDirectory.get()}/generate-resources/main/src")
-            kotlin.srcDir("C:\\Users\\roiol\\source\\repos\\Kotlin\\kmp-shopping-route-planner-fe\\composeApp\\build\\generate-resources\\main\\src")
+            kotlin.srcDir(buildDir.resolve("generate-resources/main/src"))
         }
     }
 }
@@ -113,13 +121,20 @@ android {
     }
     packaging {
         resources {
-	        excludes += "META-INF/LICENSE.md"
-	        excludes += "META-INF/LICENSE-notice.md"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/LICENSE-notice.md"
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += "META-INF/kotlinx-io.kotlin_module"
+            excludes += "'META-INF/atomicfu.kotlin_module'"
+            excludes += "META-INF/kotlinx-coroutines-io.kotlin_module"
+            excludes += "META-INF/kotlinx-coroutines-core.kotlin_module"
         }
     }
     buildTypes {
         getByName("release") {
+            isMinifyEnabled = false
+        }
+        getByName("debug"){
             isMinifyEnabled = false
         }
     }
@@ -130,10 +145,17 @@ android {
 }
 
 dependencies {
-implementation(libs.firebase.auth.ktx)
+//implementation(libs.firebase.auth.ktx)
     //    implementation(project(":composeApp"))
+    implementation(libs.ktor.client.android)
+    implementation(libs.ktor.client.content.negotiation.v111)
+    implementation(libs.ktor.serialization.kotlinx.json.v111)
     debugImplementation(compose.uiTooling)
 }
+
+//tasks.matching { it.name.contains("GradleDependencyReportTask") }.configureEach {
+//    enabled = false
+//}
 
 //compose.desktop {
 //    application {
@@ -145,4 +167,3 @@ implementation(libs.firebase.auth.ktx)
 //        }
 //    }
 //}
-

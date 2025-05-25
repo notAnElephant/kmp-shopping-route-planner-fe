@@ -1,5 +1,6 @@
 package org.example
 
+import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
 import org.openapitools.client.models.RoutePlan
@@ -29,4 +30,5 @@ interface ApiRepository {
 	suspend fun getWallBlocksByMap(mapId: Int): List<WallBlock>
 	suspend fun createWallBlock(wallBlock: WallBlock): WallBlock
 	suspend fun deleteWallBlock(wallBlockId: Int): String
+	suspend fun googleOcr(image: List<Base64ByteArray>): String
 }

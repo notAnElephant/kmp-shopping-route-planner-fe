@@ -1,39 +1,49 @@
 [versions]
-agp = "8.2.2"
+agp = "8.6.1"
 android-compileSdk = "35"
 android-minSdk = "24"
 android-targetSdk = "35"
 androidx-activityCompose = "1.10.1"
 androidx-appcompat = "1.7.0"
 androidx-constraintlayout = "2.2.1"
-androidx-core-ktx = "1.15.0"
+androidx-core-ktx = "1.16.0"
 androidx-espresso-core = "3.6.1"
-androidx-lifecycle = "2.8.3"
+androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 camerak = "0.0.11"
-compose-plugin = "1.6.11"
+compose-plugin = "1.7.0"
 core = "1.19.1"
+filekit = "1.0.0"
 junit = "4.13.2"
 kmpauth = "2.3.1"
-kotlin = "2.0.21"
-kotlinJvm = "2.1.0"
+kotlin = "2.1.20"
+kotlinJvm = "2.1.10"
 kotlintestRunnerJunit5 = "3.4.2"
-kotlinxSerializationJson = "1.6.3"
+kotlinxSerializationJson = "1.7.3"
+ktorClientAndroid = "2.3.12"
 ktorClientCio = "2.3.12"
+ktorClientContentNegotiation = "2.3.12"
 ktorClientSerialization = "2.3.12"
-materialIconsExtended = "<compose_version>"
-firebase-android-bom = "33.11.0"
+ktorSerializationKotlinxJson = "2.3.12"
+ktorClientPlugins = "2.3.12"
+materialIconsExtended = "1.7.0"
+#firebase-android-bom = "33.14.0"
 gradlePlugins-google-services = "4.4.2"
-firebaseAuthKtx = "23.2.0"
+version = "0.10.0-beta04"
+#firebaseAuthKtx = "23.2.1"
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 core = { module = "com.composables:core", version.ref = "core" }
-kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
-kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
-kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
+filekit = { module = "dev.vinceglb:filekit", version.ref = "filekit" }
+#kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
+#kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
+#kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "version" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "version" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "version" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -48,17 +58,21 @@ androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", nam
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
 kotlintest-runner-junit5 = { module = "io.kotlintest:kotlintest-runner-junit5", version.ref = "kotlintestRunnerJunit5" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
+ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientSerialization" }
+ktor-client-content-negotiation-v111 = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientSerialization" }
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorClientSerialization" }
+ktor-client-plugins = { module = "io.ktor:ktor-client-plugins", version.ref = "ktorClientPlugins" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientSerialization" }
+ktor-serialization-kotlinx-json-v111 = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 logging = { group = "org.lighthousegames", name = "logging", version = "1.5.0" }
 navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version = "2.8.0-alpha10" }
-firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
-firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth" }
-firebase-android-firestore-ktx = { module = "com.google.firebase:firebase-firestore" }
-firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
+#firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
+#firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth" }
+#firebase-android-firestore-ktx = { module = "com.google.firebase:firebase-firestore" }
+#firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 
 [plugins]
@@ -69,4 +83,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-google-services = { id = "com.google.gms.google-services", version.ref = "gradlePlugins-google-services" }
+#google-services = { id = "com.google.gms.google-services", version.ref = "gradlePlugins-google-services" }
