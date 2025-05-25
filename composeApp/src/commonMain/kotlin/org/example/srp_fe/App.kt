@@ -57,7 +57,7 @@ fun MainScreen(apiRepository: ApiRepository) {
 //            composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
             if (isMobile()) //TODO currently its actually "isandroid"
 //                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) } //this is the old one AFAIK
-                composable(Screen.PhysicalList.route) { CameraSetupScreen() }
+                composable(Screen.PhysicalList.route) { CameraSetupScreen(apiRepository, navController) }
         }
     }
 }
@@ -85,4 +85,3 @@ fun BottomNavigationBar(navController: NavController) {
         }
     }
 }
-

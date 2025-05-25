@@ -14,6 +14,7 @@ androidx-test-junit = "1.2.1"
 camerak = "0.0.11"
 compose-plugin = "1.7.0"
 core = "1.19.1"
+filekit = "1.0.0"
 junit = "4.13.2"
 kmpauth = "2.3.1"
 kotlin = "2.1.20"
@@ -29,15 +30,20 @@ ktorClientPlugins = "2.3.12"
 materialIconsExtended = "1.7.0"
 #firebase-android-bom = "33.14.0"
 gradlePlugins-google-services = "4.4.2"
+version = "0.10.0-beta04"
 #firebaseAuthKtx = "23.2.1"
 
 [libraries]
 androidx-material-icons-extended = { module = "androidx.compose.material:material-icons-extended", version.ref = "materialIconsExtended" }
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 core = { module = "com.composables:core", version.ref = "core" }
+filekit = { module = "dev.vinceglb:filekit", version.ref = "filekit" }
 #kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
 #kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
 #kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "version" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "version" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "version" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

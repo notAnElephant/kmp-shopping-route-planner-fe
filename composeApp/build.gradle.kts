@@ -94,6 +94,10 @@ kotlin {
 
                 implementation(libs.camerak)
 
+                implementation(libs.filekit.core)
+                implementation(libs.filekit.dialogs)
+                implementation(libs.filekit.dialogs.compose)
+
 //                implementation(libs.kmpauth.google)
 //                implementation(libs.kmpauth.firebase)
 //                implementation(libs.kmpauth.uihelper)

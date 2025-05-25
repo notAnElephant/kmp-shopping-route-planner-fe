@@ -20,7 +20,7 @@ class DefaultApiRepository @OptIn(ExperimentalSerializationApi::class) construct
 		encodeDefaults = true
 		explicitNulls = true
 	},
-	baseUrl = "http://10.0.2.2:8080"
+	baseUrl = "http://10.0.2.2:8081"
 )) : ApiRepository {
 
 	override suspend fun getDepartmentsByMap(mapId: Int): List<Department> = withContext(Dispatchers.IO) {
