@@ -21,7 +21,7 @@ actual class PhysicalListViewModel actual constructor(
     private val apiRepository: ApiRepository
 ) {
     private val _uiState = MutableStateFlow(PhysicalListUiState())
-    val uiState: StateFlow<PhysicalListUiState> = _uiState
+    actual val uiState: StateFlow<PhysicalListUiState> = _uiState
 
     private var currentPhotoPath: String? = null
 

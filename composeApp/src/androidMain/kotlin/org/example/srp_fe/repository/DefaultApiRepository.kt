@@ -118,7 +118,7 @@ class DefaultApiRepository @OptIn(ExperimentalSerializationApi::class) construct
 		response.body()
 	}
 
-	override suspend fun googleOcr(image: List<Base64ByteArray>):  String = withContext(Dispatchers.IO) {
+	override suspend fun googleOcr(image: List<Base64ByteArray>): String = withContext(Dispatchers.IO) {
 		val response = api.googleocrPost(image)
 		response.body()
 	}
@@ -127,9 +127,4 @@ class DefaultApiRepository @OptIn(ExperimentalSerializationApi::class) construct
 		val response = api.calculateRoutePost(routePlanning)
 		response.body()
 	}
-//
-//	override suspend fun googleOcr(image: ByteArray): String = withContext(Dispatchers.IO) {
-//		val response = api.googleOcrPost(image)
-//		response.body()
-//	}
 }

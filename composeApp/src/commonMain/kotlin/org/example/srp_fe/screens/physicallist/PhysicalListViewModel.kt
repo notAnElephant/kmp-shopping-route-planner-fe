@@ -2,6 +2,7 @@ package org.example.srp_fe.screens.physicallist
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap
+import kotlinx.coroutines.flow.StateFlow
 import org.example.ApiRepository
 
 data class PhysicalListUiState(
@@ -11,4 +12,6 @@ data class PhysicalListUiState(
 
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
-expect class PhysicalListViewModel(apiRepository: ApiRepository)
+expect class PhysicalListViewModel(apiRepository: ApiRepository) {
+    val uiState: StateFlow<PhysicalListUiState>
+}

@@ -19,7 +19,7 @@ fun PhysicalListScreen(
     apiRepository: ApiRepository,
     navController: NavHostController
 ) {
-    val uiState by viewModel.uiState.collectAsState() //TODO why isn't this available?
+    val uiState by viewModel.uiState.collectAsState() 
     val coroutineScope = rememberCoroutineScope()
 
     Column(
