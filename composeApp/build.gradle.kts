@@ -1,4 +1,5 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.gradle.api.tasks.Delete
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -20,15 +21,38 @@ openApiGenerate {
     generatorName.set("kotlin")
     library.set("multiplatform")
     configOptions.put("dateLibrary", "kotlinx-datetime")
-    configOptions.put("generateTests", "false")
-    //TODO keep in mind that this generates some test files that conflict with existing implementation, so the current solution to that now is just to delete these folders after generation
+
+    // Disable generated test/doc stubs
+    globalProperties.put("apiTests", "false")
+    globalProperties.put("modelTests", "false")
+    globalProperties.put("apiDocs", "false")
+    globalProperties.put("modelDocs", "false")
 }
 
 openApiValidate {
     inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
 }
-kotlin {
 
+val cleanupOpenApiGeneratedTests by tasks.registering(Delete::class) {
+    group = "openapi tools"
+    description = "Deletes unwanted OpenAPI generated test sources (workaround)."
+
+    delete(
+        layout.buildDirectory.dir("generate-resources/main/src/test"),
+        layout.buildDirectory.dir("generate-resources/main/src/commonTest"),
+        layout.buildDirectory.dir("generate-resources/main/src/jvmTest"),
+        layout.buildDirectory.dir("generate-resources/main/src/androidTest"),
+        layout.buildDirectory.dir("generate-resources/main/src/androidUnitTest"),
+        layout.buildDirectory.dir("generate-resources/main/src/iosTest"),
+    )
+}
+
+tasks.named("openApiGenerate") {
+    // Workaround: the kotlin multiplatform generator may still emit test sources.
+    finalizedBy(cleanupOpenApiGeneratedTests)
+}
+
+kotlin {
 
     androidTarget {
         compilerOptions {
@@ -36,7 +60,8 @@ kotlin {
         }
     }
 
-    jvm("desktop") { // This adds the JVM target for desktop
+    jvm("desktop") {
+        // This adds the JVM target for desktop
         compilations.all {
             kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
         }
@@ -45,7 +70,7 @@ kotlin {
     listOf(
         iosX64(),
         iosArm64(),
-        iosSimulatorArm64()
+        iosSimulatorArm64(),
     ).forEach { iosTarget ->
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
@@ -59,7 +84,7 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.plugins)
 
-            //firebase auth - won't be needed probs
+            // firebase auth - won't be needed probs
 //            implementation(project.dependencies.platform(libs.firebase.android.bom))
 //            implementation(libs.firebase.android.auth.ktx)
 //            implementation(libs.firebase.android.firestore.ktx)
@@ -110,12 +135,21 @@ kotlin {
 
 android {
     namespace = "org.example.srp_fe"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "org.example.srp_fe"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = 1
         versionName = "1.0"
     }
@@ -134,7 +168,7 @@ android {
         getByName("release") {
             isMinifyEnabled = false
         }
-        getByName("debug"){
+        getByName("debug") {
             isMinifyEnabled = false
         }
     }
@@ -145,7 +179,7 @@ android {
 }
 
 dependencies {
-//implementation(libs.firebase.auth.ktx)
+// implementation(libs.firebase.auth.ktx)
     //    implementation(project(":composeApp"))
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation.v111)
@@ -153,11 +187,11 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-//tasks.matching { it.name.contains("GradleDependencyReportTask") }.configureEach {
+// tasks.matching { it.name.contains("GradleDependencyReportTask") }.configureEach {
 //    enabled = false
-//}
+// }
 
-//compose.desktop {
+// compose.desktop {
 //    application {
 //        mainClass = "org.example.srp_fe.MainKt"
 //        nativeDistributions {
@@ -166,4 +200,4 @@ dependencies {
 //            packageVersion = "1.0.0"
 //        }
 //    }
-//}
+// }

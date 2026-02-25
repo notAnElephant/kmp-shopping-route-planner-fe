@@ -18,7 +18,7 @@ import java.io.File
 
 @Suppress("EXPECT_ACTUAL_CLASSIFIERS_ARE_IN_BETA_WARNING")
 actual class PhysicalListViewModel actual constructor(
-    private val apiRepository: ApiRepository
+    private val apiRepository: ApiRepository,
 ) {
     private val _uiState = MutableStateFlow(PhysicalListUiState())
     actual val uiState: StateFlow<PhysicalListUiState> = _uiState
@@ -26,13 +26,17 @@ actual class PhysicalListViewModel actual constructor(
     private var currentPhotoPath: String? = null
 
     fun createImageUri(context: Context): Uri {
-        val imageFile = File.createTempFile("photo_", ".jpg", context.cacheDir).apply {
-            currentPhotoPath = absolutePath
-        }
+        val imageFile =
+            File.createTempFile("photo_", ".jpg", context.cacheDir).apply {
+                currentPhotoPath = absolutePath
+            }
         return FileProvider.getUriForFile(context, "${context.packageName}.fileprovider", imageFile)
     }
 
-    fun onPhotoCaptured(uri: Uri, context: Context) {
+    fun onPhotoCaptured(
+        uri: Uri,
+        context: Context,
+    ) {
         val inputStream = context.contentResolver.openInputStream(uri)
         val bitmap = BitmapFactory.decodeStream(inputStream)
         val imageBitmap = bitmap?.asImageBitmap()

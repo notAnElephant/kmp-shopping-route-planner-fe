@@ -7,11 +7,13 @@ import org.example.ApiRepository
 import org.example.srp_fe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
 import org.lighthousegames.logging.logging
 import org.openapitools.client.infrastructure.Base64ByteArray
+import org.openapitools.client.models.ShopList
 
-class CameraViewModel(private val apiRepository: ApiRepository) {
-
-    private val _ocrResult = MutableStateFlow<String?>(null)
-    val ocrResult: StateFlow<String?> = _ocrResult.asStateFlow()
+class CameraViewModel(
+    private val apiRepository: ApiRepository,
+) {
+    private val _ocrResult = MutableStateFlow<ShopList?>(null)
+    val ocrResult: StateFlow<ShopList?> = _ocrResult.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
@@ -32,7 +34,7 @@ class CameraViewModel(private val apiRepository: ApiRepository) {
 
             // Update the result
             _ocrResult.value = result
-            log.d{result}
+            log.d { result }
         } catch (e: Exception) {
             _error.value = e.message ?: "Unknown error occurred"
         } finally {
@@ -45,6 +47,7 @@ class CameraViewModel(private val apiRepository: ApiRepository) {
     suspend fun processUploadedImageWithOcr(byteArray: ByteArray) {
         processImageWithOcr(byteArray)
     }
+
     companion object {
         val log = logging()
     }
