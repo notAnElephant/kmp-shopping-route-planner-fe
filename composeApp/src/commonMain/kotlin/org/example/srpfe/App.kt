@@ -10,11 +10,15 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.mmk.kmpauth.google.GoogleAuthCredentials
+import com.mmk.kmpauth.google.GoogleAuthProvider
 import io.ktor.util.PlatformUtils
 import org.example.ApiRepository
+import org.example.srpfe.auth.AuthConfig
 import org.example.srpfe.navigation.Screen
 import org.example.srpfe.screens.camera.CameraSetupScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
+import org.example.srpfe.screens.profile.ProfileScreen
 import org.example.srpfe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
@@ -22,6 +26,12 @@ import org.jetbrains.compose.ui.tooling.preview.Preview
 @Preview
 fun App(apiRepository : ApiRepository) {
     MaterialTheme {
+        if (AuthConfig.googleServerClientId.isNotBlank()) {
+            GoogleAuthProvider.create(
+                credentials = GoogleAuthCredentials(serverId = AuthConfig.googleServerClientId),
+            )
+        }
+
         MainScreen(apiRepository)
     }
 }
@@ -40,6 +50,7 @@ fun MainScreen(apiRepository: ApiRepository) {
         ) {
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
+            composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
             composable(Screen.PhysicalList.route) {
                 if (isMobile()) {
                     CameraSetupScreen(apiRepository, navController)
