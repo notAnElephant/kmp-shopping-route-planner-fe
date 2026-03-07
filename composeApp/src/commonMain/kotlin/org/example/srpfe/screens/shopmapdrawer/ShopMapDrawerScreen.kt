@@ -18,15 +18,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Snackbar
-import androidx.compose.material.Text
-import androidx.compose.material.TextField
+import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -173,7 +173,7 @@ fun FunctionButton(
 			)
 			Text(
 				text = functionType.label,
-				style = MaterialTheme.typography.caption,
+				style = MaterialTheme.typography.bodySmall,
 				color = if (isSelected) Color.Green else Color.Black
 			)
 		}
@@ -265,7 +265,7 @@ fun DepartmentTypeDropdown(
 			}
 			Text(
 				text = selectedDepartmentType?.name ?: "Departments",
-				style = MaterialTheme.typography.body1,
+				style = MaterialTheme.typography.bodyLarge,
 				overflow = TextOverflow.Ellipsis,
 				maxLines = 1
 			)
@@ -283,10 +283,8 @@ fun DepartmentTypeDropdown(
 		DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
 			if (departmentTypes.isNotEmpty()) {
 				departmentTypes.forEach { department ->
-					DropdownMenuItem(onClick = {
-						onDepartmentTypeSelected(department)
-						expanded = false
-					}) {
+					DropdownMenuItem(
+						text = {
 						Row(
 							modifier = Modifier.fillMaxWidth()
 								.padding(vertical = 8.dp, horizontal = 4.dp),
@@ -299,15 +297,18 @@ fun DepartmentTypeDropdown(
 							)
 							Spacer(modifier = Modifier.width(8.dp))
 							Text(
-								text = department.name, style = MaterialTheme.typography.body2
+								text = department.name, style = MaterialTheme.typography.bodyMedium
 							)
 						}
-					}
+						},
+						onClick = {
+							onDepartmentTypeSelected(department)
+							expanded = false
+						}
+					)
 				}
 			} else {
-				DropdownMenuItem(onClick = { }) {
-					Text("No departments available")
-				}
+				DropdownMenuItem(text = { Text("No departments available") }, onClick = { })
 			}
 		}
 	}
@@ -477,4 +478,3 @@ fun interpolateColor(start: Color, end: Color, fraction: Float): Color {
 	val a = start.alpha + (end.alpha - start.alpha) * fraction
 	return Color(r, g, b, a)
 }
-

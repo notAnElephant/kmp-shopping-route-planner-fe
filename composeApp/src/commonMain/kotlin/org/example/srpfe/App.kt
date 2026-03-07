@@ -2,7 +2,11 @@ package org.example.srpfe
 
 import ShoppingListScreen
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -65,9 +69,9 @@ fun MainScreen(apiRepository: ApiRepository) {
 fun BottomNavigationBar(navController: NavController) {
     val items = listOf(Screen.MapDrawer, Screen.ShoppingList, Screen.Profile, Screen.PhysicalList)
 
-    BottomNavigation {
+    NavigationBar {
         items.forEach { screen ->
-            BottomNavigationItem(
+            NavigationBarItem(
                 icon = { /* Add icon here */ },
                 label = { Text(screen.route) },
                 selected = false, // You can check currentRoute if needed

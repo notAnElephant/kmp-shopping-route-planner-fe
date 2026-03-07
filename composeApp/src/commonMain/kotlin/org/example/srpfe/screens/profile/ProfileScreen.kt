@@ -7,8 +7,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -41,7 +41,7 @@ fun ProfileScreen(
         if (AuthConfig.GOOGLE_SERVER_CLIENT_ID.isBlank()) {
             Text(
                 text = "Set AuthConfig.googleServerClientId before using Google Sign-In.",
-                color = MaterialTheme.colors.error,
+                color = MaterialTheme.colorScheme.error,
             )
             return@Column
         }
