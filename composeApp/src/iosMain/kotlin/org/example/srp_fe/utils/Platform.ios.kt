@@ -1,3 +1,3 @@
-package org.example.srp_fe.utils
+package org.example.srpfe.utils
 
-actual fun isMobile(): Boolean = false //TODO fix obviously
+actual fun isMobile(): Boolean = true

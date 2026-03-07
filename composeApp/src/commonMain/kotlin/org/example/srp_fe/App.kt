@@ -1,9 +1,9 @@
-package org.example.srp_fe
+package org.example.srpfe
 
 import ShoppingListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.*
-import org.example.srp_fe.screens.shopmapdrawer.ShopMapDrawerScreen
+import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerScreen
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
@@ -14,12 +14,12 @@ import androidx.navigation.compose.rememberNavController
 //import com.mmk.kmpauth.google.GoogleAuthProvider
 import io.ktor.util.PlatformUtils
 import org.example.ApiRepository
-import org.example.srp_fe.navigation.Screen
-import org.example.srp_fe.screens.camera.CameraSetupScreen
-import org.example.srp_fe.screens.physicallist.PhysicalListScreen
-import org.example.srp_fe.screens.physicallist.PlatformPhysicalListScreen
-//import org.example.srp_fe.screens.profile.ProfileScreen
-import org.example.srp_fe.utils.isMobile
+import org.example.srpfe.navigation.Screen
+import org.example.srpfe.screens.camera.CameraSetupScreen
+import org.example.srpfe.screens.physicallist.PhysicalListScreen
+import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
+//import org.example.srpfe.screens.profile.ProfileScreen
+import org.example.srpfe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable

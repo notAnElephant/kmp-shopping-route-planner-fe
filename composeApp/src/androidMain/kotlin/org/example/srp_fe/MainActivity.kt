@@ -1,11 +1,11 @@
-package org.example.srp_fe
+package org.example.srpfe
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import org.example.srp_fe.repository.DefaultApiRepository
+import org.example.srpfe.repository.DefaultApiRepository
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

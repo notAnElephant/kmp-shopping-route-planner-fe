@@ -1,4 +1,4 @@
-package org.example.srp_fe.model
+package org.example.srpfe.model
 
 import androidx.compose.ui.graphics.Color
 

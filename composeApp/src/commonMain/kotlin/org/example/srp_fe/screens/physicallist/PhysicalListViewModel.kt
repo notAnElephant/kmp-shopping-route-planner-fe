@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.physicallist
+package org.example.srpfe.screens.physicallist
 
 import androidx.compose.runtime.remember
 import androidx.compose.ui.graphics.ImageBitmap

@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.camera
+package org.example.srpfe.screens.camera
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row

@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.physicallist
+package org.example.srpfe.screens.physicallist
 
 import android.content.Context
 import android.graphics.Bitmap

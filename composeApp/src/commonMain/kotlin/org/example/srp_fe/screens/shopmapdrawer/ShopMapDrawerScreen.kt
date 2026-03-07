@@ -1,6 +1,6 @@
 @file:Suppress("t")
 
-package org.example.srp_fe.screens.shopmapdrawer
+package org.example.srpfe.screens.shopmapdrawer
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
@@ -58,8 +58,8 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.composables.core.rememberMenuState
 import org.example.ApiRepository
-import org.example.srp_fe.model.DepartmentType
-import org.example.srp_fe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
+import org.example.srpfe.model.DepartmentType
+import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
 import kotlin.random.Random
 
 data class Rectangle(val topLeft: Offset, val size: Size, val color: Color, val name: String = "")
@@ -247,7 +247,7 @@ fun DepartmentTypeDropdown(
 	// Toggle the menu state
 	val arrowIcon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
 
-	// TODO disable this somehow when not the org.example.srp_fe.model.Department is the selected function
+	// TODO disable this somehow when not the org.example.srpfe.model.Department is the selected function
 	// Use a custom Menu button with color and selected department label
 	Box(modifier = Modifier.fillMaxWidth()) {
 		Row(
@@ -292,7 +292,7 @@ fun DepartmentTypeDropdown(
 								.padding(vertical = 8.dp, horizontal = 4.dp),
 							verticalAlignment = Alignment.CenterVertically
 						) {
-							// org.example.srp_fe.model.Department color box
+							// org.example.srpfe.model.Department color box
 							Box(
 								modifier = Modifier.size(20.dp)
 									.background(department.color, RoundedCornerShape(4.dp))

@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.shoppinglist
+package org.example.srpfe.screens.shoppinglist
 
 class ShoppingListViewModel {
 }

@@ -1,7 +1,7 @@
-package org.example.srp_fe.mapping
+package org.example.srpfe.mapping
 
 import androidx.compose.ui.graphics.Color
-import org.example.srp_fe.model.DepartmentModel
+import org.example.srpfe.model.DepartmentModel
 import org.openapitools.client.models.Department
 
 fun Department.toModel(color: Color = Color.Gray, isSelected: Boolean = false): DepartmentModel {

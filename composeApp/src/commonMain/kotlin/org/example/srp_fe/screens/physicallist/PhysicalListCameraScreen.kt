@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.physicallist
+package org.example.srpfe.screens.physicallist
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button

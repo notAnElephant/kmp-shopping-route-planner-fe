@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.shopmapdrawer
+package org.example.srpfe.screens.shopmapdrawer
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.geometry.Size
@@ -10,8 +10,8 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import org.example.ApiRepository
-import org.example.srp_fe.mapping.toModel
-import org.example.srp_fe.model.DepartmentModel
+import org.example.srpfe.mapping.toModel
+import org.example.srpfe.model.DepartmentModel
 import org.lighthousegames.logging.logging
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
@@ -112,7 +112,7 @@ class ShopMapDrawerViewModel(private val apiRepository: ApiRepository) : ViewMod
 							?: throw IllegalStateException("Map is not created yet"),
 						departmentIds = selectedDepartments.map {
 							it.id
-								?: throw IllegalStateException("org.example.srp_fe.model.Department is not created yet")
+								?: throw IllegalStateException("org.example.srpfe.model.Department is not created yet")
 						},
 					)
 				).let {

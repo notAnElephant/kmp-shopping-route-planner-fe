@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.physicallist
+package org.example.srpfe.screens.physicallist
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController

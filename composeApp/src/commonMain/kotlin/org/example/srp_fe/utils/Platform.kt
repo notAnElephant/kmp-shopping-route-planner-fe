@@ -1,3 +1,3 @@
-package org.example.srp_fe.utils
+package org.example.srpfe.utils
 
 expect fun isMobile(): Boolean

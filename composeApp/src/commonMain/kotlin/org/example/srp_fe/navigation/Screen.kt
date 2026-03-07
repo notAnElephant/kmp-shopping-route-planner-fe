@@ -1,4 +1,4 @@
-package org.example.srp_fe.navigation
+package org.example.srpfe.navigation
 
 sealed class Screen(val route: String) {
     data object ShoppingList : Screen("shoppinglist")

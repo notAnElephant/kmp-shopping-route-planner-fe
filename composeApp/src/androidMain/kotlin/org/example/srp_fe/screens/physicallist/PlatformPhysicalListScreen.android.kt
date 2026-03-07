@@ -1,4 +1,4 @@
-package org.example.srp_fe.screens.physicallist
+package org.example.srpfe.screens.physicallist
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts

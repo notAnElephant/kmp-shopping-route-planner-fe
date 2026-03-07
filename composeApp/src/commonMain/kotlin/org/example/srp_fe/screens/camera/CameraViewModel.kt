@@ -1,10 +1,10 @@
-package org.example.srp_fe.screens.camera
+package org.example.srpfe.screens.camera
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.example.ApiRepository
-import org.example.srp_fe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
+import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
 import org.lighthousegames.logging.logging
 import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.ShopList

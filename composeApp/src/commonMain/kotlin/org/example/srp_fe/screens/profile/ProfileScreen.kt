@@ -1,4 +1,4 @@
-//package org.example.srp_fe.screens.profile
+//package org.example.srpfe.screens.profile
 //
 //import androidx.compose.foundation.layout.*
 //import androidx.compose.material.*
