@@ -83,12 +83,7 @@ kotlin {
         }
     }
 
-    jvm("desktop") {
-        // This adds the JVM target for desktop
-        compilations.all {
-//            kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
-        }
-    }
+    jvm()
 
     listOf(
         iosX64(),
@@ -110,6 +105,14 @@ kotlin {
 //            implementation(project.dependencies.platform(libs.firebase.android.bom))
 //            implementation(libs.firebase.android.auth.ktx)
 //            implementation(libs.firebase.android.firestore.ktx)
+        }
+
+        jvmMain.dependencies {
+            implementation(compose.desktop.currentOs)
+        }
+
+        jvmMain {
+            kotlin.srcDir("src/desktopMain/kotlin")
         }
 
         commonMain {
@@ -212,13 +215,13 @@ dependencies {
 //    enabled = false
 // }
 
-// compose.desktop {
-//    application {
-//        mainClass = "org.example.srp_fe.MainKt"
-//        nativeDistributions {
-//            targetFormats(TargetFormat.Exe)
-//            packageName = "ComposeApp"
-//            packageVersion = "1.0.0"
-//        }
-//    }
-// }
+compose.desktop {
+    application {
+        mainClass = "org.example.srpfe.MainKt"
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "ShoppingRoutePlannerFE"
+            packageVersion = "1.0.0"
+        }
+    }
+}

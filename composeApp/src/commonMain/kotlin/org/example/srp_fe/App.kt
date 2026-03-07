@@ -16,7 +16,6 @@ import io.ktor.util.PlatformUtils
 import org.example.ApiRepository
 import org.example.srpfe.navigation.Screen
 import org.example.srpfe.screens.camera.CameraSetupScreen
-import org.example.srpfe.screens.physicallist.PhysicalListScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
 //import org.example.srpfe.screens.profile.ProfileScreen
 import org.example.srpfe.utils.isMobile
@@ -55,9 +54,13 @@ fun MainScreen(apiRepository: ApiRepository) {
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
 //            composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
-            if (isMobile()) //TODO currently its actually "isandroid"
-//                composable(Screen.PhysicalList.route) { PhysicalListScreen(apiRepository, navController) } //this is the old one AFAIK
-                composable(Screen.PhysicalList.route) { CameraSetupScreen(apiRepository, navController) }
+            composable(Screen.PhysicalList.route) {
+                if (isMobile()) {
+                    CameraSetupScreen(apiRepository, navController)
+                } else {
+                    PlatformPhysicalListScreen(apiRepository, navController)
+                }
+            }
         }
     }
 }
