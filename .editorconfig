@@ -1,0 +1,13 @@
+root = true
+
+[*.{kt,kts}]
+ktlint_function_naming_ignore_when_annotated_with = Composable
+compose_check_modifiers_for_visibility = public_and_internal
+compose_content_emitters = Window,Dialog,DropdownMenu,AnimatedContent,AnimatedVisibility
+compose_content_emitters_denylist = GoogleButtonUiContainerFirebase
+compose_allowed_state_holder_names = .*ViewModel,.*Presenter,.*Component
+compose_allowed_forwarding = .*Screen,.*Content
+compose_allowed_forwarding_of_types = .*ViewModel
+compose_view_model_factories = viewModel,hiltViewModel
+compose_preview_naming_enabled = true
+compose_preview_naming_strategy = suffix
