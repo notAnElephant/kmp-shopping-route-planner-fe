@@ -18,23 +18,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
+import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import dev.gitlive.firebase.auth.FirebaseUser
 import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
 
 @Composable
-fun ProfileScreen(apiRepository: ApiRepository, navController: NavHostController) {
+fun ProfileScreen(
+    apiRepository: ApiRepository,
+    navController: NavHostController,
+) {
     var statusMessage by remember { mutableStateOf("Not signed in") }
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
         verticalArrangement = Arrangement.Center,
     ) {
-        if (AuthConfig.googleServerClientId.isBlank()) {
+        if (AuthConfig.GOOGLE_SERVER_CLIENT_ID.isBlank()) {
             Text(
                 text = "Set AuthConfig.googleServerClientId before using Google Sign-In.",
                 color = MaterialTheme.colors.error,
@@ -59,9 +63,10 @@ fun ProfileScreen(apiRepository: ApiRepository, navController: NavHostController
             linkAccount = false,
         ) {
             GoogleSignInButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(44.dp),
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .height(44.dp),
                 fontSize = 19.sp,
             ) {
                 this.onClick()

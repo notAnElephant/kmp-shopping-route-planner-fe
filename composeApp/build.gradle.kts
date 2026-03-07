@@ -201,10 +201,6 @@ dependencies {
     debugImplementation(compose.uiTooling)
 }
 
-// tasks.matching { it.name.contains("GradleDependencyReportTask") }.configureEach {
-//    enabled = false
-// }
-
 compose.desktop {
     application {
         mainClass = "org.example.srpfe.MainKt"
