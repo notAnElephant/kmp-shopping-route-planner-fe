@@ -1,9 +1,5 @@
-import org.gradle.api.tasks.Delete
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import java.awt.SystemColor.desktop
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -11,7 +7,6 @@ plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
-//    alias(libs.plugins.google.services)
 
     id("org.openapi.generator") version "7.20.0"
 }
@@ -100,11 +95,6 @@ kotlin {
         androidMain.dependencies {
             implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
-
-            // firebase auth - won't be needed probs
-//            implementation(project.dependencies.platform(libs.firebase.android.bom))
-//            implementation(libs.firebase.android.auth.ktx)
-//            implementation(libs.firebase.android.firestore.ktx)
         }
 
         jvmMain.dependencies {
@@ -145,10 +135,9 @@ kotlin {
                 implementation(libs.filekit.core)
                 implementation(libs.filekit.dialogs)
                 implementation(libs.filekit.dialogs.compose)
-
-//                implementation(libs.kmpauth.google)
-//                implementation(libs.kmpauth.firebase)
-//                implementation(libs.kmpauth.uihelper)
+                implementation(libs.kmpauth.google)
+                implementation(libs.kmpauth.firebase)
+                implementation(libs.kmpauth.uihelper)
             }
 
             kotlin.srcDir(buildDir.resolve("generate-resources/main/src"))
@@ -206,8 +195,6 @@ android {
 }
 
 dependencies {
-// implementation(libs.firebase.auth.ktx)
-    //    implementation(project(":composeApp"))
     implementation(libs.ktor.client.android)
     implementation(libs.ktor.client.content.negotiation.v111)
     implementation(libs.ktor.serialization.kotlinx.json.v111)

@@ -19,17 +19,13 @@ junit = "4.13.2"
 kmpauth = "2.3.1"
 kotlin = "2.3.10"
 kotlinJvm = "2.3.10"
-kotlintestRunnerJunit5 = "3.4.2"
 kotlinxSerializationJson = "1.10.0"
 ktorClientAndroid = "3.4.1"
 ktorClientCio = "3.4.1"
 ktorClientSerialization = "3.4.1"
 ktorSerializationKotlinxJson = "3.4.1"
 materialIconsExtended = "1.7.8"
-#firebase-android-bom = "33.14.0"
-gradlePlugins-google-services = "4.4.2"
 version = "0.13.0"
-#firebaseAuthKtx = "23.2.1"
 lighthouseGamesLogging = "2.0.3"
 androidXNavigation = "2.9.2"
 
@@ -38,9 +34,9 @@ androidx-material-icons-extended = { module = "androidx.compose.material:materia
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
 core = { module = "com.composables:core", version.ref = "core" }
 filekit = { module = "dev.vinceglb:filekit", version.ref = "filekit" }
-#kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
-#kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
-#kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
+kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
+kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
+kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "version" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "version" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "version" }
@@ -56,7 +52,6 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-kotlintest-runner-junit5 = { module = "io.kotlintest:kotlintest-runner-junit5", version.ref = "kotlintestRunnerJunit5" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
@@ -68,10 +63,6 @@ ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx
 ktor-serialization-kotlinx-json-v111 = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 logging = { group = "org.lighthousegames", name = "logging", version.ref = "lighthouseGamesLogging" }
 navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-compose", version.ref = "androidXNavigation" }
-#firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
-#firebase-android-auth-ktx = { module = "com.google.firebase:firebase-auth" }
-#firebase-android-firestore-ktx = { module = "com.google.firebase:firebase-firestore" }
-#firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtx" }
 
 
 [plugins]
@@ -82,4 +73,3 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
-#google-services = { id = "com.google.gms.google-services", version.ref = "gradlePlugins-google-services" }
