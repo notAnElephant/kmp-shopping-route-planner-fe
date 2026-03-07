@@ -19,18 +19,14 @@
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>NSCameraUsageDescription</key>
-    <string>Camera permission is required for the app to work.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Photo Library permission is required for the app to work.</string>
+	<string>Camera permission is required for the app to work.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo Library permission is required for the app to work.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>CADisableMinimumFrameDurationOnPhone</key>
 	<true/>
 	<key>UIApplicationSceneManifest</key>
-	<key>NSCameraUsageDescription</key>
-    <string>Camera permission is required for the app to work.</string>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>Photo Library permission is required for the app to work.</string>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
 		<false/>

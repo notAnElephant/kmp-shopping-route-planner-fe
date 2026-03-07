@@ -1,5 +1,5 @@
-import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.gradle.api.tasks.Delete
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -63,7 +63,7 @@ kotlin {
     jvm("desktop") {
         // This adds the JVM target for desktop
         compilations.all {
-            kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
+//            kotlinOptions.jvmTarget = "11" // Adjust JVM target version if necessary
         }
     }
 
