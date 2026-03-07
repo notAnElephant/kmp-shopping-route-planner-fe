@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidApplication)
+    alias(libs.plugins.androidMultiplatformLibrary)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
@@ -71,8 +71,13 @@ tasks.named("openApiGenerate") {
 }
 
 kotlin {
-
-    androidTarget {
+    android {
+        namespace = "org.example.srpfe"
+        compileSdk = libs.versions.android.compileSdk.get().toInt()
+        minSdk = libs.versions.android.minSdk.get().toInt()
+        androidResources {
+            enable = true
+        }
         compilerOptions {
             jvmTarget.set(JvmTarget.JVM_11)
         }
@@ -93,8 +98,10 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
-            implementation(compose.preview)
             implementation(libs.androidx.activity.compose)
+            implementation(libs.ktor.client.android)
+            implementation(libs.ktor.client.content.negotiation.v111)
+            implementation(libs.ktor.serialization.kotlinx.json.v111)
         }
 
         jvmMain.dependencies {
@@ -147,58 +154,6 @@ kotlin {
             implementation(libs.kotlin.test)
         }
     }
-}
-
-android {
-    namespace = "org.example.srpfe"
-    compileSdk =
-        libs.versions.android.compileSdk
-            .get()
-            .toInt()
-
-    defaultConfig {
-        applicationId = "org.example.srpfe"
-        minSdk =
-            libs.versions.android.minSdk
-                .get()
-                .toInt()
-        targetSdk =
-            libs.versions.android.targetSdk
-                .get()
-                .toInt()
-        versionCode = 1
-        versionName = "1.0"
-    }
-    packaging {
-        resources {
-            excludes += "META-INF/LICENSE.md"
-            excludes += "META-INF/LICENSE-notice.md"
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
-            excludes += "META-INF/kotlinx-io.kotlin_module"
-            excludes += "'META-INF/atomicfu.kotlin_module'"
-            excludes += "META-INF/kotlinx-coroutines-io.kotlin_module"
-            excludes += "META-INF/kotlinx-coroutines-core.kotlin_module"
-        }
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
-        getByName("debug") {
-            isMinifyEnabled = false
-        }
-    }
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-}
-
-dependencies {
-    implementation(libs.ktor.client.android)
-    implementation(libs.ktor.client.content.negotiation.v111)
-    implementation(libs.ktor.serialization.kotlinx.json.v111)
-    debugImplementation(compose.uiTooling)
 }
 
 compose.desktop {
