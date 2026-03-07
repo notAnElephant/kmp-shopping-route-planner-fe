@@ -23,10 +23,8 @@ kotlintestRunnerJunit5 = "3.4.2"
 kotlinxSerializationJson = "1.10.0"
 ktorClientAndroid = "3.4.1"
 ktorClientCio = "3.4.1"
-ktorClientContentNegotiation = "3.4.1"
 ktorClientSerialization = "3.4.1"
 ktorSerializationKotlinxJson = "3.4.1"
-ktorClientPlugins = "3.1.1"
 materialIconsExtended = "1.7.8"
 #firebase-android-bom = "33.14.0"
 gradlePlugins-google-services = "4.4.2"
@@ -63,10 +61,9 @@ kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktorClientAndroid" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktorClientCio" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientSerialization" }
-ktor-client-content-negotiation-v111 = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientContentNegotiation" }
+ktor-client-content-negotiation-v111 = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktorClientSerialization" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktorClientSerialization" }
 ktor-client-serialization = { module = "io.ktor:ktor-client-serialization", version.ref = "ktorClientSerialization" }
-ktor-client-plugins = { module = "io.ktor:ktor-client-plugins", version.ref = "ktorClientPlugins" }
 ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorClientSerialization" }
 ktor-serialization-kotlinx-json-v111 = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktorSerializationKotlinxJson" }
 logging = { group = "org.lighthousegames", name = "logging", version.ref = "lighthouseGamesLogging" }
