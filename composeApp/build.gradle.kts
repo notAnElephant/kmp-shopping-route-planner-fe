@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.kotlinSerialization)
 //    alias(libs.plugins.google.services)
 
-    id("org.openapi.generator") version "7.9.0"
+    id("org.openapi.generator") version "7.20.0"
 }
 
 openApiGenerate {
@@ -47,9 +47,32 @@ val cleanupOpenApiGeneratedTests by tasks.registering(Delete::class) {
     )
 }
 
+val patchOpenApiGeneratedSources by tasks.registering {
+    group = "openapi tools"
+    description = "Patches generated OpenAPI sources for current Ktor compatibility."
+
+    doLast {
+        val authFile =
+            layout.buildDirectory
+                .file("generate-resources/main/src/commonMain/kotlin/org/openapitools/client/auth/HttpBasicAuth.kt")
+                .get()
+                .asFile
+
+        if (authFile.exists()) {
+            val patched =
+                authFile
+                    .readText()
+                    .replace("import io.ktor.util.InternalAPI\n", "")
+                    .replace("    @OptIn(InternalAPI::class)\n", "")
+            authFile.writeText(patched)
+        }
+    }
+}
+
 tasks.named("openApiGenerate") {
     // Workaround: the kotlin multiplatform generator may still emit test sources.
     finalizedBy(cleanupOpenApiGeneratedTests)
+    finalizedBy(patchOpenApiGeneratedSources)
 }
 
 kotlin {
@@ -132,14 +155,14 @@ kotlin {
 }
 
 android {
-    namespace = "org.example.srp_fe"
+    namespace = "org.example.srpfe"
     compileSdk =
         libs.versions.android.compileSdk
             .get()
             .toInt()
 
     defaultConfig {
-        applicationId = "org.example.srp_fe"
+        applicationId = "org.example.srpfe"
         minSdk =
             libs.versions.android.minSdk
                 .get()
