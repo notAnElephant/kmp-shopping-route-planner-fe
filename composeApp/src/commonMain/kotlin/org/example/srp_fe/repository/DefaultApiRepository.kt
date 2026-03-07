@@ -1,6 +1,7 @@
-package org.example.srp_fe.repository
+package org.example.srpfe.repository
 
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
@@ -31,14 +32,12 @@ class DefaultApiRepository
     ) : ApiRepository {
         override suspend fun getDepartmentsByMap(mapId: Int): List<Department> =
             withContext(Dispatchers.IO) {
-                val response = api.departmentsMapIdGet(mapId)
-                response.body()
+                api.departmentsMapIdGet(mapId).body()
             }
 
         override suspend fun deleteDepartment(departmentId: Int): String =
             withContext(Dispatchers.IO) {
-                val response = api.departmentsDepartmentIdDelete(departmentId)
-                response.body()
+                api.departmentsDepartmentIdDelete(departmentId).body()
             }
 
         override suspend fun updateDepartment(
@@ -46,20 +45,17 @@ class DefaultApiRepository
             department: Department,
         ): Department =
             withContext(Dispatchers.IO) {
-                val response = api.departmentsIdPut(id, department)
-                response.body()
+                api.departmentsIdPut(id, department).body()
             }
 
         override suspend fun createDepartment(department: Department): Department =
             withContext(Dispatchers.IO) {
-                val response = api.departmentsPost(department)
-                response.body()
+                api.departmentsPost(department).body()
             }
 
         override suspend fun getMap(id: Int): Map =
             withContext(Dispatchers.IO) {
-                val response = api.mapsIdGet(id)
-                response.body()
+                api.mapsIdGet(id).body()
             }
 
         override suspend fun updateMap(
@@ -67,38 +63,32 @@ class DefaultApiRepository
             map: Map,
         ): Map =
             withContext(Dispatchers.IO) {
-                val response = api.mapsIdPut(id, map)
-                response.body()
+                api.mapsIdPut(id, map).body()
             }
 
         override suspend fun deleteMap(id: Int): String =
             withContext(Dispatchers.IO) {
-                val response = api.mapsIdDelete(id)
-                response.body()
+                api.mapsIdDelete(id).body()
             }
 
         override suspend fun createMap(map: Map): Map =
             withContext(Dispatchers.IO) {
-                val response = api.mapsPost(map)
-                response.body()
+                api.mapsPost(map).body()
             }
 
         override suspend fun getStore(id: Int): Store =
             withContext(Dispatchers.IO) {
-                val response = api.storeIdGet(id)
-                response.body()
+                api.storeIdGet(id).body()
             }
 
         override suspend fun deleteStore(id: Int): String =
             withContext(Dispatchers.IO) {
-                val response = api.storeIdDelete(id)
-                response.body()
+                api.storeIdDelete(id).body()
             }
 
         override suspend fun createStore(store: Store): Store =
             withContext(Dispatchers.IO) {
-                val response = api.storePost(store)
-                response.body()
+                api.storePost(store).body()
             }
 
         override suspend fun updateTill(
@@ -106,26 +96,22 @@ class DefaultApiRepository
             till: Till,
         ): Till =
             withContext(Dispatchers.IO) {
-                val response = api.tillsIdPut(id, till)
-                response.body()
+                api.tillsIdPut(id, till).body()
             }
 
         override suspend fun createTill(till: Till): Till =
             withContext(Dispatchers.IO) {
-                val response = api.tillsPost(till)
-                response.body()
+                api.tillsPost(till).body()
             }
 
         override suspend fun deleteTill(tillId: Int): String =
             withContext(Dispatchers.IO) {
-                val response = api.tillsTillIdDelete(tillId)
-                response.body()
+                api.tillsTillIdDelete(tillId).body()
             }
 
         override suspend fun getTills(tillId: Int): List<Till> =
             withContext(Dispatchers.IO) {
-                val response = api.tillsTillIdGet(tillId)
-                response.body()
+                api.tillsTillIdGet(tillId).body()
             }
 
         override suspend fun updateWallBlock(
@@ -133,37 +119,31 @@ class DefaultApiRepository
             wallBlock: WallBlock,
         ): WallBlock =
             withContext(Dispatchers.IO) {
-                val response = api.wallBlocksIdPut(id, wallBlock)
-                response.body()
+                api.wallBlocksIdPut(id, wallBlock).body()
             }
 
         override suspend fun getWallBlocksByMap(mapId: Int): List<WallBlock> =
             withContext(Dispatchers.IO) {
-                val response = api.wallBlocksMapIdGet(mapId)
-                response.body()
+                api.wallBlocksMapIdGet(mapId).body()
             }
 
         override suspend fun createWallBlock(wallBlock: WallBlock): WallBlock =
             withContext(Dispatchers.IO) {
-                val response = api.wallBlocksPost(wallBlock)
-                response.body()
+                api.wallBlocksPost(wallBlock).body()
             }
 
         override suspend fun deleteWallBlock(wallBlockId: Int): String =
             withContext(Dispatchers.IO) {
-                val response = api.wallBlocksWallBlockIdDelete(wallBlockId)
-                response.body()
+                api.wallBlocksWallBlockIdDelete(wallBlockId).body()
             }
 
         override suspend fun googleOcr(image: List<Base64ByteArray>): ShopList =
             withContext(Dispatchers.IO) {
-                val response = api.googleocrPost(image)
-                response.body()
+                api.googleocrPost(image).body()
             }
 
         override suspend fun calculateRoute(routePlanning: RoutePlanning): RoutePlan =
             withContext(Dispatchers.IO) {
-                val response = api.calculateRoutePost(routePlanning)
-                response.body()
+                api.calculateRoutePost(routePlanning).body()
             }
     }

@@ -36,139 +36,152 @@ import kotlinx.coroutines.launch
 import org.example.ApiRepository
 
 @Composable
-fun CameraSetupScreen(apiRepository: ApiRepository, navController: NavController? = null) {
-	// Initialize and check permissions
-	val permissions = providePermissions()
-	val cameraPermissionState = remember { mutableStateOf(permissions.hasCameraPermission()) }
+fun CameraSetupScreen(
+    apiRepository: ApiRepository,
+    navController: NavController? = null,
+) {
+    // Initialize and check permissions
+    val permissions = providePermissions()
+    val cameraPermissionState = remember { mutableStateOf(permissions.hasCameraPermission()) }
 
-	// Create ViewModel with the provided ApiRepository
-	val viewModel = remember { CameraViewModel(apiRepository) }
+    // Create ViewModel with the provided ApiRepository
+    val viewModel = remember { CameraViewModel(apiRepository) }
 
-	// Request permissions if needed
-	if (!cameraPermissionState.value) {
-		permissions.RequestCameraPermission(
-			onGranted = { cameraPermissionState.value = true },
-			onDenied = { println("Camera Permission Denied") }
-		)
-	}
+    // Request permissions if needed
+    if (!cameraPermissionState.value) {
+        permissions.RequestCameraPermission(
+            onGranted = { cameraPermissionState.value = true },
+            onDenied = { println("Camera Permission Denied") },
+        )
+    }
 
-	val cameraController = remember { mutableStateOf<CameraController?>(null) }
+    val cameraController = remember { mutableStateOf<CameraController?>(null) }
 
-	Box(modifier = Modifier.fillMaxSize()) {
-		CameraPreview(
-			modifier = Modifier.fillMaxSize(),
-			cameraConfiguration = {
-				setCameraLens(CameraLens.BACK)
-				setFlashMode(FlashMode.OFF)
-				setImageFormat(ImageFormat.JPEG)
-				setDirectory(Directory.PICTURES)
-			},
-			onCameraControllerReady = {
-				cameraController.value = it
-			}
-		)
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraPreview(
+            modifier = Modifier.fillMaxSize(),
+            cameraConfiguration = {
+                setCameraLens(CameraLens.BACK)
+                setFlashMode(FlashMode.OFF)
+                setImageFormat(ImageFormat.JPEG)
+                setDirectory(Directory.PICTURES)
+            },
+            onCameraControllerReady = {
+                cameraController.value = it
+            },
+        )
 
-		// Display your custom camera UI once controller is ready
-		cameraController.value?.let { controller ->
-			CameraScreen(cameraController = controller, viewModel = viewModel)
-		}
-	}
+        // Display your custom camera UI once controller is ready
+        cameraController.value?.let { controller ->
+            CameraScreen(cameraController = controller, viewModel = viewModel)
+        }
+    }
 }
 
 @Composable
-fun CameraScreen(cameraController: CameraController, viewModel: CameraViewModel) {
-	val scope = rememberCoroutineScope()
-	val isLoading by viewModel.isLoading.collectAsState()
-	val ocrResult by viewModel.ocrResult.collectAsState()
-	val error by viewModel.error.collectAsState()
+fun CameraScreen(
+    cameraController: CameraController,
+    viewModel: CameraViewModel,
+) {
+    val scope = rememberCoroutineScope()
+    val isLoading by viewModel.isLoading.collectAsState()
+    val ocrResult by viewModel.ocrResult.collectAsState()
+    val error by viewModel.error.collectAsState()
 
-	Box(modifier = Modifier.fillMaxSize()) {
-		// Show loading indicator if processing
-		if (isLoading) {
-			CircularProgressIndicator(
-				modifier = Modifier.align(Alignment.Center)
-			)
-		}
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Show loading indicator if processing
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.align(Alignment.Center),
+            )
+        }
 
-		// Show result or error if available
-		ocrResult?.let { result ->
-			Text(
-				text = "OCR Result: $result",
-				modifier = Modifier
-					.align(Alignment.TopCenter)
-					.padding(16.dp)
-			)
-		}
+        // Show result or error if available
+        ocrResult?.let { result ->
+            Text(
+                text = "OCR Result: $result",
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(16.dp),
+            )
+        }
 
-		error?.let { errorMsg ->
-			Text(
-				text = "Error: $errorMsg",
-				modifier = Modifier
-					.align(Alignment.TopCenter)
-					.padding(16.dp)
-			)
-		}
+        error?.let { errorMsg ->
+            Text(
+                text = "Error: $errorMsg",
+                modifier =
+                    Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(16.dp),
+            )
+        }
 
-		// Buttons at the bottom
-		Row(
-			modifier = Modifier
-				.align(Alignment.BottomCenter)
-				.padding(bottom = 32.dp)
-		) {
-			// Capture button
-			Button(
-				onClick = {
-					scope.launch {
-						when (val result = cameraController.takePicture()) {
-							is ImageCaptureResult.Success -> {
-								println("Captured Image Byte Array: ${result.byteArray.size} bytes")
+        // Buttons at the bottom
+        Row(
+            modifier =
+                Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 32.dp),
+        ) {
+            // Capture button
+            Button(
+                onClick = {
+                    scope.launch {
+                        when (val result = cameraController.takePicture()) {
+                            is ImageCaptureResult.Success -> {
+                                println("Captured Image Byte Array: ${result.byteArray.size} bytes")
 
-								// Send the captured image to backend using the ViewModel
-								viewModel.processImageWithOcr(result.byteArray)
-							}
+                                // Send the captured image to backend using the ViewModel
+                                viewModel.processImageWithOcr(result.byteArray)
+                            }
 
-							is ImageCaptureResult.Error -> {
-								println("Image Capture Error: ${result.exception.message}")
-							}
-						}
-					}
-				}
-			) {
-				Text("Capture")
-			}
+                            is ImageCaptureResult.SuccessWithFile -> {
+                                println("Captured Image File: ${result.filePath}")
+                            }
 
-			Spacer(modifier = Modifier.width(16.dp))
+                            is ImageCaptureResult.Error -> {
+                                println("Image Capture Error: ${result.exception.message}")
+                            }
+                        }
+                    }
+                },
+            ) {
+                Text("Capture")
+            }
 
-			// Upload button
-			Button(
-				onClick = {
-					scope.launch {
-						println("Upload button clicked - implement with FileKit")
+            Spacer(modifier = Modifier.width(16.dp))
 
-						try {
-							// Pick only images
-							val imageFile = FileKit.openFilePicker(type = FileKitType.Image)
+            // Upload button
+            Button(
+                onClick = {
+                    scope.launch {
+                        println("Upload button clicked - implement with FileKit")
 
-							val byteArray = imageFile?.let {
-								FileKit.compressImage(
-									bytes = it.readBytes(),
-									quality = 80,
-									maxWidth = 1024,
-									maxHeight = 1024
-								)
-							}
-							if (byteArray != null) {
-								viewModel.processUploadedImageWithOcr(byteArray)
-							}
-						} catch (e: Exception) {
-							println("Error in file picking: ${e.message}")
-						}
+                        try {
+                            // Pick only images
+                            val imageFile = FileKit.openFilePicker(type = FileKitType.Image)
 
-					}
-				}
-			) {
-				Text("Upload")
-			}
-		}
-	}
+                            val byteArray =
+                                imageFile?.let {
+                                    FileKit.compressImage(
+                                        bytes = it.readBytes(),
+                                        quality = 80,
+                                        maxWidth = 1024,
+                                        maxHeight = 1024,
+                                    )
+                                }
+                            if (byteArray != null) {
+                                viewModel.processUploadedImageWithOcr(byteArray)
+                            }
+                        } catch (e: Exception) {
+                            println("Error in file picking: ${e.message}")
+                        }
+                    }
+                },
+            ) {
+                Text("Upload")
+            }
+        }
+    }
 }
