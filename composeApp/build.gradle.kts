@@ -133,7 +133,6 @@ kotlin {
                 implementation(libs.kotlinx.serialization.json)
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
-                implementation(libs.kotlintest.runner.junit5)
 
                 implementation(compose.materialIconsExtended)
                 implementation(libs.core)
@@ -153,6 +152,10 @@ kotlin {
             }
 
             kotlin.srcDir(buildDir.resolve("generate-resources/main/src"))
+        }
+
+        commonTest.dependencies {
+            implementation(libs.kotlin.test)
         }
     }
 }
