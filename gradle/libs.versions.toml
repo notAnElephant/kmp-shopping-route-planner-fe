@@ -5,51 +5,36 @@ android-compileSdk = "36"
 android-minSdk = "24"
 android-targetSdk = "36"
 androidx-activityCompose = "1.12.4"
-androidx-appcompat = "1.7.1"
-androidx-constraintlayout = "2.2.1"
-androidx-core-ktx = "1.17.0"
-androidx-espresso-core = "3.7.0"
 androidx-lifecycle = "2.9.6"
-androidx-material = "1.13.0"
-androidx-test-junit = "1.3.0"
 camerak = "0.3"
+composeIcons = "1.1.1"
 compose-plugin = "1.10.2"
 core = "1.49.6"
 firebase-android-bom = "33.16.0"
-filekit = "1.0.0"
-junit = "4.13.2"
+filekit = "0.13.0"
 kmpauth = "2.3.1"
 ktlintGradle = "14.1.0"
 kotlin = "2.3.10"
-kotlinJvm = "2.3.10"
 kotlinxSerializationJson = "1.10.0"
 ktorClientAndroid = "3.4.1"
 ktorClientCio = "3.4.1"
 ktorClientSerialization = "3.4.1"
 ktorSerializationKotlinxJson = "3.4.1"
-materialIconsExtended = "1.7.8"
-version = "0.13.0"
 lighthouseGamesLogging = "2.0.3"
 androidXNavigation = "2.9.2"
 
 [libraries]
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
+compose-icons-feather = { module = "br.com.devsrsouza.compose.icons:feather", version.ref = "composeIcons" }
 core = { module = "com.composables:core", version.ref = "core" }
 firebase-android-bom = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-android-bom" }
 kmpauth-firebase = { module = "io.github.mirzemehdi:kmpauth-firebase", version.ref = "kmpauth" }
 kmpauth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpauth" }
 kmpauth-uihelper = { module = "io.github.mirzemehdi:kmpauth-uihelper", version.ref = "kmpauth" }
-filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "version" }
-filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "version" }
-filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "version" }
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekit" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekit" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekit" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "androidx-core-ktx" }
-androidx-test-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-junit" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "androidx-espresso-core" }
-androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "androidx-appcompat" }
-androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "androidx-constraintlayout" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
@@ -68,12 +53,9 @@ navigation = { group = "org.jetbrains.androidx.navigation", name = "navigation-c
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
-androidLibrary = { id = "com.android.library", version.ref = "agp" }
 androidMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
-kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlinJvm" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }

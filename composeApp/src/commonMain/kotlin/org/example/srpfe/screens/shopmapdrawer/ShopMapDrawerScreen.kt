@@ -27,14 +27,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material.icons.filled.ArrowDropUp
-import androidx.compose.material.icons.filled.Business
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Wallpaper
-import androidx.compose.material.icons.filled.ZoomOutMap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -57,6 +49,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.composables.core.rememberMenuState
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Briefcase
+import compose.icons.feathericons.ChevronDown
+import compose.icons.feathericons.ChevronUp
+import compose.icons.feathericons.Delete
+import compose.icons.feathericons.Layout
+import compose.icons.feathericons.Move
+import compose.icons.feathericons.Plus
 import org.example.ApiRepository
 import org.example.srpfe.model.DepartmentType
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
@@ -165,10 +165,10 @@ fun FunctionButton(
 		Column(horizontalAlignment = Alignment.CenterHorizontally) {
 			Icon(
 				imageVector = when (functionType) {
-					FunctionType.DEPARTMENT -> Icons.Default.Business
-					FunctionType.WALL -> Icons.Default.Wallpaper
-					FunctionType.DELETE -> Icons.Default.Delete
-					FunctionType.MOVE -> Icons.Default.ZoomOutMap
+					FunctionType.DEPARTMENT -> FeatherIcons.Briefcase
+					FunctionType.WALL -> FeatherIcons.Layout
+					FunctionType.DELETE -> FeatherIcons.Delete
+					FunctionType.MOVE -> FeatherIcons.Move
 				}, contentDescription = functionType.label, modifier = Modifier.size(24.dp)
 			)
 			Text(
@@ -222,7 +222,7 @@ fun DepartmentControls(
 
 					}
 				}) {
-					Icon(Icons.Default.Add, contentDescription = "Add Department")
+					Icon(FeatherIcons.Plus, contentDescription = "Add Department")
 				}
 			}
 			DepartmentTypeDropdown(
@@ -245,7 +245,7 @@ fun DepartmentTypeDropdown(
 	var expanded by remember { mutableStateOf(false) }
 
 	// Toggle the menu state
-	val arrowIcon = if (expanded) Icons.Filled.ArrowDropUp else Icons.Filled.ArrowDropDown
+	val arrowIcon = if (expanded) FeatherIcons.ChevronUp else FeatherIcons.ChevronDown
 
 	// TODO disable this somehow when not the org.example.srpfe.model.Department is the selected function
 	// Use a custom Menu button with color and selected department label

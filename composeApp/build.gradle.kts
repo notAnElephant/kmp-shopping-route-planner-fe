@@ -138,7 +138,7 @@ kotlin {
                 implementation(libs.ktor.client.content.negotiation)
                 implementation(libs.ktor.serialization.kotlinx.json)
 
-                implementation(compose.materialIconsExtended)
+                implementation(libs.compose.icons.feather)
                 implementation(libs.core)
 
                 implementation(libs.logging)

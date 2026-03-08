@@ -15,9 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Navigation
-import androidx.compose.material.icons.filled.PhotoCamera
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
@@ -36,6 +33,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import compose.icons.FeatherIcons
+import compose.icons.feathericons.Camera
+import compose.icons.feathericons.Navigation
 import org.example.ApiRepository
 import kotlin.math.PI
 import kotlin.math.asin
@@ -193,7 +193,7 @@ private fun NearbyShopCard(
             }
 
             Button(onClick = onNavigate) {
-                Icon(Icons.Default.Navigation, contentDescription = null)
+                Icon(FeatherIcons.Navigation, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("Open in navigation app")
             }
@@ -213,7 +213,7 @@ private fun PhotoPlaceholder(label: String) {
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                imageVector = Icons.Default.PhotoCamera,
+                imageVector = FeatherIcons.Camera,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
             )
