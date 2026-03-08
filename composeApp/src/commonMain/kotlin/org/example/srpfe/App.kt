@@ -19,6 +19,7 @@ import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
 import org.example.srpfe.navigation.Screen
 import org.example.srpfe.screens.camera.CameraSetupScreen
+import org.example.srpfe.screens.nearby.NearbyShopsScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
 import org.example.srpfe.screens.profile.ProfileScreen
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerScreen
@@ -51,6 +52,9 @@ fun MainScreen(apiRepository: ApiRepository) {
             startDestination = Screen.PhysicalList.route, // TODO not this in prod, obv.
             modifier = Modifier.padding(paddingValues),
         ) {
+            if (isMobile()) {
+                composable(Screen.Nearby.route) { NearbyShopsScreen(apiRepository, navController) }
+            }
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
             composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
             composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
@@ -67,7 +71,16 @@ fun MainScreen(apiRepository: ApiRepository) {
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
-    val items = listOf(Screen.MapDrawer, Screen.ShoppingList, Screen.Profile, Screen.PhysicalList)
+    val items =
+        buildList {
+            if (isMobile()) {
+                add(Screen.Nearby)
+            }
+            add(Screen.MapDrawer)
+            add(Screen.ShoppingList)
+            add(Screen.Profile)
+            add(Screen.PhysicalList)
+        }
 
     NavigationBar {
         items.forEach { screen ->

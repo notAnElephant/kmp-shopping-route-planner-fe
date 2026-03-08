@@ -73,8 +73,14 @@ tasks.named("openApiGenerate") {
 kotlin {
     android {
         namespace = "org.example.srpfe"
-        compileSdk = libs.versions.android.compileSdk.get().toInt()
-        minSdk = libs.versions.android.minSdk.get().toInt()
+        compileSdk =
+            libs.versions.android.compileSdk
+                .get()
+                .toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
         androidResources {
             enable = true
         }
@@ -98,6 +104,7 @@ kotlin {
 
     sourceSets {
         androidMain.dependencies {
+            implementation(project.dependencies.platform(libs.firebase.android.bom))
             implementation(libs.androidx.activity.compose)
             implementation(libs.ktor.client.android)
             implementation(libs.ktor.client.content.negotiation.v111)
