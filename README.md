@@ -1,7 +1,7 @@
 # kmp-shopping-route-planner
 A PoC multiplatform route planner app for ideal traverse of a shop, based on a shopping list
 
-a big wide line here
+---
 
 This is a Kotlin Multiplatform project targeting Android, iOS.
 
