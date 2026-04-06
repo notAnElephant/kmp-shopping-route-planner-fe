@@ -18,11 +18,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
-import dev.gitlive.firebase.auth.FirebaseUser
 import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
+import org.example.srpfe.auth.AuthenticatedUser
+import org.example.srpfe.auth.PlatformGoogleSignInButton
+import org.example.srpfe.utils.isMobile
 
 @Composable
 fun ProfileScreen(
@@ -46,7 +47,7 @@ fun ProfileScreen(
             return@Column
         }
 
-        val onFirebaseResult = { result: Result<FirebaseUser?> ->
+        val onSignInResult = { result: Result<AuthenticatedUser?> ->
             statusMessage =
                 result.fold(
                     onSuccess = { user ->
@@ -58,9 +59,8 @@ fun ProfileScreen(
                 )
         }
 
-        GoogleButtonUiContainerFirebase(
-            onResult = onFirebaseResult,
-            linkAccount = false,
+        PlatformGoogleSignInButton(
+            onResult = onSignInResult,
         ) {
             GoogleSignInButton(
                 modifier =
@@ -69,11 +69,19 @@ fun ProfileScreen(
                         .height(44.dp),
                 fontSize = 19.sp,
             ) {
-                this.onClick()
+                it()
             }
         }
 
         Spacer(modifier = Modifier.height(12.dp))
         Text(statusMessage)
+
+        if (!isMobile()) {
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(
+                text = "Desktop OAuth redirect URI: ${AuthConfig.GOOGLE_DESKTOP_REDIRECT_URI}",
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
     }
 }

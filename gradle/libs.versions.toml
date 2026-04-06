@@ -12,6 +12,7 @@ compose-plugin = "1.10.3"
 core = "1.49.6"
 #noinspection GradleDependency - this cannot be changed without breaking the app for now
 firebase-android-bom = "33.16.0"
+google-services = "4.4.4"
 filekit = "0.13.0"
 kmpauth = "2.3.1"
 ktlintGradle = "14.2.0"
@@ -60,3 +61,4 @@ ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintGradle" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "google-services" }

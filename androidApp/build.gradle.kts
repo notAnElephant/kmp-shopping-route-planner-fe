@@ -1,5 +1,6 @@
 plugins {
     alias(libs.plugins.androidApplication)
+    alias(libs.plugins.googleServices)
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
 }
@@ -45,6 +46,8 @@ android {
 
 dependencies {
     implementation(project(":composeApp"))
+    implementation(platform(libs.firebase.android.bom))
+    implementation("com.google.firebase:firebase-common")
     implementation(libs.androidx.activity.compose)
     debugImplementation(compose.uiTooling)
 }
