@@ -19,6 +19,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.kashif.cameraK.compose.CameraKScreen
+import com.kashif.cameraK.compose.rememberCameraKState
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.CameraLens
 import com.kashif.cameraK.enums.Directory
@@ -26,7 +28,7 @@ import com.kashif.cameraK.enums.FlashMode
 import com.kashif.cameraK.enums.ImageFormat
 import com.kashif.cameraK.permissions.providePermissions
 import com.kashif.cameraK.result.ImageCaptureResult
-import com.kashif.cameraK.ui.CameraPreview
+import com.kashif.cameraK.state.CameraConfiguration
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.compressImage
 import io.github.vinceglb.filekit.dialogs.FileKitType
@@ -55,25 +57,22 @@ fun CameraSetupScreen(
         )
     }
 
-    val cameraController = remember { mutableStateOf<CameraController?>(null) }
+    val cameraState by rememberCameraKState(
+        config =
+            CameraConfiguration(
+                cameraLens = CameraLens.BACK,
+                flashMode = FlashMode.OFF,
+                imageFormat = ImageFormat.JPEG,
+                directory = Directory.PICTURES,
+            ),
+    )
 
     Box(modifier = Modifier.fillMaxSize()) {
-        CameraPreview(
+        CameraKScreen(
             modifier = Modifier.fillMaxSize(),
-            cameraConfiguration = {
-                setCameraLens(CameraLens.BACK)
-                setFlashMode(FlashMode.OFF)
-                setImageFormat(ImageFormat.JPEG)
-                setDirectory(Directory.PICTURES)
-            },
-            onCameraControllerReady = {
-                cameraController.value = it
-            },
-        )
-
-        // Display your custom camera UI once controller is ready
-        cameraController.value?.let { controller ->
-            CameraScreen(cameraController = controller, viewModel = viewModel)
+            cameraState = cameraState,
+        ) { state ->
+            CameraScreen(cameraController = state.controller, viewModel = viewModel)
         }
     }
 }
@@ -128,7 +127,7 @@ fun CameraScreen(
             Button(
                 onClick = {
                     scope.launch {
-                        when (val result = cameraController.takePicture()) {
+                        when (val result = cameraController.takePictureToFile()) {
                             is ImageCaptureResult.Success -> {
                                 println("Captured Image Byte Array: ${result.byteArray.size} bytes")
 
