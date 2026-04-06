@@ -2,7 +2,7 @@ package org.example.srpfe.auth
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.mmk.kmpauth.firebase.google.GoogleButtonUiContainerFirebase
+import com.mmk.kmpauth.google.GoogleButtonUiContainer
 
 @Composable
 actual fun PlatformGoogleSignInButton(
@@ -10,18 +10,18 @@ actual fun PlatformGoogleSignInButton(
     onResult: (Result<AuthenticatedUser?>) -> Unit,
     content: @Composable (onClick: () -> Unit) -> Unit,
 ) {
-    GoogleButtonUiContainerFirebase(
+    GoogleButtonUiContainer(
         modifier = modifier,
-        onResult = { result ->
+        onGoogleSignInResult = { user ->
             onResult(
-                result.map { user ->
+                Result.success(
                     user?.let {
                         AuthenticatedUser(
                             displayName = it.displayName,
                             email = it.email,
                         )
-                    }
-                },
+                    },
+                ),
             )
         },
     ) {
