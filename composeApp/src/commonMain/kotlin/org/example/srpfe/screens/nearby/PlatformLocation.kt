@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package org.example.srpfe.screens.nearby
 
 import androidx.compose.runtime.Composable
