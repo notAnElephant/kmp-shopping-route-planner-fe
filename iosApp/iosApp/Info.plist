@@ -18,6 +18,21 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.1003232389500-f7ncn44pfaje9cl7u7p918f69b6e0gjq</string>
+			</array>
+		</dict>
+	</array>
+	<key>GIDClientID</key>
+	<string>1003232389500-f7ncn44pfaje9cl7u7p918f69b6e0gjq.apps.googleusercontent.com</string>
+	<key>GIDServerClientID</key>
+	<string>1003232389500-j79nn9nbpeuieenc2um6iq32h3hgu81v.apps.googleusercontent.com</string>
 	<key>NSCameraUsageDescription</key>
 	<string>Camera permission is required for the app to work.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

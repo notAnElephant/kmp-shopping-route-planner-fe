@@ -1,3 +1,6 @@
 TEAM_ID=
-BUNDLE_ID=org.example.srpfe.ShoppingRoutePlanner-FE
+BUNDLE_ID=org.example.srpfe
 APP_NAME=ShoppingRoutePlanner-FE
+CODE_SIGNING_ALLOWED[sdk=iphonesimulator*]=NO
+CODE_SIGNING_REQUIRED[sdk=iphonesimulator*]=NO
+CODE_SIGN_IDENTITY[sdk=iphonesimulator*]=
