@@ -1,5 +1,37 @@
+import org.gradle.api.DefaultTask
+import org.gradle.api.file.RegularFileProperty
+import org.gradle.api.tasks.InputFile
+import org.gradle.api.tasks.Optional
+import org.gradle.api.tasks.PathSensitive
+import org.gradle.api.tasks.PathSensitivity
+import org.gradle.api.tasks.TaskAction
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
+abstract class PatchOpenApiGeneratedSourcesTask : DefaultTask() {
+    @get:InputFile
+    @get:Optional
+    @get:PathSensitive(PathSensitivity.RELATIVE)
+    abstract val authFile: RegularFileProperty
+
+    @TaskAction
+    fun patchGeneratedSources() {
+        val file = authFile.asFile.get()
+        if (!file.exists()) {
+            return
+        }
+
+        val patched =
+            file
+                .readText()
+                .replace("import io.ktor.util.InternalAPI\n", "")
+                .replace("    @OptIn(InternalAPI::class)\n", "")
+
+        if (patched != file.readText()) {
+            file.writeText(patched)
+        }
+    }
+}
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
@@ -8,11 +40,17 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinSerialization)
 
-    id("org.openapi.generator") version "7.20.0"
+    id("org.openapi.generator") version "7.22.0"
 }
 
 openApiGenerate {
-    inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
+    inputSpec.set(
+        rootProject.layout.projectDirectory
+            .file("documentation.yaml")
+            .asFile
+            .toURI()
+            .toString(),
+    )
     generatorName.set("kotlin")
     library.set("multiplatform")
     configOptions.put("dateLibrary", "kotlinx-datetime")
@@ -25,7 +63,13 @@ openApiGenerate {
 }
 
 openApiValidate {
-    inputSpec.set("file:///${projectDir.absolutePath.replace('\\', '/')}/documentation.yaml")
+    inputSpec.set(
+        rootProject.layout.projectDirectory
+            .file("documentation.yaml")
+            .asFile
+            .toURI()
+            .toString(),
+    )
 }
 
 val cleanupOpenApiGeneratedTests by tasks.registering(Delete::class) {
@@ -42,29 +86,26 @@ val cleanupOpenApiGeneratedTests by tasks.registering(Delete::class) {
     )
 }
 
-val patchOpenApiGeneratedSources by tasks.registering {
+val cleanOpenApiGeneratedSources by tasks.registering(Delete::class) {
+    group = "openapi tools"
+    description = "Deletes all OpenAPI generated sources before regeneration."
+
+    delete(layout.buildDirectory.dir("generate-resources/main"))
+}
+
+val patchOpenApiGeneratedSources by tasks.registering(PatchOpenApiGeneratedSourcesTask::class) {
     group = "openapi tools"
     description = "Patches generated OpenAPI sources for current Ktor compatibility."
-
-    doLast {
-        val authFile =
-            layout.buildDirectory
-                .file("generate-resources/main/src/commonMain/kotlin/org/openapitools/client/auth/HttpBasicAuth.kt")
-                .get()
-                .asFile
-
-        if (authFile.exists()) {
-            val patched =
-                authFile
-                    .readText()
-                    .replace("import io.ktor.util.InternalAPI\n", "")
-                    .replace("    @OptIn(InternalAPI::class)\n", "")
-            authFile.writeText(patched)
-        }
-    }
+    authFile.set(
+        layout.buildDirectory.file(
+            "generate-resources/main/src/commonMain/kotlin/org/openapitools/client/auth/HttpBasicAuth.kt",
+        ),
+    )
 }
 
 tasks.named("openApiGenerate") {
+    dependsOn(cleanOpenApiGeneratedSources)
+
     // Workaround: the kotlin multiplatform generator may still emit test sources.
     finalizedBy(cleanupOpenApiGeneratedTests)
     finalizedBy(patchOpenApiGeneratedSources)
