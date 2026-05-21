@@ -43,14 +43,10 @@ plugins {
     id("org.openapi.generator") version "7.22.0"
 }
 
+val openApiSpecFile = rootProject.layout.projectDirectory.file("documentation.yaml")
+
 openApiGenerate {
-    inputSpec.set(
-        rootProject.layout.projectDirectory
-            .file("documentation.yaml")
-            .asFile
-            .toURI()
-            .toString(),
-    )
+    inputSpec.set(openApiSpecFile.asFile.absolutePath)
     generatorName.set("kotlin")
     library.set("multiplatform")
     configOptions.put("dateLibrary", "kotlinx-datetime")
@@ -63,13 +59,7 @@ openApiGenerate {
 }
 
 openApiValidate {
-    inputSpec.set(
-        rootProject.layout.projectDirectory
-            .file("documentation.yaml")
-            .asFile
-            .toURI()
-            .toString(),
-    )
+    inputSpec.set(openApiSpecFile.asFile.absolutePath)
 }
 
 val cleanupOpenApiGeneratedTests by tasks.registering(Delete::class) {
@@ -104,11 +94,16 @@ val patchOpenApiGeneratedSources by tasks.registering(PatchOpenApiGeneratedSourc
 }
 
 tasks.named("openApiGenerate") {
+    inputs.file(openApiSpecFile).withPathSensitivity(PathSensitivity.RELATIVE)
     dependsOn(cleanOpenApiGeneratedSources)
 
     // Workaround: the kotlin multiplatform generator may still emit test sources.
     finalizedBy(cleanupOpenApiGeneratedTests)
     finalizedBy(patchOpenApiGeneratedSources)
+}
+
+tasks.named("openApiValidate") {
+    inputs.file(openApiSpecFile).withPathSensitivity(PathSensitivity.RELATIVE)
 }
 
 kotlin {

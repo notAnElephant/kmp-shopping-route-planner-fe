@@ -444,18 +444,17 @@ fun ShopMapCanvas(
 				size = Size(coords2.first.width, coords2.first.height)
 			)
 
-			uiState.route?.route?.forEachIndexed { index, route ->
+			uiState.route?.route?.forEachIndexed { index, routePoint ->
 				val coords = viewModel.convertToCanvasCoordinates(
 					canvasSize = Size(size.width, size.height),
 					size = Size(20f, 10f),
 					x = 0,
 					y = 0,
-//					x = route.first,
-//					y = route.second
+//					parse routePoint when backend route coordinates are finalized
 				)
 
 				// Calculate color transition from light green to dark green
-				val totalPoints = uiState.route.route.size
+				val totalPoints = uiState.route?.route?.size ?: 1
 				val colorFraction = index.toFloat() / totalPoints
 				val greenShade = interpolateColor(Color(0xFFB2FF59), Color(0xFF1B5E20), colorFraction)
 

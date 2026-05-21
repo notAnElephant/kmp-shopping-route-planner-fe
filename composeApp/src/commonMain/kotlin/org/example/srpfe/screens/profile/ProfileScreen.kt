@@ -7,20 +7,27 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
+import kotlinx.coroutines.launch
 import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
+import org.example.srpfe.auth.AuthSession
+import org.example.srpfe.auth.AuthSource
 import org.example.srpfe.auth.AuthenticatedUser
 import org.example.srpfe.auth.PlatformGoogleSignInButton
 import org.example.srpfe.utils.isMobile
@@ -29,8 +36,30 @@ import org.example.srpfe.utils.isMobile
 fun ProfileScreen(
     apiRepository: ApiRepository,
     navController: NavHostController,
+    authSession: AuthSession,
 ) {
-    var statusMessage by remember { mutableStateOf("Not signed in") }
+    val coroutineScope = rememberCoroutineScope()
+    val authenticatedUser by authSession.currentUser.collectAsState()
+    var statusMessage by androidx.compose.runtime.remember { mutableStateOf("Not signed in") }
+
+    LaunchedEffect(authenticatedUser?.uid, authenticatedUser?.authSource) {
+        statusMessage =
+            when (authenticatedUser?.authSource) {
+                null -> "Not signed in"
+                AuthSource.FIREBASE -> "Signed in. Syncing backend profile..."
+                AuthSource.GOOGLE -> "Signed in with Google. Backend sync is only enabled for Firebase-backed sign-in."
+            }
+
+        if (authenticatedUser?.authSource == AuthSource.FIREBASE) {
+            statusMessage =
+                runCatching {
+                    apiRepository.getCurrentUser()
+                }.fold(
+                    onSuccess = { user -> "Signed in as ${user.displayName ?: user.email ?: user.firebaseUid}" },
+                    onFailure = { error -> "Signed in, but backend profile sync failed: ${error.message ?: "Unknown error"}" },
+                )
+        }
+    }
 
     Column(
         modifier =
@@ -47,16 +76,19 @@ fun ProfileScreen(
             return@Column
         }
 
-        val onSignInResult = { result: Result<AuthenticatedUser?> ->
-            statusMessage =
-                result.fold(
-                    onSuccess = { user ->
-                        "Signed in as ${user?.displayName ?: user?.email ?: "unknown user"}"
-                    },
-                    onFailure = { error ->
-                        "Sign-in failed: ${error.message ?: "Unknown error"}"
-                    },
-                )
+        val onSignInResult: (Result<AuthenticatedUser?>) -> Unit = { result ->
+            result
+                .onSuccess { user ->
+                    authSession.setCurrentUser(user)
+                    statusMessage =
+                        if (user == null) {
+                            "No user returned from sign-in."
+                        } else {
+                            "Signed in as ${user.displayName ?: user.email ?: "unknown user"}"
+                        }
+                }.onFailure { error ->
+                    statusMessage = "Sign-in failed: ${error.message ?: "Unknown error"}"
+                }
         }
 
         PlatformGoogleSignInButton(
@@ -76,12 +108,69 @@ fun ProfileScreen(
         Spacer(modifier = Modifier.height(12.dp))
         Text(statusMessage)
 
+        authenticatedUser?.let { user ->
+            Spacer(modifier = Modifier.height(12.dp))
+            Text("Email: ${user.email ?: "Unknown"}")
+            Text("UID: ${user.uid ?: "Not available"}")
+            Text("Auth source: ${user.authSource.name}")
+
+            Spacer(modifier = Modifier.height(12.dp))
+            RowActions(
+                onSignOut = {
+                    coroutineScope.launch {
+                        authSession.signOut()
+                        statusMessage = "Signed out"
+                    }
+                },
+                onRefreshProfile = {
+                    coroutineScope.launch {
+                        statusMessage =
+                            runCatching {
+                                apiRepository.getCurrentUser()
+                            }.fold(
+                                onSuccess = { backendUser ->
+                                    "Backend profile refreshed for ${backendUser.displayName ?: backendUser.email ?: backendUser.firebaseUid}"
+                                },
+                                onFailure = { error ->
+                                    "Profile refresh failed: ${error.message ?: "Unknown error"}"
+                                },
+                            )
+                    }
+                },
+                canRefreshProfile = user.authSource == AuthSource.FIREBASE,
+            )
+        }
+
         if (!isMobile()) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = "Desktop OAuth redirect URI: ${AuthConfig.GOOGLE_DESKTOP_REDIRECT_URI}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
+        }
+    }
+}
+
+@Composable
+private fun RowActions(
+    onSignOut: () -> Unit,
+    onRefreshProfile: () -> Unit,
+    canRefreshProfile: Boolean,
+) {
+    Button(
+        onClick = onSignOut,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Text("Sign out")
+    }
+
+    if (canRefreshProfile) {
+        Spacer(modifier = Modifier.height(8.dp))
+        OutlinedButton(
+            onClick = onRefreshProfile,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text("Refresh backend profile")
         }
     }
 }

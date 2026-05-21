@@ -17,8 +17,11 @@ actual fun PlatformGoogleSignInButton(
                 Result.success(
                     user?.let {
                         AuthenticatedUser(
+                            authSource = AuthSource.GOOGLE,
+                            idToken = it.idToken,
                             displayName = it.displayName,
                             email = it.email,
+                            photoUrl = it.profilePicUrl,
                         )
                     },
                 ),

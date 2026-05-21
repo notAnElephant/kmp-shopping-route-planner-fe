@@ -1,6 +1,5 @@
 package org.example.srpfe
 
-import ShoppingListScreen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -17,18 +16,32 @@ import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
+import org.example.srpfe.auth.AuthSession
+import org.example.srpfe.auth.FirebaseAuthSessionBridge
 import org.example.srpfe.navigation.Screen
+import org.example.srpfe.repository.DefaultApiRepository
 import org.example.srpfe.screens.camera.CameraSetupScreen
 import org.example.srpfe.screens.nearby.NearbyShopsScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
 import org.example.srpfe.screens.profile.ProfileScreen
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerScreen
+import org.example.srpfe.screens.shoppinglist.ShoppingListScreen
 import org.example.srpfe.utils.isMobile
 import org.jetbrains.compose.ui.tooling.preview.Preview
 
 @Composable
 @Preview
-fun App(apiRepository: ApiRepository) {
+fun App() {
+    val authSession = remember { AuthSession() }
+    val apiRepository = remember(authSession) { DefaultApiRepository(authSession) }
+
+    LaunchedEffect(authSession) {
+        authSession.syncFromPlatformAuth()
+        FirebaseAuthSessionBridge.idTokenChanges().collect { user ->
+            authSession.syncFromFirebaseUser(user)
+        }
+    }
+
     MaterialTheme {
         if (AuthConfig.GOOGLE_SERVER_CLIENT_ID.isNotBlank()) {
             GoogleAuthProvider.create(
@@ -36,12 +49,15 @@ fun App(apiRepository: ApiRepository) {
             )
         }
 
-        MainScreen(apiRepository)
+        MainScreen(apiRepository, authSession)
     }
 }
 
 @Composable
-fun MainScreen(apiRepository: ApiRepository) {
+fun MainScreen(
+    apiRepository: ApiRepository,
+    authSession: AuthSession,
+) {
     val navController = rememberNavController()
 
     Scaffold(
@@ -56,8 +72,8 @@ fun MainScreen(apiRepository: ApiRepository) {
                 composable(Screen.Nearby.route) { NearbyShopsScreen(apiRepository, navController) }
             }
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
-            composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController) }
-            composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController) }
+            composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController, authSession) }
+            composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController, authSession) }
             composable(Screen.PhysicalList.route) {
                 if (isMobile()) {
                     CameraSetupScreen(apiRepository, navController)

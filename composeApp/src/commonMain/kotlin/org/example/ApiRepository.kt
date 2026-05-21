@@ -1,17 +1,21 @@
 package org.example
 
 import org.openapitools.client.infrastructure.Base64ByteArray
+import org.openapitools.client.models.AppUserResponse
+import org.openapitools.client.models.CreateShoppingListRequest
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import org.openapitools.client.models.RoutePlan
-import org.openapitools.client.models.RoutePlanning
+import org.openapitools.client.models.RoutePlanResponse
+import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.ShopList
+import org.openapitools.client.models.ShoppingListResponse
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.Till
+import org.openapitools.client.models.UpdateShoppingListRequest
 import org.openapitools.client.models.WallBlock
 
 interface ApiRepository {
-    suspend fun calculateRoute(routePlanning: RoutePlanning): RoutePlan
+    suspend fun calculateRoute(routePlanning: RoutePlanningRequest): RoutePlanResponse
 
     suspend fun deleteDepartment(departmentId: Int): String
 
@@ -64,4 +68,19 @@ interface ApiRepository {
     suspend fun deleteWallBlock(wallBlockId: Int): String
 
     suspend fun googleOcr(image: List<Base64ByteArray>): ShopList
+
+    suspend fun getCurrentUser(): AppUserResponse
+
+    suspend fun getShoppingLists(): List<ShoppingListResponse>
+
+    suspend fun getShoppingList(id: String): ShoppingListResponse
+
+    suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingListResponse
+
+    suspend fun updateShoppingList(
+        id: String,
+        request: UpdateShoppingListRequest,
+    ): ShoppingListResponse
+
+    suspend fun deleteShoppingList(id: String)
 }

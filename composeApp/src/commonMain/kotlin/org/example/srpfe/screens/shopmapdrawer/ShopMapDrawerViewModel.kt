@@ -15,8 +15,8 @@ import org.example.srpfe.model.DepartmentModel
 import org.lighthousegames.logging.logging
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import org.openapitools.client.models.RoutePlan
-import org.openapitools.client.models.RoutePlanning
+import org.openapitools.client.models.RoutePlanResponse
+import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.Till
 import org.openapitools.client.models.WallBlock
@@ -27,7 +27,7 @@ data class UiState(
 	val map: Map? = null,
 	val concreteDepartments: List<DepartmentModel> = emptyList(),
 	val wallBlocks: List<WallBlock> = emptyList(),
-	val route: RoutePlan? = null,
+	val route: RoutePlanResponse? = null,
 	val errorState: String? = null,
 )
 
@@ -107,7 +107,7 @@ class ShopMapDrawerViewModel(private val apiRepository: ApiRepository) : ViewMod
 		try {
 			viewModelScope.launch {
 				apiRepository.calculateRoute(
-					RoutePlanning(
+					RoutePlanningRequest(
 						mapId = _uiState.value.map?.id
 							?: throw IllegalStateException("Map is not created yet"),
 						departmentIds = selectedDepartments.map {

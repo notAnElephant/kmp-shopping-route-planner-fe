@@ -33,6 +33,161 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/RoutePlanResponse"
+  /me:
+    get:
+      description: ""
+      security:
+        - bearerAuth: []
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AppUserResponse"
+  /shopping-lists:
+    get:
+      description: ""
+      security:
+        - bearerAuth: []
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ShoppingListResponse"
+    post:
+      description: ""
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShoppingListRequest"
+        required: true
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ShoppingListResponse"
+  /shopping-lists/{id}:
+    get:
+      description: ""
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ShoppingListResponse"
+    put:
+      description: ""
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateShoppingListRequest"
+        required: true
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ShoppingListResponse"
+    delete:
+      description: ""
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
   /departments:
     post:
       description: ""
@@ -922,6 +1077,10 @@ paths:
                 items:
                   $ref: "#/components/schemas/WallBlockResponse"
 components:
+  securitySchemes:
+    bearerAuth:
+      type: "http"
+      scheme: "bearer"
   schemas:
     RoutePlanningRequest:
       type: "object"
@@ -1743,3 +1902,67 @@ components:
         - "startY"
         - "width"
         - "height"
+    AppUserResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        firebaseUid:
+          type: "string"
+        email:
+          type: "string"
+          nullable: true
+        displayName:
+          type: "string"
+          nullable: true
+      required:
+        - "id"
+        - "firebaseUid"
+    CreateShoppingListRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ShopItem"
+      required:
+        - "name"
+        - "items"
+    UpdateShoppingListRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ShopItem"
+      required:
+        - "name"
+        - "items"
+    ShoppingListResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        userId:
+          type: "string"
+        name:
+          type: "string"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ShopItem"
+        createdAt:
+          type: "string"
+        updatedAt:
+          type: "string"
+      required:
+        - "id"
+        - "userId"
+        - "name"
+        - "items"
+        - "createdAt"
+        - "updatedAt"
