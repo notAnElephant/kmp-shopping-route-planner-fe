@@ -7,6 +7,7 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.example.ApiRepository
 import org.example.srpfe.auth.AuthSession
+import org.example.srpfe.utils.backendBaseUrl
 import org.openapitools.client.apis.DefaultApi
 import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.AppUserResponse
@@ -47,7 +48,7 @@ class DefaultApiRepository
                         encodeDefaults = true
                         explicitNulls = true
                     },
-                baseUrl = "http://10.0.2.2:8081",
+                baseUrl = backendBaseUrl(),
             ),
     ) : ApiRepository {
         private suspend fun <T> withBearerAuth(block: suspend () -> T): T {
