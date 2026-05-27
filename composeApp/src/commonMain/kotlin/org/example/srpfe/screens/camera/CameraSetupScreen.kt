@@ -96,9 +96,9 @@ fun CameraScreen(
         }
 
         // Show result or error if available
-        ocrResult?.let { result ->
+        if (ocrResult.isNotEmpty()) {
             Text(
-                text = "OCR Result: $result",
+                text = "OCR Result: ${ocrResult.joinToString { "${it.shoppingItemName} (${it.attributes})" }}",
                 modifier =
                     Modifier
                         .align(Alignment.TopCenter)

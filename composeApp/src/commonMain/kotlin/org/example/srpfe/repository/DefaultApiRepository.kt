@@ -2,8 +2,11 @@ package org.example.srpfe.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
@@ -17,17 +20,30 @@ import org.example.srpfe.utils.backendBaseUrl
 import org.openapitools.client.apis.DefaultApi
 import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.AppUserResponse
+import org.openapitools.client.models.CreateDepartmentRequest
+import org.openapitools.client.models.CreateMapRequest
+import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.CreateShoppingListRequest
+import org.openapitools.client.models.CreateStoreRequest
+import org.openapitools.client.models.CreateTillRequest
+import org.openapitools.client.models.CreateWallBlockRequest
 import org.openapitools.client.models.Department
+import org.openapitools.client.models.DepartmentResponse
 import org.openapitools.client.models.Map
+import org.openapitools.client.models.MapResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
-import org.openapitools.client.models.ShopList
-import org.openapitools.client.models.ShoppingListResponse
+import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
+import org.openapitools.client.models.StoreResponse
 import org.openapitools.client.models.Till
-import org.openapitools.client.models.UpdateShoppingListRequest
+import org.openapitools.client.models.TillResponse
+import org.openapitools.client.models.UpdateDepartmentRequest
+import org.openapitools.client.models.UpdateMapRequest
+import org.openapitools.client.models.UpdateTillRequest
+import org.openapitools.client.models.UpdateWallBlockRequest
 import org.openapitools.client.models.WallBlock
+import org.openapitools.client.models.WallBlockResponse
 
 class DefaultApiRepository
     @OptIn(ExperimentalSerializationApi::class)
@@ -54,22 +70,18 @@ class DefaultApiRepository
                 baseUrl = backendBaseUrl(),
             ),
     ) : ApiRepository {
-        private val shoppingLists = linkedMapOf<String, ShoppingListResponse>()
-        private var nextShoppingListId = 1
+        private suspend fun requireBackendIdToken(): String = authSession.requireBackendIdToken()
 
-        private suspend fun <T> withBearerAuth(block: suspend () -> T): T {
-            authSession.requireBackendIdToken()
-            return block()
-        }
+        private suspend fun authedHeaderValue(): String = "Bearer ${requireBackendIdToken()}"
 
         override suspend fun getDepartmentsByMap(mapId: Int): List<Department> =
             withContext(Dispatchers.IO) {
-                api.departmentsMapIdGet(mapId).body()
+                api.departmentsMapIdGet(mapId).body().map(DepartmentResponse::toDepartment)
             }
 
         override suspend fun deleteDepartment(departmentId: Int): String =
             withContext(Dispatchers.IO) {
-                api.departmentsDepartmentIdDelete(departmentId).body()
+                api.departmentsIdDelete(departmentId).body()
             }
 
         override suspend fun updateDepartment(
@@ -77,17 +89,17 @@ class DefaultApiRepository
             department: Department,
         ): Department =
             withContext(Dispatchers.IO) {
-                api.departmentsIdPut(id, department).body()
+                api.departmentsPut(department.toUpdateDepartmentRequest(id)).body().toDepartment()
             }
 
         override suspend fun createDepartment(department: Department): Department =
             withContext(Dispatchers.IO) {
-                api.departmentsPost(department).body()
+                api.departmentsPost(department.toCreateDepartmentRequest()).body().toDepartment()
             }
 
         override suspend fun getMap(id: Int): Map =
             withContext(Dispatchers.IO) {
-                api.mapsIdGet(id).body()
+                api.mapsIdGet(id).body().toMap()
             }
 
         override suspend fun updateMap(
@@ -95,7 +107,7 @@ class DefaultApiRepository
             map: Map,
         ): Map =
             withContext(Dispatchers.IO) {
-                api.mapsIdPut(id, map).body()
+                api.mapsPut(map.toUpdateMapRequest(id)).body().toMap()
             }
 
         override suspend fun deleteMap(id: Int): String =
@@ -105,12 +117,12 @@ class DefaultApiRepository
 
         override suspend fun createMap(map: Map): Map =
             withContext(Dispatchers.IO) {
-                api.mapsPost(map).body()
+                api.mapsPost(map.toCreateMapRequest()).body().toMap()
             }
 
         override suspend fun getStore(id: Int): Store =
             withContext(Dispatchers.IO) {
-                api.storeIdGet(id).body()
+                api.storeIdGet(id).body().toStore()
             }
 
         override suspend fun deleteStore(id: Int): String =
@@ -120,7 +132,7 @@ class DefaultApiRepository
 
         override suspend fun createStore(store: Store): Store =
             withContext(Dispatchers.IO) {
-                api.storePost(store).body()
+                api.storePost(store.toCreateStoreRequest()).body().toStore()
             }
 
         override suspend fun updateTill(
@@ -128,22 +140,22 @@ class DefaultApiRepository
             till: Till,
         ): Till =
             withContext(Dispatchers.IO) {
-                api.tillsIdPut(id, till).body()
+                api.tillsPut(till.toUpdateTillRequest(id)).body().toTill()
             }
 
         override suspend fun createTill(till: Till): Till =
             withContext(Dispatchers.IO) {
-                api.tillsPost(till).body()
+                api.tillsPost(till.toCreateTillRequest()).body().toTill()
             }
 
         override suspend fun deleteTill(tillId: Int): String =
             withContext(Dispatchers.IO) {
-                api.tillsTillIdDelete(tillId).body()
+                api.tillsIdDelete(tillId).body()
             }
 
         override suspend fun getTills(tillId: Int): List<Till> =
             withContext(Dispatchers.IO) {
-                api.tillsTillIdGet(tillId).body()
+                api.tillsMapIdGet(tillId).body().map(TillResponse::toTill)
             }
 
         override suspend fun updateWallBlock(
@@ -151,27 +163,27 @@ class DefaultApiRepository
             wallBlock: WallBlock,
         ): WallBlock =
             withContext(Dispatchers.IO) {
-                api.wallBlocksIdPut(id, wallBlock).body()
+                api.wallBlocksPut(wallBlock.toUpdateWallBlockRequest(id)).body().toWallBlock()
             }
 
         override suspend fun getWallBlocksByMap(mapId: Int): List<WallBlock> =
             withContext(Dispatchers.IO) {
-                api.wallBlocksMapIdGet(mapId).body()
+                api.wallBlocksMapIdGet(mapId).body().map(WallBlockResponse::toWallBlock)
             }
 
         override suspend fun createWallBlock(wallBlock: WallBlock): WallBlock =
             withContext(Dispatchers.IO) {
-                api.wallBlocksPost(wallBlock).body()
+                api.wallBlocksPost(wallBlock.toCreateWallBlockRequest()).body().toWallBlock()
             }
 
         override suspend fun deleteWallBlock(wallBlockId: Int): String =
             withContext(Dispatchers.IO) {
-                api.wallBlocksWallBlockIdDelete(wallBlockId).body()
+                api.wallBlocksIdDelete(wallBlockId).body()
             }
 
-        override suspend fun googleOcr(image: List<Base64ByteArray>): ShopList =
+        override suspend fun googleOcr(image: List<Base64ByteArray>): List<CreateShoppingListItemRequest> =
             withContext(Dispatchers.IO) {
-                api.googleocrPost(image).body()
+                api.ocrShoppingListPost(image).body()
             }
 
         override suspend fun calculateRoute(routePlanning: RoutePlanningRequest): RoutePlanResponse =
@@ -181,63 +193,185 @@ class DefaultApiRepository
 
         override suspend fun getCurrentUser(): AppUserResponse =
             withContext(Dispatchers.IO) {
-                withBearerAuth {
-                    val token = authSession.requireBackendIdToken()
-                    profileClient.get("${backendBaseUrl()}/me") {
-                        header(HttpHeaders.Authorization, "Bearer $token")
-                    }.body()
-                }
+                profileClient.get("${backendBaseUrl()}/me") {
+                    header(HttpHeaders.Authorization, authedHeaderValue())
+                }.body()
             }
 
-        override suspend fun getShoppingLists(): List<ShoppingListResponse> =
+        override suspend fun getShoppingLists(): List<ShoppingList> =
             withContext(Dispatchers.IO) {
-                withBearerAuth {
-                    shoppingLists.values.toList()
-                }
+                profileClient.get("${backendBaseUrl()}/shopping-lists") {
+                    header(HttpHeaders.Authorization, authedHeaderValue())
+                }.body()
             }
 
-        override suspend fun getShoppingList(id: String): ShoppingListResponse =
+        override suspend fun getShoppingList(id: Int): ShoppingList =
             withContext(Dispatchers.IO) {
-                withBearerAuth {
-                    shoppingLists[id] ?: error("Shopping list $id was not found.")
-                }
+                profileClient.get("${backendBaseUrl()}/shopping-lists/$id") {
+                    header(HttpHeaders.Authorization, authedHeaderValue())
+                }.body()
             }
 
-        override suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingListResponse =
+        override suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingList =
             withContext(Dispatchers.IO) {
-                withBearerAuth {
-                    val shoppingList =
-                        ShoppingListResponse(
-                            id = nextShoppingListId.toString(),
-                            name = request.name,
-                            items = request.items,
-                        )
-                    nextShoppingListId += 1
-                    shoppingLists[shoppingList.id] = shoppingList
-                    shoppingList
-                }
+                profileClient.post("${backendBaseUrl()}/shopping-lists") {
+                    header(HttpHeaders.Authorization, authedHeaderValue())
+                    setBody(request)
+                }.body()
             }
 
         override suspend fun updateShoppingList(
-            id: String,
-            request: UpdateShoppingListRequest,
-        ): ShoppingListResponse =
+            id: Int,
+            request: CreateShoppingListRequest,
+        ): ShoppingList =
             withContext(Dispatchers.IO) {
-                withBearerAuth {
-                    val existing = shoppingLists[id] ?: error("Shopping list $id was not found.")
-                    ShoppingListResponse(
-                        id = existing.id,
-                        name = request.name,
-                        items = request.items,
-                    ).also { shoppingLists[id] = it }
-                }
+                deleteShoppingList(id)
+                createShoppingList(request)
             }
 
-        override suspend fun deleteShoppingList(id: String) {
+        override suspend fun deleteShoppingList(id: Int) {
             withContext(Dispatchers.IO) {
-                withBearerAuth {
-                    check(shoppingLists.remove(id) != null) { "Shopping list $id was not found." }
+                profileClient.delete("${backendBaseUrl()}/shopping-lists/$id") {
+                    header(HttpHeaders.Authorization, authedHeaderValue())
                 }
             }
         }
     }
+
+private fun DepartmentResponse.toDepartment() =
+    Department(
+        name = name,
+        mapId = mapId,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+        id = id,
+    )
+
+private fun Department.toCreateDepartmentRequest() =
+    CreateDepartmentRequest(
+        mapId = mapId,
+        name = name,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+    )
+
+private fun Department.toUpdateDepartmentRequest(id: String) =
+    UpdateDepartmentRequest(
+        id = id.toInt(),
+        mapId = mapId,
+        name = name,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+    )
+
+private fun MapResponse.toMap() =
+    Map(
+        width = width,
+        height = height,
+        entranceX = entranceX,
+        entranceY = entranceY,
+        exitX = exitX,
+        exitY = exitY,
+        storeId = storeId,
+        id = id,
+    )
+
+private fun Map.toCreateMapRequest() =
+    CreateMapRequest(
+        width = width,
+        height = height,
+        entranceX = entranceX,
+        entranceY = entranceY,
+        exitX = exitX,
+        exitY = exitY,
+        storeId = storeId,
+    )
+
+private fun Map.toUpdateMapRequest(id: String) =
+    UpdateMapRequest(
+        id = id.toInt(),
+        width = width,
+        height = height,
+        entranceX = entranceX,
+        entranceY = entranceY,
+        exitX = exitX,
+        exitY = exitY,
+        storeId = storeId,
+    )
+
+private fun StoreResponse.toStore() =
+    Store(
+        name = name,
+        id = id,
+        location = location ?: "",
+    )
+
+private fun Store.toCreateStoreRequest() =
+    CreateStoreRequest(
+        name = name,
+        location = location,
+    )
+
+private fun TillResponse.toTill() =
+    Till(
+        mapId = mapId,
+        width = width,
+        height = height,
+        startX = startX,
+        startY = startY,
+        id = id,
+    )
+
+private fun Till.toCreateTillRequest() =
+    CreateTillRequest(
+        mapId = mapId,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+    )
+
+private fun Till.toUpdateTillRequest(id: String) =
+    UpdateTillRequest(
+        id = id.toInt(),
+        mapId = mapId,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+    )
+
+private fun WallBlockResponse.toWallBlock() =
+    WallBlock(
+        mapId = mapId,
+        width = width,
+        height = height,
+        startX = startX,
+        startY = startY,
+        id = id,
+    )
+
+private fun WallBlock.toCreateWallBlockRequest() =
+    CreateWallBlockRequest(
+        mapId = mapId,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+    )
+
+private fun WallBlock.toUpdateWallBlockRequest(id: String) =
+    UpdateWallBlockRequest(
+        id = id.toInt(),
+        mapId = mapId,
+        startX = startX,
+        startY = startY,
+        width = width,
+        height = height,
+    )

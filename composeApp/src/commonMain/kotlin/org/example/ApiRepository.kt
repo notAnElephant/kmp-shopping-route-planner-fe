@@ -2,16 +2,15 @@ package org.example
 
 import org.openapitools.client.infrastructure.Base64ByteArray
 import org.openapitools.client.models.AppUserResponse
+import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.CreateShoppingListRequest
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
-import org.openapitools.client.models.ShopList
-import org.openapitools.client.models.ShoppingListResponse
+import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.Till
-import org.openapitools.client.models.UpdateShoppingListRequest
 import org.openapitools.client.models.WallBlock
 
 interface ApiRepository {
@@ -67,20 +66,20 @@ interface ApiRepository {
 
     suspend fun deleteWallBlock(wallBlockId: Int): String
 
-    suspend fun googleOcr(image: List<Base64ByteArray>): ShopList
+    suspend fun googleOcr(image: List<Base64ByteArray>): List<CreateShoppingListItemRequest>
 
     suspend fun getCurrentUser(): AppUserResponse
 
-    suspend fun getShoppingLists(): List<ShoppingListResponse>
+    suspend fun getShoppingLists(): List<ShoppingList>
 
-    suspend fun getShoppingList(id: String): ShoppingListResponse
+    suspend fun getShoppingList(id: Int): ShoppingList
 
-    suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingListResponse
+    suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingList
 
     suspend fun updateShoppingList(
-        id: String,
-        request: UpdateShoppingListRequest,
-    ): ShoppingListResponse
+        id: Int,
+        request: CreateShoppingListRequest,
+    ): ShoppingList
 
-    suspend fun deleteShoppingList(id: String)
+    suspend fun deleteShoppingList(id: Int)
 }

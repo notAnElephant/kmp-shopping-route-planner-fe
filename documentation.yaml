@@ -4,7 +4,7 @@ info:
   description: "com_example_ktor_db_app API"
   version: "1.0.0"
 servers:
-- url: "https://com_example_ktor_db_app"
+  - url: "https://com_example_ktor_db_app"
 paths:
   /calculate-route:
     post:
@@ -13,49 +13,26 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/RoutePlanning"
+              $ref: "#/components/schemas/RoutePlanningRequest"
         required: true
       responses:
-        "200":
-          description: "OK"
+        "500":
+          description: "Internal Server Error"
           content:
-            '*/*':
+            text/plain:
               schema:
-                $ref: "#/components/schemas/RoutePlan"
-  /concretlist:
-    post:
-      description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ProductsInShop"
-        required: true
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/ConcreteShopList"
+                type: "string"
               examples:
                 Example#1:
-                  description: "call AI service to get concrete list <br> give back\
-                    \ concreteList"
-                  value:
-                    items:
-                    - name: "Milk"
-                      productName: "Whole Milk 1L"
-                      productId: 101
-                      quantity: "2"
-                    - name: "Bread"
-                      productName: "Whole Wheat Bread"
-                      productId: 102
-                      quantity: "1"
-                    - name: "Eggs"
-                      productName: "null"
-                      productId: "null"
-                      quantity: "12"
+                  value: ""
+                Example#2:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/RoutePlanResponse"
   /departments:
     post:
       description: ""
@@ -63,36 +40,73 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Department"
+              $ref: "#/components/schemas/CreateDepartmentRequest"
         required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DepartmentResponse"
+    put:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateDepartmentRequest"
+        required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/DepartmentResponse"
+  /departments/{id}:
+    delete:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
         "400":
           description: "Bad Request"
           content:
             '*/*':
               schema:
-                type: "object"
+                type: "string"
               examples:
                 Example#1:
-                  value: "Invalid position, there is no path to the tills"
-                Example#2:
-                  value: "Invalid position"
-        "201":
-          description: "Created"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Department"
-  /departments/{departmentId}:
-    delete:
-      description: ""
-      parameters:
-      - name: "departmentId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
+                  value: "Invalid id"
         "204":
           description: "No Content"
           content:
@@ -103,35 +117,11 @@ paths:
     get:
       description: ""
       parameters:
-      - name: "mapId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Department"
-  /departments/{id}:
-    put:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Department"
-        required: true
+        - name: "mapId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
         "400":
           description: "Bad Request"
@@ -141,9 +131,46 @@ paths:
                 type: "string"
               examples:
                 Example#1:
-                  value: "Invalid position, there is no path to the tills"
-                Example#2:
-                  value: "Invalid position"
+                  value: "Invalid mapId"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/DepartmentResponse"
+  /maps:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMapRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MapResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+    put:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMapRequest"
+        required: true
+      responses:
         "500":
           description: "Internal Server Error"
           content:
@@ -153,13 +180,167 @@ paths:
               examples:
                 Example#1:
                   value: ""
+                Example#2:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MapResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /maps/{id}:
+    delete:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MapResponse"
+  /maps/import-by-image:
+    post:
+      description: ""
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+                Example#4:
+                  value: ""
+                Example#5:
+                  value: ""
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/Department"
-  /googleocr:
+  /me:
+    get:
+      description: ""
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/AppUserResponse"
+  /ocr:
+    get:
+      description: ""
+      parameters:
+        - name: "file"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No text found in image"
+                Example#2:
+                  value: "Missing file parameter"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /ocr/shopping-list:
     post:
       description: ""
       requestBody:
@@ -172,6 +353,73 @@ paths:
                 format: "byte"
         required: true
       responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/CreateShoppingListItemRequest"
+  /products:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateProductRequest"
+        required: true
+      responses:
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ProductResponse"
+  /products/{articleNo}:
+    delete:
+      description: ""
+      parameters:
+        - name: "articleNo"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid articleNo"
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+        - name: "articleNo"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid articleNo"
         "500":
           description: "Internal Server Error"
           content:
@@ -186,162 +434,20 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/ShopList"
-              examples:
-                Example#1:
-                  description: ""
-                  value:
-                    items:
-                    - name: "Apples"
-                      quantity: "5"
-                    - name: "Milk"
-                      quantity: "2"
-                    - name: "Bread"
-                      quantity: "1"
-  /maps:
-    post:
-      description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Map"
-        required: true
-      responses:
-        "201":
-          description: "Created"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Map"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-  /maps/{id}:
-    delete:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "204":
-          description: "No Content"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-    get:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Map"
+                $ref: "#/components/schemas/ProductResponse"
     put:
       description: ""
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
+        - name: "articleNo"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Map"
-        required: true
-      responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "201":
-          description: "Created"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Map"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Map resizing would cause collision"
-  /ocr:
-    get:
-      description: ""
-      parameters:
-      - name: "file"
-        in: "query"
-        required: false
-        schema:
-          type: "string"
-      responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  description: ""
-                  value: ""
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "No text found in image"
-  /routeplan/{userId}:
-    post:
-      description: ""
-      parameters:
-      - name: "userId"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/SimpleRoutePlanning"
+              $ref: "#/components/schemas/UpdateProductRequest"
         required: true
       responses:
         "200":
@@ -349,103 +455,43 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/RoutePlan"
-              examples:
-                Example#1:
-                  description: ""
-                  value:
-                    route:
-                    - first: 1
-                      second: 2
-                    - first: 3
-                      second: 4
-                    - first: 5
-                      second: 6
-  /savelist:
-    post:
+                $ref: "#/components/schemas/ProductResponse"
+  /products/store/{storeId}:
+    get:
       description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ShoppingListWithUserDTO"
-        required: true
+      parameters:
+        - name: "storeId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
-        "200":
-          description: "OK <br> Save that list and return the id"
-          content:
-            '*/*':
-              schema:
-                type: "integer"
-                format: "int32"
-  /shelves:
-    post:
-      description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ShelfCreation"
-        required: true
-      responses:
-        "201":
-          description: "Created <br> val newShelf = shelfRepository.addShelf(shelf)"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Shelf"
-              examples:
-                Example#1:
-                  description: ""
-                  value:
-                    id: 0
-                    departmentId: "null"
-                    width: "null"
-                    height: "null"
-                    startX: "null"
-                    startY: "null"
-                    midx: 0.0
-                    midy: 0.0
         "400":
           description: "Bad Request"
           content:
             '*/*':
               schema:
-                type: "object"
-  /shelves/{shelfId}:
-    delete:
-      description: ""
-      parameters:
-      - name: "shelfId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
                 type: "string"
               examples:
                 Example#1:
-                  value: ""
-        "204":
-          description: "No Content"
+                  value: "Invalid storeId"
+        "200":
+          description: "OK"
           content:
             '*/*':
               schema:
-                type: "object"
-  /shelves/{departmentId}:
-    get:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ProductResponse"
+  /recipes/ingredients:
+    post:
       description: ""
-      parameters:
-      - name: "departmentId"
-        in: "path"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RecipeRequest"
         required: true
-        schema:
-          type: "integer"
       responses:
         "200":
           description: "OK"
@@ -454,23 +500,68 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/Shelf"
-  /shelves/{id}:
-    put:
+                  $ref: "#/components/schemas/IngredientResponse"
+        "400":
+          description: "Bad Request <br> 👈 important"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /sales/{store}:
+    get:
       description: ""
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Shelf"
-        required: true
+        - name: "store"
+          in: "path"
+          required: true
+          schema:
+            type: "string"
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Store is required"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/SalesResponse"
+  /shopping-lists:
+    get:
+      description: ""
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/ShoppingList"
         "500":
           description: "Internal Server Error"
           content:
@@ -480,12 +571,117 @@ paths:
               examples:
                 Example#1:
                   value: ""
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShoppingListRequest"
+        required: true
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "object"
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/Shelf"
+                $ref: "#/components/schemas/ShoppingList"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+  /shopping-lists/{id}:
+    delete:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    get:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ShoppingList"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
   /store:
     post:
       description: ""
@@ -493,7 +689,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/Store"
+              $ref: "#/components/schemas/CreateStoreRequest"
         required: true
       responses:
         "201":
@@ -501,117 +697,25 @@ paths:
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/Store"
+                $ref: "#/components/schemas/StoreResponse"
         "400":
           description: "Bad Request"
           content:
             '*/*':
               schema:
-                type: "object"
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid input data"
   /store/{id}:
     delete:
       description: ""
       parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "204":
-          description: "No Content"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-    get:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Store"
-  /tills:
-    post:
-      description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Till"
-        required: true
-      responses:
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-              examples:
-                Example#1:
-                  value: "Invalid position"
-        "201":
-          description: "Created"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/Till"
-  /tills/{tillId}:
-    delete:
-      description: ""
-      parameters:
-      - name: "tillId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "204":
-          description: "No Content"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-    get:
-      description: ""
-      parameters:
-      - name: "tillId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
-      responses:
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "array"
-                items:
-                  $ref: "#/components/schemas/Till"
-  /tills/{id}:
-    put:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/Till"
-        required: true
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
         "400":
           description: "Bad Request"
@@ -621,7 +725,7 @@ paths:
                 type: "string"
               examples:
                 Example#1:
-                  value: "Invalid position"
+                  value: "Invalid id"
         "500":
           description: "Internal Server Error"
           content:
@@ -631,21 +735,131 @@ paths:
               examples:
                 Example#1:
                   value: ""
-        "201":
-          description: "Created"
+        "204":
+          description: "No Content"
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/Till"
-  /wall-blocks:
-    post:
+                type: "object"
+    get:
       description: ""
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WallBlock"
-        required: true
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StoreResponse"
+  /store/{id}/component-details:
+    get:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/StoreDetailsResponse"
+  /store/{id}/place-details:
+    get:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/PlaceDetailsResponse"
+  /store/{storeId}/shopping-lists/{shoppingListId}/matches:
+    get:
+      description: ""
+      parameters:
+        - name: "storeId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+        - name: "shoppingListId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
         "400":
           description: "Bad Request"
@@ -653,27 +867,233 @@ paths:
             '*/*':
               schema:
                 type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ShoppingListMatchesResponse"
+  /tills:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateTillRequest"
+        required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
               examples:
                 Example#1:
-                  value: "Invalid position, there is no path to the tills"
+                  value: ""
                 Example#2:
-                  value: "Invalid position"
+                  value: ""
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/WallBlock"
-  /wall-blocks/{wallBlockId}:
+                $ref: "#/components/schemas/TillResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+    put:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateTillRequest"
+        required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/TillResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /tills/{id}:
     delete:
       description: ""
       parameters:
-      - name: "wallBlockId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
+        "204":
+          description: "No Content"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /tills/{mapId}:
+    get:
+      description: ""
+      parameters:
+        - name: "mapId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid mapId"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/TillResponse"
+  /wall-blocks:
+    post:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateWallBlockRequest"
+        required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Unexpected error"
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+                Example#4:
+                  value: ""
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/WallBlockResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+    put:
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateWallBlockRequest"
+        required: true
+      responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Unexpected error"
+            text/plain:
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: ""
+                Example#2:
+                  value: ""
+                Example#3:
+                  value: ""
+                Example#4:
+                  value: ""
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/WallBlockResponse"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+  /wall-blocks/{id}:
+    delete:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid id"
         "204":
           description: "No Content"
           content:
@@ -684,12 +1104,21 @@ paths:
     get:
       description: ""
       parameters:
-      - name: "mapId"
-        in: "path"
-        required: true
-        schema:
-          type: "integer"
+        - name: "mapId"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Invalid mapId"
         "200":
           description: "OK"
           content:
@@ -697,67 +1126,41 @@ paths:
               schema:
                 type: "array"
                 items:
-                  $ref: "#/components/schemas/WallBlock"
-  /wall-blocks/{id}:
-    put:
-      description: ""
-      parameters:
-      - name: "id"
-        in: "path"
-        required: true
-        schema:
-          type: "string"
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/WallBlock"
-        required: true
-      responses:
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "object"
-              examples:
-                Example#1:
-                  value: "Invalid position, there is no path to the tills"
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "201":
-          description: "Created"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/WallBlock"
+                  $ref: "#/components/schemas/WallBlockResponse"
 components:
   schemas:
-    RoutePlanning:
+    RoutePlanningProductRequest:
+      type: "object"
+      properties:
+        articleNo:
+          type: "integer"
+          format: "int32"
+        departmentId:
+          type: "integer"
+          format: "int32"
+        position:
+          type: "string"
+      required:
+        - "articleNo"
+        - "departmentId"
+        - "position"
+    RoutePlanningRequest:
       type: "object"
       properties:
         mapId:
           type: "integer"
           format: "int32"
-        departmentIds:
+        products:
           type: "array"
           items:
-            type: "integer"
-            format: "int32"
+            $ref: "#/components/schemas/RoutePlanningProductRequest"
       required:
-      - "mapId"
-      - "departmentIds"
+        - "mapId"
+        - "products"
     Pair:
       type: "object"
-      properties: {}
-    RoutePlan:
+      properties: { }
+    RoutePlanResponse:
       type: "object"
       properties:
         route:
@@ -765,49 +1168,207 @@ components:
           items:
             $ref: "#/components/schemas/Pair"
       required:
-      - "route"
-    ProductsInShop:
+        - "route"
+    CreateDepartmentRequest:
       type: "object"
       properties:
-        shoppingListId:
+        mapId:
           type: "integer"
           format: "int32"
+        name:
+          type: "string"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "mapId"
+        - "name"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    DepartmentResponse:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        name:
+          type: "string"
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "name"
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    UpdateDepartmentRequest:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        mapId:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "id"
+        - "mapId"
+        - "name"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    CreateMapRequest:
+      type: "object"
+      properties:
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        entranceX:
+          type: "number"
+          format: "double"
+        entranceY:
+          type: "number"
+          format: "double"
+        exitX:
+          type: "number"
+          format: "double"
+        exitY:
+          type: "number"
+          format: "double"
         storeId:
           type: "integer"
           format: "int32"
       required:
-      - "shoppingListId"
-      - "storeId"
-    ConcreteShopItem:
+        - "width"
+        - "height"
+        - "entranceX"
+        - "entranceY"
+        - "exitX"
+        - "exitY"
+        - "storeId"
+    MapResponse:
       type: "object"
       properties:
-        name:
-          type: "string"
-        productName:
-          type: "string"
-        productId:
+        id:
           type: "integer"
           format: "int32"
-        quantity:
-          type: "string"
+          nullable: true
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        entranceX:
+          type: "number"
+          format: "double"
+        entranceY:
+          type: "number"
+          format: "double"
+        exitX:
+          type: "number"
+          format: "double"
+        exitY:
+          type: "number"
+          format: "double"
+        storeId:
+          type: "integer"
+          format: "int32"
       required:
-      - "name"
-      - "quantity"
-    ConcreteShopList:
+        - "width"
+        - "height"
+        - "entranceX"
+        - "entranceY"
+        - "exitX"
+        - "exitY"
+        - "storeId"
+    UpdateMapRequest:
       type: "object"
       properties:
-        items:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/ConcreteShopItem"
+        id:
+          type: "integer"
+          format: "int32"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        entranceX:
+          type: "number"
+          format: "double"
+        entranceY:
+          type: "number"
+          format: "double"
+        exitX:
+          type: "number"
+          format: "double"
+        exitY:
+          type: "number"
+          format: "double"
+        storeId:
+          type: "integer"
+          format: "int32"
       required:
-      - "items"
+        - "id"
+        - "width"
+        - "height"
+        - "entranceX"
+        - "entranceY"
+        - "exitX"
+        - "exitY"
+        - "storeId"
     Department:
       type: "object"
       properties:
         id:
           type: "integer"
           format: "int32"
+          nullable: true
         mapId:
           type: "integer"
           format: "int32"
@@ -826,37 +1387,228 @@ components:
           type: "number"
           format: "double"
       required:
-      - "mapId"
-      - "name"
-      - "width"
-      - "height"
-      - "startX"
-      - "startY"
-    ShopItem:
+        - "mapId"
+        - "name"
+        - "width"
+        - "height"
+        - "startX"
+        - "startY"
+    AppUserResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        firebaseUid:
+          type: "string"
+        email:
+          type: "string"
+          nullable: true
+        displayName:
+          type: "string"
+          nullable: true
+      required:
+        - "id"
+        - "firebaseUid"
+    CreateShoppingListItemRequest:
+      type: "object"
+      properties:
+        shoppingItemName:
+          type: "string"
+        attributes:
+          type: "string"
+      required:
+        - "shoppingItemName"
+        - "attributes"
+    CreateProductRequest:
       type: "object"
       properties:
         name:
           type: "string"
-        quantity:
+        size:
           type: "string"
+          nullable: true
+        departmentId:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        position:
+          type: "string"
+          nullable: true
+        storeId:
+          type: "integer"
+          format: "int32"
+        price:
+          type: "number"
+          format: "double"
+          nullable: true
       required:
-      - "name"
-      - "quantity"
-    ShopList:
+        - "name"
+        - "storeId"
+    ProductResponse:
       type: "object"
       properties:
+        articleNo:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        name:
+          type: "string"
+        size:
+          type: "string"
+          nullable: true
+        departmentId:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        position:
+          type: "string"
+          nullable: true
+        storeId:
+          type: "integer"
+          format: "int32"
+        price:
+          type: "number"
+          format: "double"
+          nullable: true
+      required:
+        - "name"
+        - "storeId"
+    UpdateProductRequest:
+      type: "object"
+      properties:
+        articleNo:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+        size:
+          type: "string"
+          nullable: true
+        departmentId:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        position:
+          type: "string"
+          nullable: true
+        storeId:
+          type: "integer"
+          format: "int32"
+        price:
+          type: "number"
+          format: "double"
+          nullable: true
+      required:
+        - "articleNo"
+        - "name"
+        - "storeId"
+    RecipeRequest:
+      type: "object"
+      properties:
+        mealName:
+          type: "string"
+      required:
+        - "mealName"
+    IngredientResponse:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        amount:
+          type: "string"
+      required:
+        - "name"
+        - "amount"
+    SalesResponse:
+      type: "object"
+      properties:
+        store:
+          type: "string"
+        validFrom:
+          type: "string"
+        validTo:
+          type: "string"
+        offers:
+          type: "array"
+          items:
+            type: "string"
+      required:
+        - "store"
+        - "validFrom"
+        - "validTo"
+        - "offers"
+    ShoppingList:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        userId:
+          type: "integer"
+          format: "int32"
+        name:
+          type: "string"
+      required:
+        - "userId"
+        - "name"
+    CreateShoppingListRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
         items:
           type: "array"
           items:
-            $ref: "#/components/schemas/ShopItem"
+            $ref: "#/components/schemas/CreateShoppingListItemRequest"
       required:
-      - "items"
+        - "name"
+        - "items"
+    CreateStoreRequest:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+        location:
+          type: "string"
+          nullable: true
+      required:
+        - "name"
+    StoreResponse:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        name:
+          type: "string"
+        location:
+          type: "string"
+          nullable: true
+      required:
+        - "name"
+    Store:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        name:
+          type: "string"
+        location:
+          type: "string"
+          nullable: true
+      required:
+        - "name"
     Map:
       type: "object"
       properties:
         id:
           type: "integer"
           format: "int32"
+          nullable: true
         storeId:
           type: "integer"
           format: "int32"
@@ -879,154 +1631,20 @@ components:
           type: "number"
           format: "double"
       required:
-      - "storeId"
-      - "width"
-      - "height"
-      - "entranceX"
-      - "entranceY"
-      - "exitX"
-      - "exitY"
-    SimpleRoutePlanning:
-      type: "object"
-      properties:
-        storeId:
-          type: "integer"
-          format: "int32"
-        concreteShopList:
-          $ref: "#/components/schemas/ConcreteShopList"
-      required:
-      - "storeId"
-      - "concreteShopList"
-    ShoppingListWithUserDTO:
-      type: "object"
-      properties:
-        userId:
-          type: "integer"
-          format: "int32"
-        items:
-          type: "array"
-          items:
-            $ref: "#/components/schemas/ShopItem"
-        listName:
-          type: "string"
-      required:
-      - "userId"
-      - "items"
-      - "listName"
-    ShelfCreation:
-      type: "object"
-      properties:
-        departmentId:
-          type: "integer"
-          format: "int32"
-        width:
-          type: "number"
-          format: "double"
-        height:
-          type: "number"
-          format: "double"
-        startX:
-          type: "number"
-          format: "double"
-        startY:
-          type: "number"
-          format: "double"
-        shelfType:
-          type: "string"
-          enum:
-          - "Up"
-          - "Down"
-          - "Left"
-          - "Right"
-      required:
-      - "departmentId"
-      - "width"
-      - "height"
-      - "startX"
-      - "startY"
-      - "shelfType"
-    Shelf:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        departmentId:
-          type: "integer"
-          format: "int32"
-        width:
-          type: "number"
-          format: "double"
-        height:
-          type: "number"
-          format: "double"
-        startX:
-          type: "number"
-          format: "double"
-        startY:
-          type: "number"
-          format: "double"
-        midx:
-          type: "number"
-          format: "double"
-        midy:
-          type: "number"
-          format: "double"
-      required:
-      - "id"
-      - "departmentId"
-      - "width"
-      - "height"
-      - "startX"
-      - "startY"
-      - "midx"
-      - "midy"
-    Store:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        name:
-          type: "string"
-        location:
-          type: "string"
-      required:
-      - "name"
-      - "location"
-    Till:
-      type: "object"
-      properties:
-        id:
-          type: "integer"
-          format: "int32"
-        mapId:
-          type: "integer"
-          format: "int32"
-        width:
-          type: "number"
-          format: "double"
-        height:
-          type: "number"
-          format: "double"
-        startX:
-          type: "number"
-          format: "double"
-        startY:
-          type: "number"
-          format: "double"
-      required:
-      - "mapId"
-      - "width"
-      - "height"
-      - "startX"
-      - "startY"
+        - "storeId"
+        - "width"
+        - "height"
+        - "entranceX"
+        - "entranceY"
+        - "exitX"
+        - "exitY"
     WallBlock:
       type: "object"
       properties:
         id:
           type: "integer"
           format: "int32"
+          nullable: true
         mapId:
           type: "integer"
           format: "int32"
@@ -1043,8 +1661,363 @@ components:
           type: "number"
           format: "double"
       required:
-      - "mapId"
-      - "width"
-      - "height"
-      - "startX"
-      - "startY"
+        - "mapId"
+        - "width"
+        - "height"
+        - "startX"
+        - "startY"
+    Till:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        mapId:
+          type: "integer"
+          format: "int32"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+      required:
+        - "mapId"
+        - "width"
+        - "height"
+        - "startX"
+        - "startY"
+    StoreDetailsResponse:
+      type: "object"
+      properties:
+        store:
+          $ref: "#/components/schemas/Store"
+        map:
+          nullable: true
+          $ref: "#/components/schemas/Map"
+        departments:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Department"
+        wallBlocks:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/WallBlock"
+        tills:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/Till"
+      required:
+        - "store"
+        - "departments"
+        - "wallBlocks"
+        - "tills"
+    Photo:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+      required:
+        - "name"
+    DayTime:
+      type: "object"
+      properties:
+        day:
+          type: "integer"
+          format: "int32"
+        hour:
+          type: "integer"
+          format: "int32"
+        minute:
+          type: "integer"
+          format: "int32"
+      required:
+        - "day"
+        - "hour"
+        - "minute"
+    Period:
+      type: "object"
+      properties:
+        open:
+          $ref: "#/components/schemas/DayTime"
+        close:
+          $ref: "#/components/schemas/DayTime"
+      required:
+        - "open"
+        - "close"
+    OpeningHours:
+      type: "object"
+      properties:
+        periods:
+          type: "array"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/Period"
+    ParkingOptions:
+      type: "object"
+      properties:
+        freeParkingLot:
+          type: "boolean"
+          nullable: true
+        freeStreetParking:
+          type: "boolean"
+          nullable: true
+        freeGarageParking:
+          type: "boolean"
+          nullable: true
+    AccessibilityOptions:
+      type: "object"
+      properties:
+        wheelchairAccessibleEntrance:
+          type: "boolean"
+          nullable: true
+    PlaceDetailsResponse:
+      type: "object"
+      properties:
+        id:
+          type: "string"
+        internationalPhoneNumber:
+          type: "string"
+          nullable: true
+        websiteUri:
+          type: "string"
+          nullable: true
+        googleMapsUri:
+          type: "string"
+          nullable: true
+        rating:
+          type: "number"
+          format: "double"
+          nullable: true
+        userRatingCount:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        priceLevel:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        photos:
+          type: "array"
+          nullable: true
+          items:
+            $ref: "#/components/schemas/Photo"
+        regularOpeningHours:
+          nullable: true
+          $ref: "#/components/schemas/OpeningHours"
+        parkingOptions:
+          nullable: true
+          $ref: "#/components/schemas/ParkingOptions"
+        accessibilityOptions:
+          nullable: true
+          $ref: "#/components/schemas/AccessibilityOptions"
+      required:
+        - "id"
+    ShoppingListItemResponse:
+      type: "object"
+      properties:
+        itemId:
+          type: "integer"
+          format: "int32"
+        shoppingItemName:
+          type: "string"
+        attributes:
+          type: "string"
+      required:
+        - "itemId"
+        - "shoppingItemName"
+        - "attributes"
+    ShoppingListProductMatchResponse:
+      type: "object"
+      properties:
+        shoppingListItem:
+          $ref: "#/components/schemas/ShoppingListItemResponse"
+        product:
+          $ref: "#/components/schemas/ProductResponse"
+      required:
+        - "shoppingListItem"
+        - "product"
+    ShoppingListMatchesResponse:
+      type: "object"
+      properties:
+        shoppingListId:
+          type: "integer"
+          format: "int32"
+        storeId:
+          type: "integer"
+          format: "int32"
+        matches:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ShoppingListProductMatchResponse"
+      required:
+        - "shoppingListId"
+        - "storeId"
+        - "matches"
+    CreateTillRequest:
+      type: "object"
+      properties:
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    TillResponse:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    UpdateTillRequest:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "id"
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    CreateWallBlockRequest:
+      type: "object"
+      properties:
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    WallBlockResponse:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+          nullable: true
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"
+    UpdateWallBlockRequest:
+      type: "object"
+      properties:
+        id:
+          type: "integer"
+          format: "int32"
+        mapId:
+          type: "integer"
+          format: "int32"
+        startX:
+          type: "number"
+          format: "double"
+        startY:
+          type: "number"
+          format: "double"
+        width:
+          type: "number"
+          format: "double"
+        height:
+          type: "number"
+          format: "double"
+      required:
+        - "id"
+        - "mapId"
+        - "startX"
+        - "startY"
+        - "width"
+        - "height"

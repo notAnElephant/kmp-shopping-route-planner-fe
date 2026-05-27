@@ -7,13 +7,13 @@ import org.example.ApiRepository
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
 import org.lighthousegames.logging.logging
 import org.openapitools.client.infrastructure.Base64ByteArray
-import org.openapitools.client.models.ShopList
+import org.openapitools.client.models.CreateShoppingListItemRequest
 
 class CameraViewModel(
     private val apiRepository: ApiRepository,
 ) {
-    private val _ocrResult = MutableStateFlow<ShopList?>(null)
-    val ocrResult: StateFlow<ShopList?> = _ocrResult.asStateFlow()
+    private val _ocrResult = MutableStateFlow<List<CreateShoppingListItemRequest>>(emptyList())
+    val ocrResult: StateFlow<List<CreateShoppingListItemRequest>> = _ocrResult.asStateFlow()
 
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()

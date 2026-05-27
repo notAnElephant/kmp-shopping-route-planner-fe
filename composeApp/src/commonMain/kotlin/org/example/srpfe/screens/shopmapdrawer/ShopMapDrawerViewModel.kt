@@ -16,6 +16,7 @@ import org.lighthousegames.logging.logging
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
 import org.openapitools.client.models.RoutePlanResponse
+import org.openapitools.client.models.RoutePlanningProductRequest
 import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.Till
@@ -110,9 +111,13 @@ class ShopMapDrawerViewModel(private val apiRepository: ApiRepository) : ViewMod
 					RoutePlanningRequest(
 						mapId = _uiState.value.map?.id
 							?: throw IllegalStateException("Map is not created yet"),
-						departmentIds = selectedDepartments.map {
-							it.id
-								?: throw IllegalStateException("org.example.srpfe.model.Department is not created yet")
+						products = selectedDepartments.mapIndexed { index, department ->
+							RoutePlanningProductRequest(
+								articleNo = index + 1,
+								departmentId = department.id
+									?: throw IllegalStateException("org.example.srpfe.model.Department is not created yet"),
+								position = department.id.toString(),
+							)
 						},
 					)
 				).let {

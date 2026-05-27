@@ -30,8 +30,8 @@ import kotlinx.coroutines.launch
 import org.example.ApiRepository
 import org.example.srpfe.auth.AuthSession
 import org.example.srpfe.auth.AuthSource
-import org.openapitools.client.models.ShopItem
-import org.openapitools.client.models.ShoppingListResponse
+import org.openapitools.client.models.CreateShoppingListItemRequest
+import org.openapitools.client.models.ShoppingList
 
 @Composable
 fun ShoppingListScreen(
@@ -104,14 +104,16 @@ fun ShoppingListScreen(
                     ) {
                         itemsIndexed(
                             items = uiState.shoppingLists,
-                            key = { _, shoppingList -> shoppingList.id },
+                            key = { _, shoppingList -> shoppingList.id ?: shoppingList.name },
                         ) { _, shoppingList ->
                             ShoppingListCard(
                                 shoppingList = shoppingList,
                                 onEdit = { viewModel.startEditing(shoppingList) },
                                 onDelete = {
                                     coroutineScope.launch {
-                                        viewModel.deleteShoppingList(shoppingList.id)
+                                        shoppingList.id?.let { id ->
+                                            viewModel.deleteShoppingList(id)
+                                        }
                                     }
                                 },
                             )
@@ -218,14 +220,14 @@ private fun ShoppingListEditor(
 
 @Composable
 private fun DraftItemRow(
-    item: ShopItem,
+    item: CreateShoppingListItemRequest,
     onRemove: () -> Unit,
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
     ) {
-        Text("${item.name} (${item.quantity})")
+        Text("${item.shoppingItemName} (${item.attributes})")
         OutlinedButton(onClick = onRemove) {
             Text("Remove")
         }
@@ -234,7 +236,7 @@ private fun DraftItemRow(
 
 @Composable
 private fun ShoppingListCard(
-    shoppingList: ShoppingListResponse,
+    shoppingList: ShoppingList,
     onEdit: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -249,9 +251,7 @@ private fun ShoppingListCard(
                 text = shoppingList.name,
                 style = MaterialTheme.typography.titleMedium,
             )
-            shoppingList.items.forEach { item ->
-                Text("${item.name} (${item.quantity})")
-            }
+            Text("ID: ${shoppingList.id ?: "pending"}")
             Spacer(modifier = Modifier.height(4.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = onEdit) {

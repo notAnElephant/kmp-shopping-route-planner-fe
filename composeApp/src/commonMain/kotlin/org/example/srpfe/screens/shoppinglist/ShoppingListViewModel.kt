@@ -4,21 +4,20 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.example.ApiRepository
+import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.CreateShoppingListRequest
-import org.openapitools.client.models.ShopItem
-import org.openapitools.client.models.ShoppingListResponse
-import org.openapitools.client.models.UpdateShoppingListRequest
+import org.openapitools.client.models.ShoppingList
 
 data class ShoppingListUiState(
-    val shoppingLists: List<ShoppingListResponse> = emptyList(),
+    val shoppingLists: List<ShoppingList> = emptyList(),
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val errorMessage: String? = null,
     val draftName: String = "",
     val draftItemName: String = "",
     val draftItemQuantity: String = "",
-    val draftItems: List<ShopItem> = emptyList(),
-    val editingListId: String? = null,
+    val draftItems: List<CreateShoppingListItemRequest> = emptyList(),
+    val editingListId: Int? = null,
 )
 
 class ShoppingListViewModel(
@@ -73,7 +72,11 @@ class ShoppingListViewModel(
 
         _uiState.value =
             currentState.copy(
-                draftItems = currentState.draftItems + ShopItem(name = itemName, quantity = itemQuantity),
+                draftItems =
+                    currentState.draftItems + CreateShoppingListItemRequest(
+                        shoppingItemName = itemName,
+                        attributes = itemQuantity,
+                    ),
                 draftItemName = "",
                 draftItemQuantity = "",
                 errorMessage = null,
@@ -90,12 +93,12 @@ class ShoppingListViewModel(
         _uiState.value = _uiState.value.copy(draftItems = currentItems)
     }
 
-    fun startEditing(shoppingList: ShoppingListResponse) {
+    fun startEditing(shoppingList: ShoppingList) {
         _uiState.value =
             _uiState.value.copy(
                 editingListId = shoppingList.id,
                 draftName = shoppingList.name,
-                draftItems = shoppingList.items,
+                draftItems = emptyList(),
                 draftItemName = "",
                 draftItemQuantity = "",
                 errorMessage = null,
@@ -145,11 +148,7 @@ class ShoppingListViewModel(
                 } else {
                     apiRepository.updateShoppingList(
                         id = editingListId,
-                        request =
-                            UpdateShoppingListRequest(
-                                name = name,
-                                items = requestItems,
-                            ),
+                        request = CreateShoppingListRequest(name = name, items = requestItems),
                     )
                 }
             }
@@ -167,7 +166,7 @@ class ShoppingListViewModel(
         }
     }
 
-    suspend fun deleteShoppingList(id: String) {
+    suspend fun deleteShoppingList(id: Int) {
         _uiState.value = _uiState.value.copy(isSaving = true, errorMessage = null)
         runCatching {
             apiRepository.deleteShoppingList(id)
