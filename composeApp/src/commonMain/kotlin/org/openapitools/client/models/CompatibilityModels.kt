@@ -1,8 +1,11 @@
 package org.openapitools.client.models
 
+import kotlinx.serialization.Serializable
+
 typealias RoutePlanResponse = RoutePlan
 typealias RoutePlanningRequest = RoutePlanning
 
+@Serializable
 data class AppUserResponse(
     val firebaseUid: String? = null,
     val displayName: String? = null,

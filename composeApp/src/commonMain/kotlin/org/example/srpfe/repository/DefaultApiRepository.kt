@@ -1,4 +1,11 @@
 package org.example.srpfe.repository
+import io.ktor.client.HttpClient
+import io.ktor.client.call.body
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.request.get
+import io.ktor.client.request.header
+import io.ktor.http.HttpHeaders
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.withContext
@@ -26,6 +33,17 @@ class DefaultApiRepository
     @OptIn(ExperimentalSerializationApi::class)
     constructor(
         private val authSession: AuthSession,
+        private val profileClient: HttpClient =
+            HttpClient {
+                install(ContentNegotiation) {
+                    json(
+                        Json {
+                            ignoreUnknownKeys = true
+                            explicitNulls = true
+                        },
+                    )
+                }
+            },
         private val api: DefaultApi =
             DefaultApi(
                 jsonSerializer =
@@ -164,12 +182,10 @@ class DefaultApiRepository
         override suspend fun getCurrentUser(): AppUserResponse =
             withContext(Dispatchers.IO) {
                 withBearerAuth {
-                    val user = authSession.currentUser.value ?: error("You need to sign in before using this feature.")
-                    AppUserResponse(
-                        firebaseUid = user.uid,
-                        displayName = user.displayName,
-                        email = user.email,
-                    )
+                    val token = authSession.requireBackendIdToken()
+                    profileClient.get("${backendBaseUrl()}/me") {
+                        header(HttpHeaders.Authorization, "Bearer $token")
+                    }.body()
                 }
             }
 

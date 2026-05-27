@@ -39,6 +39,11 @@ fun App() {
         authSession.syncFromPlatformAuth()
         FirebaseAuthSessionBridge.idTokenChanges().collect { user ->
             authSession.syncFromFirebaseUser(user)
+            if (user != null) {
+                runCatching {
+                    apiRepository.getCurrentUser()
+                }
+            }
         }
     }
 
