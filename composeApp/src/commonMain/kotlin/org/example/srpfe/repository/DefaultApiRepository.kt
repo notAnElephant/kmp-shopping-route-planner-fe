@@ -2,12 +2,14 @@ package org.example.srpfe.repository
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.statement.bodyAsText
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
+import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -33,6 +35,7 @@ import org.openapitools.client.models.Map
 import org.openapitools.client.models.MapResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
+import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.StoreResponse
@@ -125,6 +128,11 @@ class DefaultApiRepository
                 api.storeIdGet(id).body().toStore()
             }
 
+        override suspend fun getStores(): List<Store> =
+            withContext(Dispatchers.IO) {
+                api.storeGet().body().map(StoreResponse::toStore)
+            }
+
         override suspend fun deleteStore(id: Int): String =
             withContext(Dispatchers.IO) {
                 api.storeIdDelete(id).body()
@@ -133,6 +141,11 @@ class DefaultApiRepository
         override suspend fun createStore(store: Store): Store =
             withContext(Dispatchers.IO) {
                 api.storePost(store.toCreateStoreRequest()).body().toStore()
+            }
+
+        override suspend fun getSales(store: String): SalesResponse =
+            withContext(Dispatchers.IO) {
+                api.salesStoreGet(store).body()
             }
 
         override suspend fun updateTill(
@@ -193,10 +206,17 @@ class DefaultApiRepository
 
         override suspend fun getCurrentUser(): AppUserResponse =
             withContext(Dispatchers.IO) {
-                profileClient
+                val response =
+                    profileClient
                     .get("${backendBaseUrl()}/me") {
                         header(HttpHeaders.Authorization, authedHeaderValue())
-                    }.body()
+                    }
+
+                if (!response.status.isSuccess()) {
+                    error("Backend /me failed with ${response.status.value} ${response.status.description}: ${response.bodyAsText()}")
+                }
+
+                response.body()
             }
 
         override suspend fun getShoppingLists(): List<ShoppingList> =

@@ -8,6 +8,7 @@ import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
+import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.Till
@@ -40,9 +41,13 @@ interface ApiRepository {
 
     suspend fun deleteStore(id: Int): String
 
+    suspend fun getStores(): List<Store>
+
     suspend fun getStore(id: Int): Store
 
     suspend fun createStore(store: Store): Store
+
+    suspend fun getSales(store: String): SalesResponse
 
     suspend fun updateTill(
         id: String,

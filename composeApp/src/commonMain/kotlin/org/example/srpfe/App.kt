@@ -8,6 +8,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -21,6 +22,7 @@ import org.example.srpfe.screens.camera.CameraSetupScreen
 import org.example.srpfe.screens.nearby.NearbyShopsScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
 import org.example.srpfe.screens.profile.ProfileScreen
+import org.example.srpfe.screens.sales.SalesScreen
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerScreen
 import org.example.srpfe.screens.shoppinglist.ShoppingListScreen
 import org.example.srpfe.utils.isMobile
@@ -69,6 +71,7 @@ fun MainScreen() {
             if (isMobile()) {
                 composable(Screen.Nearby.route) { NearbyShopsScreen() }
             }
+            composable(Screen.Sales.route) { SalesScreen() }
             composable(Screen.MapDrawer.route) { ShopMapDrawerScreen() }
             composable(Screen.ShoppingList.route) { ShoppingListScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
@@ -85,11 +88,14 @@ fun MainScreen() {
 
 @Composable
 fun BottomNavigationBar(navController: androidx.navigation.NavController) {
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = navBackStackEntry?.destination?.route
     val items =
         buildList {
             if (isMobile()) {
                 add(Screen.Nearby)
             }
+            add(Screen.Sales)
             add(Screen.MapDrawer)
             add(Screen.ShoppingList)
             add(Screen.Profile)
@@ -100,8 +106,8 @@ fun BottomNavigationBar(navController: androidx.navigation.NavController) {
         items.forEach { screen ->
             NavigationBarItem(
                 icon = { /* Add icon here */ },
-                label = { Text(screen.route) },
-                selected = false, // You can check currentRoute if needed
+                label = { Text(screen.label) },
+                selected = currentRoute == screen.route,
                 onClick = {
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.startDestinationId) {
