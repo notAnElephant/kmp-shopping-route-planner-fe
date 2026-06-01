@@ -8,26 +8,19 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import kotlinx.coroutines.launch
-import org.example.ApiRepository
 
 @Composable
 fun PhysicalListScreen(
     viewModel: PhysicalListViewModel,
     onLaunchCamera: () -> Unit,
-    apiRepository: ApiRepository,
-    navController: NavHostController
 ) {
-    val uiState by viewModel.uiState.collectAsState() 
-    val coroutineScope = rememberCoroutineScope()
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.Center,
     ) {
-
         if (uiState.imageBitmap == null) {
             Text("No image captured yet")
         } else {
@@ -41,7 +34,7 @@ fun PhysicalListScreen(
         Spacer(modifier = Modifier.height(16.dp))
         Button(onClick = {
 //            coroutineScope.launch { viewModel.sendImageForOCR() }
-            //TODO send image for ocr?
+            // TODO send image for ocr?
         }) {
             Text("Extract Text")
         }

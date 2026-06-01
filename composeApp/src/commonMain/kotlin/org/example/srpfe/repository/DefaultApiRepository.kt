@@ -193,31 +193,35 @@ class DefaultApiRepository
 
         override suspend fun getCurrentUser(): AppUserResponse =
             withContext(Dispatchers.IO) {
-                profileClient.get("${backendBaseUrl()}/me") {
-                    header(HttpHeaders.Authorization, authedHeaderValue())
-                }.body()
+                profileClient
+                    .get("${backendBaseUrl()}/me") {
+                        header(HttpHeaders.Authorization, authedHeaderValue())
+                    }.body()
             }
 
         override suspend fun getShoppingLists(): List<ShoppingList> =
             withContext(Dispatchers.IO) {
-                profileClient.get("${backendBaseUrl()}/shopping-lists") {
-                    header(HttpHeaders.Authorization, authedHeaderValue())
-                }.body()
+                profileClient
+                    .get("${backendBaseUrl()}/shopping-lists") {
+                        header(HttpHeaders.Authorization, authedHeaderValue())
+                    }.body()
             }
 
         override suspend fun getShoppingList(id: Int): ShoppingList =
             withContext(Dispatchers.IO) {
-                profileClient.get("${backendBaseUrl()}/shopping-lists/$id") {
-                    header(HttpHeaders.Authorization, authedHeaderValue())
-                }.body()
+                profileClient
+                    .get("${backendBaseUrl()}/shopping-lists/$id") {
+                        header(HttpHeaders.Authorization, authedHeaderValue())
+                    }.body()
             }
 
         override suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingList =
             withContext(Dispatchers.IO) {
-                profileClient.post("${backendBaseUrl()}/shopping-lists") {
-                    header(HttpHeaders.Authorization, authedHeaderValue())
-                    setBody(request)
-                }.body()
+                profileClient
+                    .post("${backendBaseUrl()}/shopping-lists") {
+                        header(HttpHeaders.Authorization, authedHeaderValue())
+                        setBody(request)
+                    }.body()
             }
 
         override suspend fun updateShoppingList(

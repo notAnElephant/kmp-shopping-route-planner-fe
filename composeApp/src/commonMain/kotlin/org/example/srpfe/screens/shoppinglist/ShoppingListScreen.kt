@@ -21,25 +21,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
-import org.example.ApiRepository
 import org.example.srpfe.auth.AuthSession
 import org.example.srpfe.auth.AuthSource
+import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.ShoppingList
 
 @Composable
-fun ShoppingListScreen(
-    apiRepository: ApiRepository,
-    navController: NavHostController,
-    authSession: AuthSession,
-) {
-    val viewModel = remember(apiRepository) { ShoppingListViewModel(apiRepository) }
+fun ShoppingListScreen() {
+    val viewModel = koinViewModel<ShoppingListViewModel>()
+    val authSession = koinInject<AuthSession>()
     val uiState by viewModel.uiState.collectAsState()
     val authenticatedUser by authSession.currentUser.collectAsState()
     val coroutineScope = androidx.compose.runtime.rememberCoroutineScope()

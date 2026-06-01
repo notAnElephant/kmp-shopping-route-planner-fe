@@ -21,23 +21,20 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.mmk.kmpauth.uihelper.google.GoogleSignInButton
 import kotlinx.coroutines.launch
-import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
 import org.example.srpfe.auth.AuthSession
 import org.example.srpfe.auth.AuthSource
 import org.example.srpfe.auth.AuthenticatedUser
 import org.example.srpfe.auth.PlatformGoogleSignInButton
 import org.example.srpfe.utils.isMobile
+import org.koin.compose.koinInject
 
 @Composable
-fun ProfileScreen(
-    apiRepository: ApiRepository,
-    navController: NavHostController,
-    authSession: AuthSession,
-) {
+fun ProfileScreen() {
+    val apiRepository = koinInject<org.example.ApiRepository>()
+    val authSession = koinInject<AuthSession>()
     val coroutineScope = rememberCoroutineScope()
     val authenticatedUser by authSession.currentUser.collectAsState()
     var statusMessage by androidx.compose.runtime.remember { mutableStateOf("Not signed in") }

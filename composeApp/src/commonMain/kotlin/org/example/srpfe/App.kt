@@ -8,18 +8,15 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
-import org.example.ApiRepository
 import org.example.srpfe.auth.AuthConfig
 import org.example.srpfe.auth.AuthSession
 import org.example.srpfe.auth.FirebaseAuthSessionBridge
 import org.example.srpfe.navigation.Screen
-import org.example.srpfe.repository.DefaultApiRepository
 import org.example.srpfe.screens.camera.CameraSetupScreen
 import org.example.srpfe.screens.nearby.NearbyShopsScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
@@ -27,13 +24,12 @@ import org.example.srpfe.screens.profile.ProfileScreen
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerScreen
 import org.example.srpfe.screens.shoppinglist.ShoppingListScreen
 import org.example.srpfe.utils.isMobile
-import org.jetbrains.compose.ui.tooling.preview.Preview
+import org.koin.compose.koinInject
 
 @Composable
-@Preview
 fun App() {
-    val authSession = remember { AuthSession() }
-    val apiRepository = remember(authSession) { DefaultApiRepository(authSession) }
+    val authSession = koinInject<AuthSession>()
+    val apiRepository = koinInject<org.example.ApiRepository>()
 
     LaunchedEffect(authSession) {
         authSession.syncFromPlatformAuth()
@@ -54,15 +50,12 @@ fun App() {
             )
         }
 
-        MainScreen(apiRepository, authSession)
+        MainScreen()
     }
 }
 
 @Composable
-fun MainScreen(
-    apiRepository: ApiRepository,
-    authSession: AuthSession,
-) {
+fun MainScreen() {
     val navController = rememberNavController()
 
     Scaffold(
@@ -74,16 +67,16 @@ fun MainScreen(
             modifier = Modifier.padding(paddingValues),
         ) {
             if (isMobile()) {
-                composable(Screen.Nearby.route) { NearbyShopsScreen(apiRepository, navController) }
+                composable(Screen.Nearby.route) { NearbyShopsScreen() }
             }
-            composable(Screen.MapDrawer.route) { ShopMapDrawerScreen(apiRepository, navController) }
-            composable(Screen.ShoppingList.route) { ShoppingListScreen(apiRepository, navController, authSession) }
-            composable(Screen.Profile.route) { ProfileScreen(apiRepository, navController, authSession) }
+            composable(Screen.MapDrawer.route) { ShopMapDrawerScreen() }
+            composable(Screen.ShoppingList.route) { ShoppingListScreen() }
+            composable(Screen.Profile.route) { ProfileScreen() }
             composable(Screen.PhysicalList.route) {
                 if (isMobile()) {
-                    CameraSetupScreen(apiRepository, navController)
+                    CameraSetupScreen()
                 } else {
-                    PlatformPhysicalListScreen(apiRepository, navController)
+                    PlatformPhysicalListScreen()
                 }
             }
         }
@@ -91,7 +84,7 @@ fun MainScreen(
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: androidx.navigation.NavController) {
     val items =
         buildList {
             if (isMobile()) {

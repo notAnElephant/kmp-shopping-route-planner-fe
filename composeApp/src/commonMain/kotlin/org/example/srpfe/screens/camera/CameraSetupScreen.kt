@@ -18,7 +18,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import com.kashif.cameraK.compose.CameraKScreen
 import com.kashif.cameraK.compose.rememberCameraKState
 import com.kashif.cameraK.controller.CameraController
@@ -35,19 +34,15 @@ import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.launch
-import org.example.ApiRepository
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CameraSetupScreen(
-    apiRepository: ApiRepository,
-    navController: NavController? = null,
-) {
+fun CameraSetupScreen() {
     // Initialize and check permissions
     val permissions = providePermissions()
     val cameraPermissionState = remember { mutableStateOf(permissions.hasCameraPermission()) }
 
-    // Create ViewModel with the provided ApiRepository
-    val viewModel = remember { CameraViewModel(apiRepository) }
+    val viewModel = koinViewModel<CameraViewModel>()
 
     // Request permissions if needed
     if (!cameraPermissionState.value) {

@@ -12,36 +12,31 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.compressImage
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.openFilePicker
 import io.github.vinceglb.filekit.readBytes
 import kotlinx.coroutines.launch
-import org.example.ApiRepository
-import org.example.srpfe.screens.camera.CameraViewModel
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-actual fun PlatformPhysicalListScreen(
-    apiRepository: ApiRepository,
-    navController: NavHostController
-) {
-    val viewModel = remember { CameraViewModel(apiRepository) }
+actual fun PlatformPhysicalListScreen() {
+    val viewModel = koinViewModel<org.example.srpfe.screens.camera.CameraViewModel>()
     val scope = rememberCoroutineScope()
     val isLoading by viewModel.isLoading.collectAsState()
     val ocrResult by viewModel.ocrResult.collectAsState()
     val error by viewModel.error.collectAsState()
 
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
     ) {

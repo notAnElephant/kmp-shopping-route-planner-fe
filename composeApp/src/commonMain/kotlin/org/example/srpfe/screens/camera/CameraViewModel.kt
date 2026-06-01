@@ -1,5 +1,6 @@
 package org.example.srpfe.screens.camera
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -11,7 +12,7 @@ import org.openapitools.client.models.CreateShoppingListItemRequest
 
 class CameraViewModel(
     private val apiRepository: ApiRepository,
-) {
+) : ViewModel() {
     private val _ocrResult = MutableStateFlow<List<CreateShoppingListItemRequest>>(emptyList())
     val ocrResult: StateFlow<List<CreateShoppingListItemRequest>> = _ocrResult.asStateFlow()
 

@@ -1,5 +1,5 @@
-import org.jlleitschuh.gradle.ktlint.KtlintExtension
 import org.gradle.api.artifacts.VersionCatalogsExtension
+import org.jlleitschuh.gradle.ktlint.KtlintExtension
 
 plugins {
     alias(libs.plugins.ktlint)

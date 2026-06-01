@@ -32,11 +32,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
 import compose.icons.FeatherIcons
 import compose.icons.feathericons.Camera
 import compose.icons.feathericons.Navigation
-import org.example.ApiRepository
 import kotlin.math.PI
 import kotlin.math.asin
 import kotlin.math.cos
@@ -52,10 +50,7 @@ private data class NearbyShop(
 )
 
 @Composable
-fun NearbyShopsScreen(
-    apiRepository: ApiRepository,
-    navController: NavHostController,
-) {
+fun NearbyShopsScreen() {
     val uriHandler = LocalUriHandler.current
     val gpsLocation = rememberPlatformLocation()
     val fallbackLocation = GeoPoint(latitude = 47.4979, longitude = 19.0402)

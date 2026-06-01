@@ -38,7 +38,10 @@ class AuthSession {
                     syncFromFirebaseUser(FirebaseAuthSessionBridge.currentUser())
                     _currentUser.value
                 }
-                else -> _currentUser.value
+
+                else -> {
+                    _currentUser.value
+                }
             }
 
         val user = refreshedUser ?: error("You need to sign in before using this feature.")

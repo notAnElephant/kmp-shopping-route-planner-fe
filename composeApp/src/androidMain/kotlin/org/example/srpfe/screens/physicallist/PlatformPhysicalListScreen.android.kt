@@ -4,25 +4,22 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.navigation.NavHostController
-import org.example.ApiRepository
+import org.koin.compose.koinInject
 
 @Composable
-actual fun PlatformPhysicalListScreen(
-    apiRepository: ApiRepository,
-    navController: NavHostController
-) {
-    val viewModel by remember { mutableStateOf(PhysicalListViewModel(apiRepository)) }
+actual fun PlatformPhysicalListScreen() {
+    val viewModel = koinInject<PhysicalListViewModel>()
     val context = LocalContext.current
     val photoUri = remember { mutableStateOf<Uri?>(null) }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
-        if (success) {
-            photoUri.value?.let { uri ->
-                viewModel.onPhotoCaptured(uri, context)
+    val launcher =
+        rememberLauncherForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success) {
+                photoUri.value?.let { uri ->
+                    viewModel.onPhotoCaptured(uri, context)
+                }
             }
         }
-    }
 
     PhysicalListScreen(
         viewModel = viewModel,
@@ -31,7 +28,5 @@ actual fun PlatformPhysicalListScreen(
             photoUri.value = uri
             launcher.launch(uri)
         },
-        apiRepository = apiRepository,
-        navController = navController
     )
 }

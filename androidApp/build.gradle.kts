@@ -7,12 +7,21 @@ plugins {
 
 android {
     namespace = "org.example.srpfe"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
+    compileSdk =
+        libs.versions.android.compileSdk
+            .get()
+            .toInt()
 
     defaultConfig {
         applicationId = "org.example.srpfe"
-        minSdk = libs.versions.android.minSdk.get().toInt()
-        targetSdk = libs.versions.android.targetSdk.get().toInt()
+        minSdk =
+            libs.versions.android.minSdk
+                .get()
+                .toInt()
+        targetSdk =
+            libs.versions.android.targetSdk
+                .get()
+                .toInt()
         versionCode = 1
         versionName = "1.0"
     }
@@ -47,7 +56,8 @@ android {
 dependencies {
     implementation(project(":composeApp"))
     implementation(platform(libs.firebase.android.bom))
-    implementation("com.google.firebase:firebase-common")
+    implementation(libs.google.firebase.common)
     implementation(libs.androidx.activity.compose)
-    debugImplementation(compose.uiTooling)
+    implementation(libs.koin.android)
+    debugImplementation(libs.ui.tooling)
 }

@@ -1,5 +1,6 @@
 package org.example.srpfe.screens.shoppinglist
 
+import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,7 +23,7 @@ data class ShoppingListUiState(
 
 class ShoppingListViewModel(
     private val apiRepository: ApiRepository,
-) {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ShoppingListUiState())
     val uiState: StateFlow<ShoppingListUiState> = _uiState.asStateFlow()
 
@@ -73,10 +74,11 @@ class ShoppingListViewModel(
         _uiState.value =
             currentState.copy(
                 draftItems =
-                    currentState.draftItems + CreateShoppingListItemRequest(
-                        shoppingItemName = itemName,
-                        attributes = itemQuantity,
-                    ),
+                    currentState.draftItems +
+                        CreateShoppingListItemRequest(
+                            shoppingItemName = itemName,
+                            attributes = itemQuantity,
+                        ),
                 draftItemName = "",
                 draftItemQuantity = "",
                 errorMessage = null,
@@ -153,17 +155,18 @@ class ShoppingListViewModel(
                 }
             }
 
-        saveResult.onSuccess {
-            cancelEditing()
-            _uiState.value = _uiState.value.copy(isSaving = false)
-            loadShoppingLists()
-        }.onFailure { error ->
-            _uiState.value =
-                _uiState.value.copy(
-                    isSaving = false,
-                    errorMessage = error.message ?: "Could not save shopping list.",
-                )
-        }
+        saveResult
+            .onSuccess {
+                cancelEditing()
+                _uiState.value = _uiState.value.copy(isSaving = false)
+                loadShoppingLists()
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        isSaving = false,
+                        errorMessage = error.message ?: "Could not save shopping list.",
+                    )
+            }
     }
 
     suspend fun deleteShoppingList(id: Int) {
