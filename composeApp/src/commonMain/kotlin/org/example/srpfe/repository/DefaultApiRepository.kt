@@ -1,14 +1,17 @@
 package org.example.srpfe.repository
+
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.statement.bodyAsText
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
+import io.ktor.http.appendPathSegments
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.Dispatchers
@@ -47,6 +50,7 @@ import org.openapitools.client.models.UpdateTillRequest
 import org.openapitools.client.models.UpdateWallBlockRequest
 import org.openapitools.client.models.WallBlock
 import org.openapitools.client.models.WallBlockResponse
+import org.openapitools.client.infrastructure.HttpResponse as OpenApiHttpResponse
 
 class DefaultApiRepository
     @OptIn(ExperimentalSerializationApi::class)
@@ -79,12 +83,17 @@ class DefaultApiRepository
 
         override suspend fun getDepartmentsByMap(mapId: Int): List<Department> =
             withContext(Dispatchers.IO) {
-                api.departmentsMapIdGet(mapId).body().map(DepartmentResponse::toDepartment)
+                api
+                    .departmentsMapIdGet(mapId)
+                    .requireSuccessBody(this@DefaultApiRepository::getDepartmentsByMap.name)
+                    .map(DepartmentResponse::toDepartment)
             }
 
         override suspend fun deleteDepartment(departmentId: Int): String =
             withContext(Dispatchers.IO) {
-                api.departmentsIdDelete(departmentId).body()
+                api
+                    .departmentsIdDelete(departmentId)
+                    .requireSuccessBody(this@DefaultApiRepository::deleteDepartment.name)
             }
 
         override suspend fun updateDepartment(
@@ -92,17 +101,28 @@ class DefaultApiRepository
             department: Department,
         ): Department =
             withContext(Dispatchers.IO) {
-                api.departmentsPut(department.toUpdateDepartmentRequest(id)).body().toDepartment()
+                api
+                    .departmentsPut(
+                        department.toUpdateDepartmentRequest(id),
+                    ).requireSuccessBody<DepartmentResponse>(this@DefaultApiRepository::updateDepartment.name)
+                    .toDepartment()
             }
 
         override suspend fun createDepartment(department: Department): Department =
             withContext(Dispatchers.IO) {
-                api.departmentsPost(department.toCreateDepartmentRequest()).body().toDepartment()
+                api
+                    .departmentsPost(
+                        department.toCreateDepartmentRequest(),
+                    ).requireSuccessBody<DepartmentResponse>(this@DefaultApiRepository::createDepartment.name)
+                    .toDepartment()
             }
 
         override suspend fun getMap(id: Int): Map =
             withContext(Dispatchers.IO) {
-                api.mapsIdGet(id).body().toMap()
+                api
+                    .mapsIdGet(id)
+                    .requireSuccessBody<MapResponse>(this@DefaultApiRepository::getMap.name)
+                    .toMap()
             }
 
         override suspend fun updateMap(
@@ -110,42 +130,64 @@ class DefaultApiRepository
             map: Map,
         ): Map =
             withContext(Dispatchers.IO) {
-                api.mapsPut(map.toUpdateMapRequest(id)).body().toMap()
+                api
+                    .mapsPut(map.toUpdateMapRequest(id))
+                    .requireSuccessBody<MapResponse>(this@DefaultApiRepository::updateMap.name)
+                    .toMap()
             }
 
         override suspend fun deleteMap(id: Int): String =
             withContext(Dispatchers.IO) {
-                api.mapsIdDelete(id).body()
+                api.mapsIdDelete(id).requireSuccessBody(this@DefaultApiRepository::deleteMap.name)
             }
 
         override suspend fun createMap(map: Map): Map =
             withContext(Dispatchers.IO) {
-                api.mapsPost(map.toCreateMapRequest()).body().toMap()
+                api
+                    .mapsPost(map.toCreateMapRequest())
+                    .requireSuccessBody<MapResponse>(this@DefaultApiRepository::createMap.name)
+                    .toMap()
             }
 
         override suspend fun getStore(id: Int): Store =
             withContext(Dispatchers.IO) {
-                api.storeIdGet(id).body().toStore()
+                api
+                    .storeIdGet(id)
+                    .requireSuccessBody<StoreResponse>(this@DefaultApiRepository::getStore.name)
+                    .toStore()
             }
 
         override suspend fun getStores(): List<Store> =
             withContext(Dispatchers.IO) {
-                api.storeGet().body().map(StoreResponse::toStore)
+                api
+                    .storeGet()
+                    .requireSuccessBody<List<StoreResponse>>(this@DefaultApiRepository::getStores.name)
+                    .map(StoreResponse::toStore)
             }
 
         override suspend fun deleteStore(id: Int): String =
             withContext(Dispatchers.IO) {
-                api.storeIdDelete(id).body()
+                api.storeIdDelete(id).requireSuccessBody(this@DefaultApiRepository::deleteStore.name)
             }
 
         override suspend fun createStore(store: Store): Store =
             withContext(Dispatchers.IO) {
-                api.storePost(store.toCreateStoreRequest()).body().toStore()
+                api
+                    .storePost(store.toCreateStoreRequest())
+                    .requireSuccessBody<StoreResponse>(this@DefaultApiRepository::createStore.name)
+                    .toStore()
             }
 
         override suspend fun getSales(store: String): SalesResponse =
             withContext(Dispatchers.IO) {
-                api.salesStoreGet(store).body()
+                val response =
+                    profileClient.get(backendBaseUrl()) {
+                        url {
+                            appendPathSegments("sales", store)
+                        }
+                    }
+
+                response.requireSuccessBody(this@DefaultApiRepository::getSales.name)
             }
 
         override suspend fun updateTill(
@@ -153,22 +195,31 @@ class DefaultApiRepository
             till: Till,
         ): Till =
             withContext(Dispatchers.IO) {
-                api.tillsPut(till.toUpdateTillRequest(id)).body().toTill()
+                api
+                    .tillsPut(till.toUpdateTillRequest(id))
+                    .requireSuccessBody<TillResponse>(this@DefaultApiRepository::updateTill.name)
+                    .toTill()
             }
 
         override suspend fun createTill(till: Till): Till =
             withContext(Dispatchers.IO) {
-                api.tillsPost(till.toCreateTillRequest()).body().toTill()
+                api
+                    .tillsPost(till.toCreateTillRequest())
+                    .requireSuccessBody<TillResponse>(this@DefaultApiRepository::createTill.name)
+                    .toTill()
             }
 
         override suspend fun deleteTill(tillId: Int): String =
             withContext(Dispatchers.IO) {
-                api.tillsIdDelete(tillId).body()
+                api.tillsIdDelete(tillId).requireSuccessBody(this@DefaultApiRepository::deleteTill.name)
             }
 
         override suspend fun getTills(tillId: Int): List<Till> =
             withContext(Dispatchers.IO) {
-                api.tillsMapIdGet(tillId).body().map(TillResponse::toTill)
+                api
+                    .tillsMapIdGet(tillId)
+                    .requireSuccessBody<List<TillResponse>>(this@DefaultApiRepository::getTills.name)
+                    .map(TillResponse::toTill)
             }
 
         override suspend fun updateWallBlock(
@@ -176,47 +227,61 @@ class DefaultApiRepository
             wallBlock: WallBlock,
         ): WallBlock =
             withContext(Dispatchers.IO) {
-                api.wallBlocksPut(wallBlock.toUpdateWallBlockRequest(id)).body().toWallBlock()
+                api
+                    .wallBlocksPut(
+                        wallBlock.toUpdateWallBlockRequest(id),
+                    ).requireSuccessBody<WallBlockResponse>(this@DefaultApiRepository::updateWallBlock.name)
+                    .toWallBlock()
             }
 
         override suspend fun getWallBlocksByMap(mapId: Int): List<WallBlock> =
             withContext(Dispatchers.IO) {
-                api.wallBlocksMapIdGet(mapId).body().map(WallBlockResponse::toWallBlock)
+                api
+                    .wallBlocksMapIdGet(
+                        mapId,
+                    ).requireSuccessBody<List<WallBlockResponse>>(this@DefaultApiRepository::getWallBlocksByMap.name)
+                    .map(WallBlockResponse::toWallBlock)
             }
 
         override suspend fun createWallBlock(wallBlock: WallBlock): WallBlock =
             withContext(Dispatchers.IO) {
-                api.wallBlocksPost(wallBlock.toCreateWallBlockRequest()).body().toWallBlock()
+                api
+                    .wallBlocksPost(
+                        wallBlock.toCreateWallBlockRequest(),
+                    ).requireSuccessBody<WallBlockResponse>(this@DefaultApiRepository::createWallBlock.name)
+                    .toWallBlock()
             }
 
         override suspend fun deleteWallBlock(wallBlockId: Int): String =
             withContext(Dispatchers.IO) {
-                api.wallBlocksIdDelete(wallBlockId).body()
+                api
+                    .wallBlocksIdDelete(wallBlockId)
+                    .requireSuccessBody(this@DefaultApiRepository::deleteWallBlock.name)
             }
 
         override suspend fun googleOcr(image: List<Base64ByteArray>): List<CreateShoppingListItemRequest> =
             withContext(Dispatchers.IO) {
-                api.ocrShoppingListPost(image).body()
+                api
+                    .ocrShoppingListPost(image)
+                    .requireSuccessBody(this@DefaultApiRepository::googleOcr.name)
             }
 
         override suspend fun calculateRoute(routePlanning: RoutePlanningRequest): RoutePlanResponse =
             withContext(Dispatchers.IO) {
-                api.calculateRoutePost(routePlanning).body()
+                api
+                    .calculateRoutePost(routePlanning)
+                    .requireSuccessBody(this@DefaultApiRepository::calculateRoute.name)
             }
 
         override suspend fun getCurrentUser(): AppUserResponse =
             withContext(Dispatchers.IO) {
                 val response =
                     profileClient
-                    .get("${backendBaseUrl()}/me") {
-                        header(HttpHeaders.Authorization, authedHeaderValue())
-                    }
+                        .get("${backendBaseUrl()}/me") {
+                            header(HttpHeaders.Authorization, authedHeaderValue())
+                        }
 
-                if (!response.status.isSuccess()) {
-                    error("Backend /me failed with ${response.status.value} ${response.status.description}: ${response.bodyAsText()}")
-                }
-
-                response.body()
+                response.requireSuccessBody(this@DefaultApiRepository::getCurrentUser.name)
             }
 
         override suspend fun getShoppingLists(): List<ShoppingList> =
@@ -224,7 +289,7 @@ class DefaultApiRepository
                 profileClient
                     .get("${backendBaseUrl()}/shopping-lists") {
                         header(HttpHeaders.Authorization, authedHeaderValue())
-                    }.body()
+                    }.requireSuccessBody(this@DefaultApiRepository::getShoppingLists.name)
             }
 
         override suspend fun getShoppingList(id: Int): ShoppingList =
@@ -232,7 +297,7 @@ class DefaultApiRepository
                 profileClient
                     .get("${backendBaseUrl()}/shopping-lists/$id") {
                         header(HttpHeaders.Authorization, authedHeaderValue())
-                    }.body()
+                    }.requireSuccessBody(this@DefaultApiRepository::getShoppingList.name)
             }
 
         override suspend fun createShoppingList(request: CreateShoppingListRequest): ShoppingList =
@@ -241,7 +306,7 @@ class DefaultApiRepository
                     .post("${backendBaseUrl()}/shopping-lists") {
                         header(HttpHeaders.Authorization, authedHeaderValue())
                         setBody(request)
-                    }.body()
+                    }.requireSuccessBody(this@DefaultApiRepository::createShoppingList.name)
             }
 
         override suspend fun updateShoppingList(
@@ -255,12 +320,36 @@ class DefaultApiRepository
 
         override suspend fun deleteShoppingList(id: Int) {
             withContext(Dispatchers.IO) {
-                profileClient.delete("${backendBaseUrl()}/shopping-lists/$id") {
-                    header(HttpHeaders.Authorization, authedHeaderValue())
-                }
+                profileClient
+                    .delete("${backendBaseUrl()}/shopping-lists/$id") {
+                        header(HttpHeaders.Authorization, authedHeaderValue())
+                    }.requireSuccess(this@DefaultApiRepository::deleteShoppingList.name)
             }
         }
     }
+
+private suspend fun HttpResponse.requireSuccess(endpoint: String): HttpResponse {
+    if (status.isSuccess()) {
+        return this
+    }
+
+    val backendMessage = bodyAsText().ifBlank { "No response body" }
+    error("$endpoint failed with ${status.value} ${status.description}: $backendMessage")
+}
+
+private suspend inline fun <reified T> HttpResponse.requireSuccessBody(endpoint: String): T = requireSuccess(endpoint).body()
+
+private suspend fun <T : Any> OpenApiHttpResponse<T>.requireSuccess(endpoint: String): OpenApiHttpResponse<T> {
+    if (success) {
+        return this
+    }
+
+    val backendMessage = response.bodyAsText().ifBlank { "No response body" }
+    error("$endpoint failed with ${response.status.value} ${response.status.description}: $backendMessage")
+}
+
+private suspend inline fun <reified T : Any> OpenApiHttpResponse<T>.requireSuccessBody(endpoint: String): T =
+    requireSuccess(endpoint).body()
 
 private fun DepartmentResponse.toDepartment() =
     Department(
