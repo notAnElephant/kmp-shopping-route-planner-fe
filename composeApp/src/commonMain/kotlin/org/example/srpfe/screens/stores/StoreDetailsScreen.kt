@@ -66,6 +66,31 @@ fun StoreDetailsScreen(
 
             if (uiState.isLoading && uiState.store == null) {
                 CircularProgressIndicator()
+            } else if (uiState.store == null && uiState.hasAttemptedInitialLoad) {
+                if (uiState.errorMessage != null) {
+                    Text(
+                        text = uiState.errorMessage.orEmpty(),
+                        color = MaterialTheme.colorScheme.error,
+                    )
+                }
+
+                Button(
+                    onClick = {
+                        coroutineScope.launch {
+                            viewModel.loadStore()
+                        }
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Retry")
+                }
+
+                OutlinedButton(
+                    onClick = onBack,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text("Back")
+                }
             } else {
                 OutlinedTextField(
                     value = uiState.draftName,
@@ -116,7 +141,7 @@ fun StoreDetailsScreen(
 
                 Button(
                     onClick = onOpenMapEditor,
-                    enabled = !uiState.isDeleting,
+                    enabled = uiState.store != null && !uiState.isDeleting,
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     Text("Open map editor")

@@ -27,6 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.openapitools.client.models.Store
@@ -40,10 +43,26 @@ fun StoresScreen(
         val viewModel = koinViewModel<StoresViewModel>()
         val uiState by viewModel.uiState.collectAsState()
         val coroutineScope = rememberCoroutineScope()
+        val lifecycleOwner = LocalLifecycleOwner.current
         var storePendingDelete by remember { mutableStateOf<Store?>(null) }
 
         LaunchedEffect(Unit) {
             viewModel.loadStores()
+        }
+
+        androidx.compose.runtime.DisposableEffect(lifecycleOwner, viewModel) {
+            val observer =
+                LifecycleEventObserver { _, event ->
+                    if (event == Lifecycle.Event.ON_RESUME) {
+                        coroutineScope.launch {
+                            viewModel.loadStores()
+                        }
+                    }
+                }
+            lifecycleOwner.lifecycle.addObserver(observer)
+            onDispose {
+                lifecycleOwner.lifecycle.removeObserver(observer)
+            }
         }
 
         Column(

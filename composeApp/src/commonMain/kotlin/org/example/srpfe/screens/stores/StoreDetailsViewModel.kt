@@ -13,6 +13,7 @@ data class StoreDetailsUiState(
     val draftName: String = "",
     val draftLocation: String = "",
     val placeDetails: PlaceDetailsResponse? = null,
+    val hasAttemptedInitialLoad: Boolean = false,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,
     val isLoadingPlaceDetails: Boolean = false,
@@ -37,11 +38,14 @@ class StoreDetailsViewModel(
                     store = store,
                     draftName = store.name,
                     draftLocation = store.location.orEmpty(),
+                    hasAttemptedInitialLoad = true,
                     isLoading = false,
                 )
         }.onFailure { error ->
             _uiState.value =
                 _uiState.value.copy(
+                    store = null,
+                    hasAttemptedInitialLoad = true,
                     isLoading = false,
                     errorMessage = error.message ?: "Could not load store.",
                 )
@@ -102,6 +106,10 @@ class StoreDetailsViewModel(
     }
 
     suspend fun loadPlaceDetails() {
+        if (_uiState.value.store == null) {
+            _uiState.value = _uiState.value.copy(errorMessage = "Load the store before requesting place details.")
+            return
+        }
         _uiState.value = _uiState.value.copy(isLoadingPlaceDetails = true, errorMessage = null)
         runCatching {
             apiRepository.getStorePlaceDetails(storeId)
@@ -121,6 +129,10 @@ class StoreDetailsViewModel(
     }
 
     suspend fun deleteStore(): Boolean {
+        if (_uiState.value.store == null) {
+            _uiState.value = _uiState.value.copy(errorMessage = "Load the store before deleting it.")
+            return false
+        }
         _uiState.value = _uiState.value.copy(isDeleting = true, errorMessage = null)
         return runCatching {
             apiRepository.deleteStore(storeId)
