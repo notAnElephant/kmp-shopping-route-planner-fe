@@ -11,10 +11,13 @@ import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.CreateShoppingListRequest
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
+import org.openapitools.client.models.PlaceDetailsResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
+import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
+import org.openapitools.client.models.StoreDetailsResponse
 import org.openapitools.client.models.Till
 import org.openapitools.client.models.WallBlock
 import kotlin.test.Test
@@ -74,6 +77,19 @@ private class FailingShoppingListRepository : ApiRepository {
     override suspend fun getStore(id: Int): Store = notImplemented()
 
     override suspend fun createStore(store: Store): Store = notImplemented()
+
+    override suspend fun updateStore(
+        id: Int,
+        store: Store,
+    ): Store = notImplemented()
+
+    override suspend fun getStorePlaceDetails(id: Int): PlaceDetailsResponse = notImplemented()
+
+    override suspend fun getStoreComponentDetails(id: Int): StoreDetailsResponse = notImplemented()
+
+    override suspend fun getStores(): List<Store> = notImplemented()
+
+    override suspend fun getSales(store: String): SalesResponse = notImplemented()
 
     override suspend fun updateTill(
         id: String,

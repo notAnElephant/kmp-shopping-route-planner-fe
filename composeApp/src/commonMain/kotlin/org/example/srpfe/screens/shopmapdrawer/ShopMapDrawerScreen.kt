@@ -19,11 +19,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -59,6 +61,7 @@ import compose.icons.feathericons.Plus
 import org.example.srpfe.model.DepartmentType
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerViewModel.Companion.log
 import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
 
 data class Rectangle(
@@ -78,10 +81,19 @@ enum class FunctionType(
 }
 
 @Composable
-fun ShopMapDrawerScreen() {
-    val viewModel = koinViewModel<ShopMapDrawerViewModel>()
+fun ShopMapDrawerScreen(
+    storeId: Int,
+    onBack: () -> Unit,
+) {
+    val viewModel =
+        koinViewModel<ShopMapDrawerViewModel>(
+            parameters = { parametersOf(storeId) },
+        )
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
+        modifier =
+            Modifier
+                .fillMaxSize()
+                .padding(16.dp),
     ) {
         val uiState by viewModel.uiState.collectAsState()
 
@@ -92,32 +104,75 @@ fun ShopMapDrawerScreen() {
                 modifier = Modifier.fillMaxSize(),
                 verticalArrangement = Arrangement.SpaceBetween,
             ) {
-                Column(
-                    modifier = Modifier.weight(1f), // Canvas and controls take remaining space
+                OutlinedButton(
+                    onClick = onBack,
+                    modifier = Modifier.fillMaxWidth(),
                 ) {
-                    FunctionSelector(
-                        selectedFunctionType = selectedFunction,
-                        onFunctionSelected = { selectedFunction = it },
-                    )
-                    DepartmentControls(
-                        selectedDepartmentType = selectedDepartmentType,
-                        onDepartmentTypeSelected = { selectedDepartmentType = it },
-                    )
-                    ShopMapCanvas(
-                        selectedFunctionType = selectedFunction,
-                        viewModel = viewModel,
-                        uiState = uiState,
-                        selectedDepartmentType = selectedDepartmentType,
-                    )
+                    Text("Back")
                 }
-                Button(
-                    onClick = { viewModel.calculateRoute(uiState.concreteDepartments) },
-                    modifier =
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                ) {
-                    Text("Calculate Route")
+
+                when {
+                    uiState.isLoading -> {
+                        Box(
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            CircularProgressIndicator()
+                        }
+                    }
+
+                    uiState.map == null -> {
+                        Box(
+                            modifier = Modifier.weight(1f).fillMaxWidth(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp),
+                            ) {
+                                Text(
+                                    text = "No map exists for ${uiState.store?.name ?: "this store"} yet.",
+                                    style = MaterialTheme.typography.bodyLarge,
+                                )
+                                Button(
+                                    onClick = viewModel::createMapForStore,
+                                    enabled = !uiState.isCreatingMap,
+                                ) {
+                                    Text(if (uiState.isCreatingMap) "Creating map..." else "Create map")
+                                }
+                            }
+                        }
+                    }
+
+                    else -> {
+                        Column(
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            FunctionSelector(
+                                selectedFunctionType = selectedFunction,
+                                onFunctionSelected = { selectedFunction = it },
+                            )
+                            DepartmentControls(
+                                selectedDepartmentType = selectedDepartmentType,
+                                onDepartmentTypeSelected = { selectedDepartmentType = it },
+                            )
+                            ShopMapCanvas(
+                                selectedFunctionType = selectedFunction,
+                                viewModel = viewModel,
+                                uiState = uiState,
+                                selectedDepartmentType = selectedDepartmentType,
+                            )
+                        }
+                        Button(
+                            onClick = { viewModel.calculateRoute(uiState.concreteDepartments) },
+                            modifier =
+                                Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 16.dp),
+                        ) {
+                            Text("Calculate Route")
+                        }
+                    }
                 }
             }
             ErrorSnackbar(
@@ -349,14 +404,11 @@ fun ShopMapCanvas(
     selectedDepartmentType: DepartmentType? = null,
 ) {
     val scale by remember { mutableStateOf(1f) }
-    val rectangles = remember { mutableStateListOf<Rectangle>() }
-
     var startPoint: Offset? by remember { mutableStateOf(null) }
     var currentPoint: Offset? by remember { mutableStateOf(null) }
 
     val textMeasurer = rememberTextMeasurer()
 
-    // Canvas for drawing
     Canvas(
         modifier =
             Modifier
@@ -366,10 +418,8 @@ fun ShopMapCanvas(
                 .pointerInput(selectedDepartmentType, selectedFunctionType) {
                     detectTapGestures(onPress = { offset ->
                         if (startPoint == null) {
-                            // First click: Set top-left corner
                             startPoint = offset
                         } else {
-                            // Second click: Set bottom-right corner
                             currentPoint = offset
                             if (startPoint != null && currentPoint != null) {
                                 val size1 =
@@ -381,11 +431,8 @@ fun ShopMapCanvas(
 
                                 when (selectedFunctionType) {
                                     FunctionType.WALL -> {
-                                        val color = Color.Black
-                                        rectangles.add(Rectangle(startPoint!!, size1, color, ""))
                                         log.i { "Drawing wall: $startPoint, $currentPoint" }
 
-                                        // newSize, newX, newY)
                                         val backendCoordinates: Triple<Size, Int, Int> =
                                             viewModel.convertToBackendCoordinates(
                                                 canvasSize,
@@ -394,7 +441,6 @@ fun ShopMapCanvas(
                                                 startPoint!!.y + size1.height,
                                             )
 
-                                        // TODO a wallblockokról nem tároljuk el a színt külön, de valszeg minek is
                                         viewModel.createWallBlock(
                                             width = backendCoordinates.first.width.toInt(),
                                             height = backendCoordinates.first.height.toInt(),
@@ -404,11 +450,9 @@ fun ShopMapCanvas(
                                     }
 
                                     FunctionType.DEPARTMENT -> {
-                                        val color = selectedDepartmentType?.color ?: Color.White
-                                        rectangles.add(Rectangle(startPoint!!, size1, color, selectedDepartmentType?.name ?: ""))
+                                        val departmentType = selectedDepartmentType ?: return@detectTapGestures
                                         log.i { "Drawing department: $startPoint, $currentPoint" }
 
-                                        // newSize, newX, newY)
                                         val backendCoordinates: Triple<Size, Int, Int> =
                                             viewModel.convertToBackendCoordinates(
                                                 canvasSize,
@@ -418,8 +462,8 @@ fun ShopMapCanvas(
                                             )
 
                                         viewModel.createDepartment(
-                                            name = selectedDepartmentType?.name ?: "",
-                                            color = color,
+                                            name = departmentType.name,
+                                            color = departmentType.color,
                                             width = backendCoordinates.first.width.toInt(),
                                             height = backendCoordinates.first.height.toInt(),
                                             startX = backendCoordinates.second,
@@ -440,22 +484,44 @@ fun ShopMapCanvas(
                 },
     ) {
         scale(scale) {
-            rectangles.forEach { rect ->
+            uiState.wallBlocks.forEach { wallBlock ->
+                val canvasCoords =
+                    viewModel.convertToCanvasCoordinates(
+                        canvasSize = Size(size.width, size.height),
+                        size = Size(wallBlock.width.toFloat(), wallBlock.height.toFloat()),
+                        x = wallBlock.startX.toInt(),
+                        y = wallBlock.startY.toInt(),
+                    )
                 drawRect(
-                    color = rect.color, // Use the department color
+                    color = Color.Black,
+                    topLeft = Offset(canvasCoords.second, canvasCoords.third - canvasCoords.first.height),
+                    size = canvasCoords.first,
+                )
+            }
+
+            uiState.concreteDepartments.forEach { department ->
+                val canvasCoords =
+                    viewModel.convertToCanvasCoordinates(
+                        canvasSize = Size(size.width, size.height),
+                        size = Size(department.width.toFloat(), department.height.toFloat()),
+                        x = department.startX.toInt(),
+                        y = department.startY.toInt(),
+                    )
+                val rect =
+                    Rectangle(
+                        topLeft = Offset(canvasCoords.second, canvasCoords.third - canvasCoords.first.height),
+                        size = canvasCoords.first,
+                        color = department.color,
+                        name = department.name,
+                    )
+                drawRect(
+                    color = rect.color,
                     topLeft = rect.topLeft,
                     size = rect.size,
                 )
-                // Check if the rectangle is not too small (adjust thresholds as needed)
                 if (rect.size.width > 20 && rect.size.height > 20 && rect.name.isNotEmpty()) {
-                    var topleft = rect.topLeft + Offset(5.0F, rect.size.height / 2)
-                    var color =
-                        when (rect.color) { // TODO not always white color
-// 						Color.Black -> Color.White
-                            else -> Color.White
-                        }
                     drawText(
-                        topLeft = topleft,
+                        topLeft = rect.topLeft + Offset(5f, rect.size.height / 2),
                         textMeasurer = textMeasurer,
                         text = rect.name,
                     )
@@ -495,10 +561,8 @@ fun ShopMapCanvas(
                         size = Size(20f, 10f),
                         x = 0,
                         y = 0,
-// 					parse routePoint when backend route coordinates are finalized
                     )
 
-                // Calculate color transition from light green to dark green
                 val totalPoints = uiState.route?.route?.size ?: 1
                 val colorFraction = index.toFloat() / totalPoints
                 val greenShade = interpolateColor(Color(0xFFB2FF59), Color(0xFF1B5E20), colorFraction)

@@ -8,16 +8,22 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavType
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
+import androidx.savedstate.read
 import com.mmk.kmpauth.google.GoogleAuthCredentials
 import com.mmk.kmpauth.google.GoogleAuthProvider
 import org.example.srpfe.auth.AuthConfig
 import org.example.srpfe.auth.AuthSession
 import org.example.srpfe.auth.FirebaseAuthSessionBridge
 import org.example.srpfe.navigation.Screen
+import org.example.srpfe.screens.stores.CreateStoreScreen
+import org.example.srpfe.screens.stores.StoreDetailsScreen
+import org.example.srpfe.screens.stores.StoresScreen
 import org.example.srpfe.screens.camera.CameraSetupScreen
 import org.example.srpfe.screens.nearby.NearbyShopsScreen
 import org.example.srpfe.screens.physicallist.PlatformPhysicalListScreen
@@ -71,8 +77,51 @@ fun MainScreen() {
             if (isMobile()) {
                 composable(Screen.Nearby.route) { NearbyShopsScreen() }
             }
+            composable(Screen.Stores.route) {
+                StoresScreen(
+                    onCreateStore = { navController.navigate(Screen.CreateStore.route) },
+                    onOpenStore = { storeId -> navController.navigate(Screen.StoreDetails.route(storeId)) },
+                )
+            }
+            composable(Screen.CreateStore.route) {
+                CreateStoreScreen(
+                    onBack = { navController.popBackStack() },
+                    onStoreCreated = { storeId ->
+                        navController.navigate(Screen.StoreDetails.route(storeId)) {
+                            popUpTo(Screen.Stores.route)
+                        }
+                    },
+                )
+            }
+            composable(
+                route = Screen.StoreDetails.route,
+                arguments = listOf(navArgument(Screen.storeIdArg) { type = NavType.IntType }),
+            ) { backStackEntry ->
+                val storeId =
+                    backStackEntry.arguments?.read { getIntOrNull(Screen.storeIdArg) }
+                        ?: return@composable
+                StoreDetailsScreen(
+                    storeId = storeId,
+                    onBack = { navController.popBackStack() },
+                    onOpenMapEditor = { navController.navigate(Screen.MapDrawer.route(storeId)) },
+                    onStoreDeleted = {
+                        navController.popBackStack(Screen.Stores.route, false)
+                    },
+                )
+            }
             composable(Screen.Sales.route) { SalesScreen() }
-            composable(Screen.MapDrawer.route) { ShopMapDrawerScreen() }
+            composable(
+                route = Screen.MapDrawer.route,
+                arguments = listOf(navArgument(Screen.storeIdArg) { type = NavType.IntType }),
+            ) { backStackEntry ->
+                val storeId =
+                    backStackEntry.arguments?.read { getIntOrNull(Screen.storeIdArg) }
+                        ?: return@composable
+                ShopMapDrawerScreen(
+                    storeId = storeId,
+                    onBack = { navController.popBackStack() },
+                )
+            }
             composable(Screen.ShoppingList.route) { ShoppingListScreen() }
             composable(Screen.Profile.route) { ProfileScreen() }
             composable(Screen.PhysicalList.route) {
@@ -95,8 +144,8 @@ fun BottomNavigationBar(navController: androidx.navigation.NavController) {
             if (isMobile()) {
                 add(Screen.Nearby)
             }
+            add(Screen.Stores)
             add(Screen.Sales)
-            add(Screen.MapDrawer)
             add(Screen.ShoppingList)
             add(Screen.Profile)
             add(Screen.PhysicalList)
@@ -104,10 +153,17 @@ fun BottomNavigationBar(navController: androidx.navigation.NavController) {
 
     NavigationBar {
         items.forEach { screen ->
+            val selected =
+                when (screen) {
+                    Screen.Stores ->
+                        currentRoute?.startsWith(Screen.Stores.route) == true ||
+                            currentRoute?.startsWith("mapdrawer/") == true
+                    else -> currentRoute == screen.route
+                }
             NavigationBarItem(
                 icon = { /* Add icon here */ },
                 label = { Text(screen.label) },
-                selected = currentRoute == screen.route,
+                selected = selected,
                 onClick = {
                     navController.navigate(screen.route) {
                         popUpTo(navController.graph.startDestinationId) {

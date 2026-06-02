@@ -5,6 +5,9 @@ import org.example.srpfe.auth.AuthSession
 import org.example.srpfe.repository.DefaultApiRepository
 import org.example.srpfe.screens.camera.CameraViewModel
 import org.example.srpfe.screens.sales.SalesViewModel
+import org.example.srpfe.screens.stores.CreateStoreViewModel
+import org.example.srpfe.screens.stores.StoreDetailsViewModel
+import org.example.srpfe.screens.stores.StoresViewModel
 import org.example.srpfe.screens.shopmapdrawer.ShopMapDrawerViewModel
 import org.example.srpfe.screens.shoppinglist.ShoppingListViewModel
 import org.koin.core.KoinApplication
@@ -19,7 +22,10 @@ val appModule =
         single<ApiRepository> { DefaultApiRepository(get()) }
         viewModel { CameraViewModel(get()) }
         viewModel { ShoppingListViewModel(get()) }
-        viewModel { ShopMapDrawerViewModel(get()) }
+        viewModel { StoresViewModel(get()) }
+        viewModel { CreateStoreViewModel(get()) }
+        viewModel { (storeId: Int) -> StoreDetailsViewModel(get(), storeId) }
+        viewModel { (storeId: Int) -> ShopMapDrawerViewModel(get(), storeId) }
         viewModel { SalesViewModel(get()) }
     }
 

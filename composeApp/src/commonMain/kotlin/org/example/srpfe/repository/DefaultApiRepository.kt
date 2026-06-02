@@ -36,16 +36,19 @@ import org.openapitools.client.models.Department
 import org.openapitools.client.models.DepartmentResponse
 import org.openapitools.client.models.Map
 import org.openapitools.client.models.MapResponse
+import org.openapitools.client.models.PlaceDetailsResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
+import org.openapitools.client.models.StoreDetailsResponse
 import org.openapitools.client.models.StoreResponse
 import org.openapitools.client.models.Till
 import org.openapitools.client.models.TillResponse
 import org.openapitools.client.models.UpdateDepartmentRequest
 import org.openapitools.client.models.UpdateMapRequest
+import org.openapitools.client.models.UpdateStoreRequest
 import org.openapitools.client.models.UpdateTillRequest
 import org.openapitools.client.models.UpdateWallBlockRequest
 import org.openapitools.client.models.WallBlock
@@ -176,6 +179,31 @@ class DefaultApiRepository
                     .storePost(store.toCreateStoreRequest())
                     .requireSuccessBody<StoreResponse>(this@DefaultApiRepository::createStore.name)
                     .toStore()
+            }
+
+        override suspend fun updateStore(
+            id: Int,
+            store: Store,
+        ): Store =
+            withContext(Dispatchers.IO) {
+                api
+                    .storePut(store.toUpdateStoreRequest(id))
+                    .requireSuccessBody<StoreResponse>(this@DefaultApiRepository::updateStore.name)
+                    .toStore()
+            }
+
+        override suspend fun getStorePlaceDetails(id: Int): PlaceDetailsResponse =
+            withContext(Dispatchers.IO) {
+                api
+                    .storeIdPlaceDetailsGet(id)
+                    .requireSuccessBody(this@DefaultApiRepository::getStorePlaceDetails.name)
+            }
+
+        override suspend fun getStoreComponentDetails(id: Int): StoreDetailsResponse =
+            withContext(Dispatchers.IO) {
+                api
+                    .storeIdComponentDetailsGet(id)
+                    .requireSuccessBody(this@DefaultApiRepository::getStoreComponentDetails.name)
             }
 
         override suspend fun getSales(store: String): SalesResponse =
@@ -427,6 +455,13 @@ private fun StoreResponse.toStore() =
 
 private fun Store.toCreateStoreRequest() =
     CreateStoreRequest(
+        name = name,
+        location = location,
+    )
+
+private fun Store.toUpdateStoreRequest(id: Int) =
+    UpdateStoreRequest(
+        id = id,
         name = name,
         location = location,
     )
