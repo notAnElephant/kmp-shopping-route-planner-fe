@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -97,10 +97,10 @@ fun ShoppingListScreen() {
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(12.dp),
                     ) {
-                        itemsIndexed(
+                        items(
                             items = uiState.shoppingLists,
-                            key = { _, shoppingList -> shoppingList.id ?: shoppingList.name },
-                        ) { _, shoppingList ->
+                            key = { shoppingList -> shoppingList.id?.toString() ?: shoppingList.name },
+                        ) { shoppingList ->
                             ShoppingListCard(
                                 shoppingList = shoppingList,
                                 onEdit = { viewModel.startEditing(shoppingList) },

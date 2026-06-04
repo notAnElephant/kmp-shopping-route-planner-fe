@@ -4,7 +4,7 @@ info:
   description: "com_example_ktor_db_app API"
   version: "1.0.0"
 servers:
-  - url: "https://com_example_ktor_db_app"
+  - url: /
 paths:
   /calculate-route:
     post:
@@ -16,17 +16,81 @@ paths:
               $ref: "#/components/schemas/RoutePlanningRequest"
         required: true
       responses:
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 404
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 404
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "422":
+          description: "Unprocessable Entity"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
+                Example#4:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -35,25 +99,85 @@ paths:
                 $ref: "#/components/schemas/RoutePlanResponse"
   /departments:
     post:
-      description: ""
+      summary: Create department
+
+      description: |
+        Creates a new department on the selected store map.
+
+        Validation rules:
+        - Department must fit inside the map boundaries
+        - Department must not overlap existing objects
+        - Department placement must not block access to checkout
+
+        Example department layout:
+
+        ![Department Example](https://fastly.picsum.photos/id/26/200/300.jpg?hmac=E9i_aIqa_ifLvxqI2b1QTLCnhGQYJ83IpvaDfFM54bU)
+
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: "#/components/schemas/CreateDepartmentRequest"
-        required: true
+            example:
+              mapId: 3
+              name: "Bakery"
+              startX: 115.0
+              startY: 25.5
+              width: 53.0
+              height: 24.5
       responses:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "422":
+          description: "Unprocessable Entity"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
@@ -72,12 +196,60 @@ paths:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#4:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "422":
+          description: "Unprocessable Entity"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -99,10 +271,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -124,10 +313,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid mapId"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -151,16 +357,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
-        "404":
-          description: "Not Found"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
           content:
             '*/*':
               schema:
-                type: "object"
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -177,18 +394,25 @@ paths:
               $ref: "#/components/schemas/CreateMapRequest"
         required: true
       responses:
-        "201":
-          description: "Created"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/MapResponse"
         "400":
           description: "Bad Request"
           content:
             '*/*':
               schema:
                 type: "string"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "201":
+          description: "Created"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MapResponse"
     put:
       description: ""
       requestBody:
@@ -198,29 +422,25 @@ paths:
               $ref: "#/components/schemas/UpdateMapRequest"
         required: true
       responses:
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-                Example#2:
-                  value: ""
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                $ref: "#/components/schemas/MapResponse"
         "400":
           description: "Bad Request"
           content:
             '*/*':
               schema:
                 type: "string"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/MapResponse"
   /maps/{id}:
     delete:
       description: ""
@@ -236,19 +456,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -269,19 +497,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -291,24 +527,100 @@ paths:
   /maps/import-by-image:
     post:
       description: ""
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+                - mapWidth
+                - mapHeight
+                - mapId
+              properties:
+                file:
+                  type: string
+                  format: binary
+
+                mapWidth:
+                  type: number
+
+                mapHeight:
+                  type: number
+
+                mapId:
+                  type: integer
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#4:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#5:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#6:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "502":
+          description: "Bad Gateway"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
-                Example#2:
-                  value: ""
-                Example#3:
-                  value: ""
-                Example#4:
-                  value: ""
-                Example#5:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
@@ -333,45 +645,9 @@ paths:
             '*/*':
               schema:
                 $ref: "#/components/schemas/AppUserResponse"
-  /ocr:
-    get:
-      description: ""
-      parameters:
-        - name: "file"
-          in: "query"
-          required: false
-          schema:
-            type: "string"
-      responses:
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "No text found in image"
-                Example#2:
-                  value: "Missing file parameter"
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
-        "200":
-          description: "OK"
-          content:
-            '*/*':
-              schema:
-                type: "string"
   /ocr/shopping-list:
     post:
-      description: ""
+      description: "get {\n            controller.extractText(call)\n        }"
       requestBody:
         content:
           application/json:
@@ -382,6 +658,58 @@ paths:
                 format: "byte"
         required: true
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "502":
+          description: "Bad Gateway"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
+        "404":
+          description: "Not Found"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 404
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -400,6 +728,25 @@ paths:
               $ref: "#/components/schemas/CreateProductRequest"
         required: true
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
@@ -415,6 +762,25 @@ paths:
               $ref: "#/components/schemas/UpdateProductRequest"
         required: true
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -440,6 +806,19 @@ paths:
               examples:
                 Example#1:
                   value: "Invalid articleNo"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -467,12 +846,16 @@ paths:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -516,6 +899,44 @@ paths:
               $ref: "#/components/schemas/RecipeRequest"
         required: true
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "502":
+          description: "Bad Gateway"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -524,12 +945,6 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/IngredientResponse"
-        "400":
-          description: "Bad Request <br> 👈 important"
-          content:
-            '*/*':
-              schema:
-                type: "string"
   /sales/{store}:
     get:
       description: ""
@@ -548,25 +963,50 @@ paths:
                 type: "string"
               examples:
                 Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#2:
                   value: "Store is required"
-        "500":
-          description: "Internal Server Error"
+        "502":
+          description: "Bad Gateway"
           content:
             '*/*':
               schema:
-                type: "string"
-            text/plain:
-              schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/SalesResponse"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
   /shopping-lists:
     get:
       description: ""
@@ -577,6 +1017,13 @@ paths:
             '*/*':
               schema:
                 type: "object"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 401
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -585,15 +1032,6 @@ paths:
                 type: "array"
                 items:
                   $ref: "#/components/schemas/ShoppingList"
-        "500":
-          description: "Internal Server Error"
-          content:
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
     post:
       description: ""
       requestBody:
@@ -609,21 +1047,32 @@ paths:
             '*/*':
               schema:
                 type: "object"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 401
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/ShoppingList"
-        "500":
-          description: "Internal Server Error"
+        "400":
+          description: "Bad Request"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
   /shopping-lists/{id}:
     delete:
       description: ""
@@ -649,16 +1098,28 @@ paths:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#3:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -680,6 +1141,19 @@ paths:
             '*/*':
               schema:
                 type: "object"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 401
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 401
+                    timestamp: "null"
         "400":
           description: "Bad Request"
           content:
@@ -695,16 +1169,16 @@ paths:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
-                Example#2:
-                  value: ""
-                Example#3:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
   /store:
     get:
       description: ""
@@ -726,21 +1200,25 @@ paths:
               $ref: "#/components/schemas/CreateStoreRequest"
         required: true
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/StoreResponse"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: "Invalid input data"
     put:
       description: ""
       requestBody:
@@ -750,18 +1228,25 @@ paths:
               $ref: "#/components/schemas/UpdateStoreRequest"
         required: true
       responses:
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/StoreResponse"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
   /store/{id}:
     delete:
       description: ""
@@ -777,19 +1262,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -810,19 +1303,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -844,19 +1345,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -878,29 +1387,76 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#3:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#4:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "502":
+          description: "Bad Gateway"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
+                Example#2:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 502
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
-                $ref: "#/components/schemas/PlaceDetailsResponse"
+                $ref: "#/components/schemas/StorePlaceDetailsResponse"
   /store/{storeId}/shopping-lists/{shoppingListId}/matches:
     get:
       description: ""
@@ -941,26 +1497,35 @@ paths:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
-                Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/TillResponse"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
     put:
       description: ""
       requestBody:
@@ -973,26 +1538,60 @@ paths:
         "500":
           description: "Internal Server Error"
           content:
-            text/plain:
+            '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+                Example#3:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "422":
+          description: "Unprocessable Entity"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/TillResponse"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
   /tills/{id}:
     delete:
       description: ""
@@ -1008,10 +1607,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -1033,10 +1649,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid mapId"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -1060,16 +1693,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
-        "404":
-          description: "Not Found"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
           content:
             '*/*':
               schema:
-                type: "object"
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -1091,34 +1735,58 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Unexpected error"
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#3:
-                  value: ""
-                Example#4:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "422":
+          description: "Unprocessable Entity"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
         "201":
           description: "Created"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/WallBlockResponse"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
     put:
       description: ""
       requestBody:
@@ -1133,34 +1801,58 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Unexpected error"
-            text/plain:
-              schema:
-                type: "string"
-              examples:
-                Example#1:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#2:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
                 Example#3:
-                  value: ""
-                Example#4:
-                  value: ""
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "422":
+          description: "Unprocessable Entity"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 422
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
             '*/*':
               schema:
                 $ref: "#/components/schemas/WallBlockResponse"
-        "400":
-          description: "Bad Request"
-          content:
-            '*/*':
-              schema:
-                type: "string"
   /wall-blocks/{id}:
     delete:
       description: ""
@@ -1176,10 +1868,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "204":
           description: "No Content"
           content:
@@ -1201,10 +1910,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid mapId"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -1228,16 +1954,27 @@ paths:
           content:
             '*/*':
               schema:
-                type: "string"
+                $ref: "#/components/schemas/ErrorResponse"
               examples:
                 Example#1:
-                  value: "Invalid id"
-        "404":
-          description: "Not Found"
+                  description: ""
+                  value:
+                    message: "null"
+                    status: 400
+                    timestamp: "null"
+        "500":
+          description: "Internal Server Error"
           content:
             '*/*':
               schema:
-                type: "object"
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                Example#1:
+                  description: ""
+                  value:
+                    message: "Internal server error"
+                    status: 500
+                    timestamp: "null"
         "200":
           description: "OK"
           content:
@@ -1246,6 +1983,21 @@ paths:
                 $ref: "#/components/schemas/WallBlockResponse"
 components:
   schemas:
+    ErrorResponse:
+      type: "object"
+      properties:
+        message:
+          type: "string"
+        status:
+          type: "integer"
+          format: "int32"
+        timestamp:
+          type: "integer"
+          format: "int64"
+      required:
+        - "message"
+        - "status"
+        - "timestamp"
     RoutePlanningProductRequest:
       type: "object"
       properties:
@@ -1284,8 +2036,12 @@ components:
           type: "array"
           items:
             $ref: "#/components/schemas/Pair"
+        length:
+          type: "integer"
+          format: "int32"
       required:
         - "route"
+        - "length"
     CreateDepartmentRequest:
       type: "object"
       properties:
@@ -1850,71 +2606,24 @@ components:
         - "departments"
         - "wallBlocks"
         - "tills"
-    Photo:
-      type: "object"
-      properties:
-        name:
-          type: "string"
-      required:
-        - "name"
-    DayTime:
+    OpeningHoursResponse:
       type: "object"
       properties:
         day:
           type: "integer"
           format: "int32"
-        hour:
-          type: "integer"
-          format: "int32"
-        minute:
-          type: "integer"
-          format: "int32"
+        openTime:
+          type: "string"
+        closeTime:
+          type: "string"
       required:
         - "day"
-        - "hour"
-        - "minute"
-    Period:
+        - "openTime"
+        - "closeTime"
+    StorePlaceDetailsResponse:
       type: "object"
       properties:
-        open:
-          $ref: "#/components/schemas/DayTime"
-        close:
-          $ref: "#/components/schemas/DayTime"
-      required:
-        - "open"
-        - "close"
-    OpeningHours:
-      type: "object"
-      properties:
-        periods:
-          type: "array"
-          nullable: true
-          items:
-            $ref: "#/components/schemas/Period"
-    ParkingOptions:
-      type: "object"
-      properties:
-        freeParkingLot:
-          type: "boolean"
-          nullable: true
-        freeStreetParking:
-          type: "boolean"
-          nullable: true
-        freeGarageParking:
-          type: "boolean"
-          nullable: true
-    AccessibilityOptions:
-      type: "object"
-      properties:
-        wheelchairAccessibleEntrance:
-          type: "boolean"
-          nullable: true
-    PlaceDetailsResponse:
-      type: "object"
-      properties:
-        id:
-          type: "string"
-        internationalPhoneNumber:
+        phoneNumber:
           type: "string"
           nullable: true
         websiteUri:
@@ -1931,26 +2640,23 @@ components:
           type: "integer"
           format: "int32"
           nullable: true
-        priceLevel:
-          type: "integer"
-          format: "int32"
-          nullable: true
-        photos:
+        hasParking:
+          type: "boolean"
+        wheelchairAccessible:
+          type: "boolean"
+        openingHours:
           type: "array"
-          nullable: true
           items:
-            $ref: "#/components/schemas/Photo"
-        regularOpeningHours:
-          nullable: true
-          $ref: "#/components/schemas/OpeningHours"
-        parkingOptions:
-          nullable: true
-          $ref: "#/components/schemas/ParkingOptions"
-        accessibilityOptions:
-          nullable: true
-          $ref: "#/components/schemas/AccessibilityOptions"
+            $ref: "#/components/schemas/OpeningHoursResponse"
+        imagePaths:
+          type: "array"
+          items:
+            type: "string"
       required:
-        - "id"
+        - "hasParking"
+        - "wheelchairAccessible"
+        - "openingHours"
+        - "imagePaths"
     ShoppingListItemResponse:
       type: "object"
       properties:

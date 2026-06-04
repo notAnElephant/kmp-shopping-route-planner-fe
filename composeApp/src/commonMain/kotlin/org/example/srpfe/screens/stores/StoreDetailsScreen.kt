@@ -26,9 +26,7 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
-import org.openapitools.client.models.AccessibilityOptions
-import org.openapitools.client.models.OpeningHours
-import org.openapitools.client.models.ParkingOptions
+import org.openapitools.client.models.OpeningHoursResponse
 
 @Composable
 fun StoreDetailsScreen(
@@ -179,17 +177,24 @@ fun StoreDetailsScreen(
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.SemiBold,
                             )
-                            PlaceDetailLine("Google place id", placeDetails.id)
-                            PlaceDetailLine("Phone", placeDetails.internationalPhoneNumber)
+                            PlaceDetailLine("Phone", placeDetails.phoneNumber)
                             PlaceDetailLine("Website", placeDetails.websiteUri)
                             PlaceDetailLine("Maps", placeDetails.googleMapsUri)
                             PlaceDetailLine("Rating", placeDetails.rating?.toString())
                             PlaceDetailLine("Ratings", placeDetails.userRatingCount?.toString())
-                            PlaceDetailLine("Price level", placeDetails.priceLevel?.toString())
-                            PlaceDetailLine("Photos", placeDetails.photos?.joinToString { it.name })
-                            PlaceDetailLine("Parking", formatParking(placeDetails.parkingOptions))
-                            PlaceDetailLine("Accessibility", formatAccessibility(placeDetails.accessibilityOptions))
-                            PlaceDetailLine("Opening hours", formatOpeningHours(placeDetails.regularOpeningHours))
+                            PlaceDetailLine("Parking", formatParking(placeDetails.hasParking))
+                            PlaceDetailLine(
+                                "Accessibility",
+                                formatAccessibility(placeDetails.wheelchairAccessible),
+                            )
+                            PlaceDetailLine(
+                                "Opening hours",
+                                formatOpeningHours(placeDetails.openingHours),
+                            )
+                            PlaceDetailLine(
+                                "Images",
+                                placeDetails.imagePaths.takeIf { it.isNotEmpty() }?.joinToString(),
+                            )
 
                             placeDetails.websiteUri?.let { websiteUri ->
                                 Button(
@@ -227,38 +232,26 @@ private fun PlaceDetailLine(
     Text("$label: $value")
 }
 
-private fun formatParking(parkingOptions: ParkingOptions?): String? {
-    if (parkingOptions == null) {
-        return null
+private fun formatParking(hasParking: Boolean): String? =
+    if (hasParking) {
+        "Parking available"
+    } else {
+        "No parking information"
     }
-    val values =
-        buildList {
-            if (parkingOptions.freeParkingLot == true) add("Free parking lot")
-            if (parkingOptions.freeStreetParking == true) add("Free street parking")
-            if (parkingOptions.freeGarageParking == true) add("Free garage parking")
-        }
-    return values.takeIf { it.isNotEmpty() }?.joinToString()
-}
 
-private fun formatAccessibility(accessibilityOptions: AccessibilityOptions?): String? =
-    if (accessibilityOptions?.wheelchairAccessibleEntrance == true) {
+private fun formatAccessibility(wheelchairAccessible: Boolean): String? =
+    if (wheelchairAccessible) {
         "Wheelchair accessible entrance"
     } else {
-        null
+        "No wheelchair accessibility information"
     }
 
-private fun formatOpeningHours(openingHours: OpeningHours?): String? =
-    openingHours?.periods
-        ?.takeIf { it.isNotEmpty() }
+private fun formatOpeningHours(openingHours: List<OpeningHoursResponse>): String? =
+    openingHours
+        .takeIf { it.isNotEmpty() }
         ?.joinToString(separator = "; ") { period ->
-            "${dayName(period.open.day)} ${formatTime(period.open.hour, period.open.minute)} - " +
-                "${dayName(period.close.day)} ${formatTime(period.close.hour, period.close.minute)}"
+            "${dayName(period.day)} ${period.openTime} - ${period.closeTime}"
         }
-
-private fun formatTime(
-    hour: Int,
-    minute: Int,
-): String = "${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}"
 
 private fun dayName(day: Int): String =
     when (day) {

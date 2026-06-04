@@ -36,13 +36,13 @@ import org.openapitools.client.models.Department
 import org.openapitools.client.models.DepartmentResponse
 import org.openapitools.client.models.Map
 import org.openapitools.client.models.MapResponse
-import org.openapitools.client.models.PlaceDetailsResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.StoreDetailsResponse
+import org.openapitools.client.models.StorePlaceDetailsResponse
 import org.openapitools.client.models.StoreResponse
 import org.openapitools.client.models.Till
 import org.openapitools.client.models.TillResponse
@@ -192,7 +192,7 @@ class DefaultApiRepository
                     .toStore()
             }
 
-        override suspend fun getStorePlaceDetails(id: Int): PlaceDetailsResponse =
+        override suspend fun getStorePlaceDetails(id: Int): StorePlaceDetailsResponse =
             withContext(Dispatchers.IO) {
                 api
                     .storeIdPlaceDetailsGet(id)

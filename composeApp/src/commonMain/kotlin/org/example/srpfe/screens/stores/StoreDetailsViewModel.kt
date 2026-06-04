@@ -5,14 +5,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import org.example.ApiRepository
-import org.openapitools.client.models.PlaceDetailsResponse
 import org.openapitools.client.models.Store
+import org.openapitools.client.models.StorePlaceDetailsResponse
 
 data class StoreDetailsUiState(
     val store: Store? = null,
     val draftName: String = "",
     val draftLocation: String = "",
-    val placeDetails: PlaceDetailsResponse? = null,
+    val placeDetails: StorePlaceDetailsResponse? = null,
     val hasAttemptedInitialLoad: Boolean = false,
     val isLoading: Boolean = false,
     val isSaving: Boolean = false,

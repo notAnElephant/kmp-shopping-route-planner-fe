@@ -6,13 +6,13 @@ import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.CreateShoppingListRequest
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import org.openapitools.client.models.PlaceDetailsResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.StoreDetailsResponse
+import org.openapitools.client.models.StorePlaceDetailsResponse
 import org.openapitools.client.models.Till
 import org.openapitools.client.models.WallBlock
 
@@ -54,7 +54,7 @@ interface ApiRepository {
         store: Store,
     ): Store
 
-    suspend fun getStorePlaceDetails(id: Int): PlaceDetailsResponse
+    suspend fun getStorePlaceDetails(id: Int): StorePlaceDetailsResponse
 
     suspend fun getStoreComponentDetails(id: Int): StoreDetailsResponse
 
