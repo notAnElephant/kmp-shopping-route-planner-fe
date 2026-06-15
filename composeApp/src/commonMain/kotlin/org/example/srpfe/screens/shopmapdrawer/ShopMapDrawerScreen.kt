@@ -395,8 +395,10 @@ fun ShopMapCanvas(
     selectedDepartmentType: DepartmentType? = null,
 ) {
     val scale by remember { mutableStateOf(1f) }
-    var startPoint: Offset? by remember { mutableStateOf(null) }
-    var currentPoint: Offset? by remember { mutableStateOf(null) }
+    var createStartPoint by remember { mutableStateOf<Offset?>(null) }
+    var selectedItemRef by remember { mutableStateOf<EditableItemRef?>(null) }
+    var draftRect by remember { mutableStateOf<CanvasRect?>(null) }
+    var interaction by remember { mutableStateOf(EditorInteraction.NONE) }
 
     val textMeasurer = rememberTextMeasurer()
 
@@ -406,149 +408,238 @@ fun ShopMapCanvas(
                 .fillMaxSize()
                 .background(Color.LightGray)
                 .border(1.dp, Color.Black)
-                .pointerInput(selectedDepartmentType, selectedFunctionType) {
-                    detectTapGestures(onPress = { offset ->
-                        if (startPoint == null) {
-                            startPoint = offset
-                        } else {
-                            currentPoint = offset
-                            if (startPoint != null && currentPoint != null) {
-                                val size1 =
-                                    Size(
-                                        width = currentPoint!!.x - startPoint!!.x,
-                                        height = currentPoint!!.y - startPoint!!.y,
-                                    )
+                .pointerInput(
+                    selectedFunctionType,
+                    selectedDepartmentType,
+                    uiState.concreteDepartments,
+                    uiState.wallBlocks,
+                    uiState.tills,
+                    uiState.map,
+                ) {
+                    when (selectedFunctionType) {
+                        FunctionType.DEPARTMENT,
+                        FunctionType.WALL,
+                        FunctionType.DELETE,
+                        -> detectTapGestures(
+                            onTap = { offset ->
                                 val canvasSize = Size(size.width.toFloat(), size.height.toFloat())
-
+                                val items = buildEditableItems(viewModel, uiState, canvasSize)
                                 when (selectedFunctionType) {
-                                    FunctionType.WALL -> {
-                                        log.i { "Drawing wall: $startPoint, $currentPoint" }
+                                    FunctionType.DEPARTMENT,
+                                    FunctionType.WALL,
+                                    -> {
+                                        if (createStartPoint == null) {
+                                            createStartPoint = offset
+                                            selectedItemRef = null
+                                            draftRect = null
+                                        } else {
+                                            val start = createStartPoint ?: return@detectTapGestures
+                                            val rect = createCanvasRect(start, offset)
+                                            val backendCoordinates =
+                                                viewModel.convertToBackendCoordinates(
+                                                    canvasSize = canvasSize,
+                                                    size = rect.size,
+                                                    x = rect.left,
+                                                    y = rect.bottom,
+                                                )
 
-                                        val backendCoordinates: Triple<Size, Int, Int> =
-                                            viewModel.convertToBackendCoordinates(
-                                                canvasSize,
-                                                size1,
-                                                startPoint!!.x,
-                                                startPoint!!.y + size1.height,
-                                            )
+                                            when (selectedFunctionType) {
+                                                FunctionType.WALL -> {
+                                                    log.i { "Drawing wall: $start, $offset" }
+                                                    viewModel.createWallBlock(
+                                                        width = backendCoordinates.first.width.toInt(),
+                                                        height = backendCoordinates.first.height.toInt(),
+                                                        startX = backendCoordinates.second,
+                                                        startY = backendCoordinates.third,
+                                                    )
+                                                }
 
-                                        viewModel.createWallBlock(
-                                            width = backendCoordinates.first.width.toInt(),
-                                            height = backendCoordinates.first.height.toInt(),
-                                            startX = backendCoordinates.second,
-                                            startY = backendCoordinates.third,
-                                        )
+                                                FunctionType.DEPARTMENT -> {
+                                                    val departmentType = selectedDepartmentType ?: return@detectTapGestures
+                                                    log.i { "Drawing department: $start, $offset" }
+                                                    viewModel.createDepartment(
+                                                        name = departmentType.name,
+                                                        color = departmentType.color,
+                                                        width = backendCoordinates.first.width.toInt(),
+                                                        height = backendCoordinates.first.height.toInt(),
+                                                        startX = backendCoordinates.second,
+                                                        startY = backendCoordinates.third,
+                                                    )
+                                                }
+
+                                                else -> Unit
+                                            }
+
+                                            createStartPoint = null
+                                        }
                                     }
 
-                                    FunctionType.DEPARTMENT -> {
-                                        val departmentType = selectedDepartmentType ?: return@detectTapGestures
-                                        log.i { "Drawing department: $startPoint, $currentPoint" }
+                                    FunctionType.DELETE -> {
+                                        val hitItem = hitTestItem(items, offset)
+                                        if (hitItem == null) {
+                                            selectedItemRef = null
+                                            draftRect = null
+                                            return@detectTapGestures
+                                        }
 
-                                        val backendCoordinates: Triple<Size, Int, Int> =
-                                            viewModel.convertToBackendCoordinates(
-                                                canvasSize,
-                                                size1,
-                                                startPoint!!.x,
-                                                startPoint!!.y + size1.height,
-                                            )
+                                        val isSameSelection = selectedItemRef == hitItem.ref
+                                        selectedItemRef = hitItem.ref
+                                        draftRect = null
+                                        interaction = EditorInteraction.NONE
 
-                                        viewModel.createDepartment(
-                                            name = departmentType.name,
-                                            color = departmentType.color,
-                                            width = backendCoordinates.first.width.toInt(),
-                                            height = backendCoordinates.first.height.toInt(),
-                                            startX = backendCoordinates.second,
-                                            startY = backendCoordinates.third,
-                                        )
+                                        if (isSameSelection && hitItem.canDelete) {
+                                            performDelete(hitItem.ref, viewModel)
+                                            selectedItemRef = null
+                                        }
                                     }
 
-                                    else -> {
-                                        return@detectTapGestures
-                                    }
+                                    else -> Unit
+                                }
+                            },
+                        )
+
+                        FunctionType.MOVE -> awaitEachGesture {
+                            val canvasSize = Size(size.width.toFloat(), size.height.toFloat())
+                            val bounds = canvasSize
+                            val items = buildEditableItems(viewModel, uiState, canvasSize)
+                            val down = awaitAnyDown()
+                            val selectedItem = items.firstOrNull { it.ref == selectedItemRef }
+                            val selectedRect = selectedItem?.rect
+                            val hitHandle =
+                                if (selectedItem?.canResize == true && selectedRect != null) {
+                                    hitTestHandle(selectedRect, down.position)
+                                } else {
+                                    null
                                 }
 
-                                startPoint = null
-                                currentPoint = null
+                            var activeItem: EditableCanvasItem? = null
+                            var activeRect: CanvasRect? = null
+
+                            if (hitHandle != null && selectedItem != null) {
+                                activeItem = selectedItem
+                                activeRect = selectedRect
+                                draftRect = selectedRect
+                                interaction = interactionForHandle(hitHandle)
+                            } else {
+                                val hitItem = hitTestItem(items, down.position)
+                                if (hitItem == null) {
+                                    selectedItemRef = null
+                                    draftRect = null
+                                    interaction = EditorInteraction.NONE
+                                    return@awaitEachGesture
+                                }
+
+                                selectedItemRef = hitItem.ref
+                                activeItem = hitItem
+                                activeRect = hitItem.rect
+                                draftRect = hitItem.rect
+                                interaction = EditorInteraction.MOVING
                             }
+
+                            var moved = false
+                            while (true) {
+                                val event = awaitPointerEvent()
+                                val change = trackedChange(event.changes, down.id) ?: break
+                                if (!change.pressed) {
+                                    break
+                                }
+
+                                val delta = change.positionChange()
+                                if (delta != Offset.Zero && activeRect != null) {
+                                    moved = true
+                                    activeRect =
+                                        when (interaction) {
+                                            EditorInteraction.MOVING ->
+                                                moveRect(
+                                                    rect = activeRect,
+                                                    delta = delta,
+                                                    bounds = bounds,
+                                                )
+
+                                            else ->
+                                                resizeRect(
+                                                    rect = activeRect,
+                                                    handle = handleForInteraction(interaction) ?: ResizeHandle.TOP,
+                                                    delta = delta,
+                                                    bounds = bounds,
+                                                    minSize =
+                                                        minCanvasSize(
+                                                            canvasSize = canvasSize,
+                                                            mapWidth = viewModel.width,
+                                                            mapHeight = viewModel.height,
+                                                        ),
+                                                )
+                                        }
+                                    draftRect = activeRect
+                                }
+                                change.consume()
+                            }
+
+                            if (moved && activeItem != null && activeRect != null) {
+                                commitRectChange(
+                                    ref = activeItem.ref,
+                                    rect = activeRect,
+                                    canvasSize = canvasSize,
+                                    uiState = uiState,
+                                    viewModel = viewModel,
+                                )
+                            }
+
+                            draftRect = null
+                            interaction = EditorInteraction.NONE
                         }
-                    })
+                    }
                 },
     ) {
         scale(scale) {
-            uiState.wallBlocks.forEach { wallBlock ->
-                val canvasCoords =
-                    viewModel.convertToCanvasCoordinates(
-                        canvasSize = Size(size.width, size.height),
-                        size = Size(wallBlock.width.toFloat(), wallBlock.height.toFloat()),
-                        x = wallBlock.startX.toInt(),
-                        y = wallBlock.startY.toInt(),
-                    )
-                drawRect(
-                    color = Color.Black,
-                    topLeft = Offset(canvasCoords.second, canvasCoords.third - canvasCoords.first.height),
-                    size = canvasCoords.first,
-                )
-            }
+            val canvasSize = Size(size.width, size.height)
+            val items = buildEditableItems(viewModel, uiState, canvasSize)
 
-            uiState.concreteDepartments.forEach { department ->
-                val canvasCoords =
-                    viewModel.convertToCanvasCoordinates(
-                        canvasSize = Size(size.width, size.height),
-                        size = Size(department.width.toFloat(), department.height.toFloat()),
-                        x = department.startX.toInt(),
-                        y = department.startY.toInt(),
-                    )
+            items.forEach { item ->
                 val rect =
-                    Rectangle(
-                        topLeft = Offset(canvasCoords.second, canvasCoords.third - canvasCoords.first.height),
-                        size = canvasCoords.first,
-                        color = department.color,
-                        name = department.name,
-                    )
+                    if (item.ref == selectedItemRef && draftRect != null) {
+                        draftRect ?: item.rect
+                    } else {
+                        item.rect
+                    }
                 drawRect(
-                    color = rect.color,
+                    color = item.color,
                     topLeft = rect.topLeft,
                     size = rect.size,
                 )
-                if (rect.size.width > 20 && rect.size.height > 20 && rect.name.isNotEmpty()) {
+
+                if (item.label.isNotEmpty() && rect.size.width > 20f && rect.size.height > 20f) {
                     drawText(
-                        topLeft = rect.topLeft + Offset(5f, rect.size.height / 2),
                         textMeasurer = textMeasurer,
-                        text = rect.name,
+                        text = item.label,
+                        topLeft = rect.topLeft + Offset(5f, rect.size.height / 2f),
                     )
+                }
+
+                if (item.ref == selectedItemRef) {
+                    drawRect(
+                        color = selectionColor,
+                        topLeft = rect.topLeft,
+                        size = rect.size,
+                        style = Stroke(width = 3f),
+                    )
+
+                    if (item.canResize) {
+                        ResizeHandle.entries.forEach { handle ->
+                            drawCircle(
+                                color = selectionColor,
+                                radius = HANDLE_RADIUS,
+                                center = handleCenter(rect, handle),
+                            )
+                        }
+                    }
                 }
             }
 
-            val coords =
-                viewModel.convertToCanvasCoordinates(
-                    canvasSize = Size(size.width, size.height),
-                    size = Size(20f, 10f),
-                    x = uiState.map?.exitX?.toInt() ?: 0,
-                    y = uiState.map?.exitY?.toInt() ?: 0,
-                )
-            drawRect(
-                color = Color.Gray,
-                topLeft = Offset(coords.second, coords.third),
-                size = Size(coords.first.width, coords.first.height),
-            )
-
-            val coords2 =
-                viewModel.convertToCanvasCoordinates(
-                    canvasSize = Size(size.width, size.height),
-                    size = Size(20f, 10f),
-                    x = uiState.map?.entranceX?.toInt() ?: 0,
-                    y = (uiState.map?.entranceY?.toInt() ?: 0),
-                )
-            drawRect(
-                color = Color.Blue,
-                topLeft = Offset(coords2.second, coords2.third - 75),
-                size = Size(coords2.first.width, coords2.first.height),
-            )
-
-            uiState.route?.route?.forEachIndexed { index, routePoint ->
+            uiState.route?.route?.forEachIndexed { index, _ ->
                 val coords =
                     viewModel.convertToCanvasCoordinates(
-                        canvasSize = Size(size.width, size.height),
+                        canvasSize = canvasSize,
                         size = Size(20f, 10f),
                         x = 0,
                         y = 0,
@@ -566,6 +657,254 @@ fun ShopMapCanvas(
             }
         }
     }
+}
+
+private fun trackedChange(
+    changes: List<PointerInputChange>,
+    pointerId: androidx.compose.ui.input.pointer.PointerId,
+): PointerInputChange? = changes.firstOrNull { it.id == pointerId } ?: changes.firstOrNull()
+
+private suspend fun AwaitPointerEventScope.awaitAnyDown(): PointerInputChange {
+    while (true) {
+        val event = awaitPointerEvent()
+        event.changes.firstOrNull { it.pressed }?.let { return it }
+    }
+}
+
+private fun performDelete(
+    ref: EditableItemRef,
+    viewModel: ShopMapDrawerViewModel,
+) {
+    when (ref.kind) {
+        EditableItemKind.DEPARTMENT -> ref.id?.let(viewModel::deleteDepartment)
+        EditableItemKind.WALL -> ref.id?.let(viewModel::deleteWallBlock)
+        EditableItemKind.TILL -> ref.id?.let(viewModel::deleteTill)
+        EditableItemKind.ENTRANCE,
+        EditableItemKind.EXIT,
+        -> Unit
+    }
+}
+
+private fun commitRectChange(
+    ref: EditableItemRef,
+    rect: CanvasRect,
+    canvasSize: Size,
+    uiState: UiState,
+    viewModel: ShopMapDrawerViewModel,
+) {
+    val backendCoordinates =
+        viewModel.convertToBackendCoordinates(
+            canvasSize = canvasSize,
+            size = rect.size,
+            x = rect.left,
+            y = rect.bottom,
+        )
+
+    when (ref.kind) {
+        EditableItemKind.DEPARTMENT -> {
+            val department = uiState.concreteDepartments.firstOrNull { it.id == ref.id } ?: return
+            ref.id?.let { departmentId ->
+                viewModel.updateDepartmentRect(
+                    departmentId = departmentId,
+                    name = department.name,
+                    width = backendCoordinates.first.width.toInt(),
+                    height = backendCoordinates.first.height.toInt(),
+                    startX = backendCoordinates.second,
+                    startY = backendCoordinates.third,
+                )
+            }
+        }
+
+        EditableItemKind.WALL ->
+            ref.id?.let { wallId ->
+                viewModel.updateWallBlockRect(
+                    wallBlockId = wallId,
+                    width = backendCoordinates.first.width.toInt(),
+                    height = backendCoordinates.first.height.toInt(),
+                    startX = backendCoordinates.second,
+                    startY = backendCoordinates.third,
+                )
+            }
+
+        EditableItemKind.TILL ->
+            ref.id?.let { tillId ->
+                viewModel.updateTillRect(
+                    tillId = tillId,
+                    width = backendCoordinates.first.width.toInt(),
+                    height = backendCoordinates.first.height.toInt(),
+                    startX = backendCoordinates.second,
+                    startY = backendCoordinates.third,
+                )
+            }
+
+        EditableItemKind.ENTRANCE ->
+            viewModel.updateEntrancePosition(
+                startX = backendCoordinates.second,
+                startY = backendCoordinates.third,
+            )
+
+        EditableItemKind.EXIT ->
+            viewModel.updateExitPosition(
+                startX = backendCoordinates.second,
+                startY = backendCoordinates.third,
+            )
+    }
+}
+
+private fun buildEditableItems(
+    viewModel: ShopMapDrawerViewModel,
+    uiState: UiState,
+    canvasSize: Size,
+): List<EditableCanvasItem> {
+    val walls =
+        uiState.wallBlocks.mapNotNull { wallBlock ->
+            val wallId = wallBlock.id ?: return@mapNotNull null
+            EditableCanvasItem(
+                ref = EditableItemRef(EditableItemKind.WALL, wallId),
+                rect =
+                    backendRectToCanvasRect(
+                        viewModel = viewModel,
+                        canvasSize = canvasSize,
+                        width = wallBlock.width.toFloat(),
+                        height = wallBlock.height.toFloat(),
+                        startX = wallBlock.startX.toInt(),
+                        startY = wallBlock.startY.toInt(),
+                    ),
+                color = wallColor,
+                canResize = true,
+                canDelete = true,
+            )
+        }
+
+    val departments =
+        uiState.concreteDepartments.mapNotNull { department ->
+            val departmentId = department.id ?: return@mapNotNull null
+            EditableCanvasItem(
+                ref = EditableItemRef(EditableItemKind.DEPARTMENT, departmentId),
+                rect =
+                    backendRectToCanvasRect(
+                        viewModel = viewModel,
+                        canvasSize = canvasSize,
+                        width = department.width.toFloat(),
+                        height = department.height.toFloat(),
+                        startX = department.startX.toInt(),
+                        startY = department.startY.toInt(),
+                    ),
+                color = department.color,
+                label = department.name,
+                canResize = true,
+                canDelete = true,
+            )
+        }
+
+    val tills =
+        uiState.tills.mapNotNull { till ->
+            val tillId = till.id ?: return@mapNotNull null
+            EditableCanvasItem(
+                ref = EditableItemRef(EditableItemKind.TILL, tillId),
+                rect =
+                    backendRectToCanvasRect(
+                        viewModel = viewModel,
+                        canvasSize = canvasSize,
+                        width = till.width.toFloat(),
+                        height = till.height.toFloat(),
+                        startX = till.startX.toInt(),
+                        startY = till.startY.toInt(),
+                    ),
+                color = tillColor,
+                label = "Till",
+                canResize = true,
+                canDelete = true,
+            )
+        }
+
+    val exit =
+        uiState.map?.let { map ->
+            EditableCanvasItem(
+                ref = EditableItemRef(EditableItemKind.EXIT),
+                rect =
+                    backendRectToCanvasRect(
+                        viewModel = viewModel,
+                        canvasSize = canvasSize,
+                        width = MAP_ANCHOR_WIDTH,
+                        height = MAP_ANCHOR_HEIGHT,
+                        startX = map.exitX.toInt(),
+                        startY = map.exitY.toInt(),
+                    ),
+                color = exitColor,
+                label = "Exit",
+                canResize = false,
+                canDelete = false,
+            )
+        }
+
+    val entrance =
+        uiState.map?.let { map ->
+            EditableCanvasItem(
+                ref = EditableItemRef(EditableItemKind.ENTRANCE),
+                rect =
+                    backendRectToCanvasRect(
+                        viewModel = viewModel,
+                        canvasSize = canvasSize,
+                        width = MAP_ANCHOR_WIDTH,
+                        height = MAP_ANCHOR_HEIGHT,
+                        startX = map.entranceX.toInt(),
+                        startY = map.entranceY.toInt(),
+                    ),
+                color = entranceColor,
+                label = "Entrance",
+                canResize = false,
+                canDelete = false,
+            )
+        }
+
+    return buildList {
+        addAll(walls)
+        addAll(departments)
+        addAll(tills)
+        exit?.let(::add)
+        entrance?.let(::add)
+    }
+}
+
+private fun hitTestItem(
+    items: List<EditableCanvasItem>,
+    point: Offset,
+): EditableCanvasItem? = items.asReversed().firstOrNull { item -> item.rect.contains(point) }
+
+private fun createCanvasRect(
+    start: Offset,
+    end: Offset,
+): CanvasRect {
+    val left = minOf(start.x, end.x)
+    val top = minOf(start.y, end.y)
+    val right = maxOf(start.x, end.x)
+    val bottom = maxOf(start.y, end.y)
+    return CanvasRect(
+        topLeft = Offset(left, top),
+        size = Size(right - left, bottom - top),
+    )
+}
+
+private fun backendRectToCanvasRect(
+    viewModel: ShopMapDrawerViewModel,
+    canvasSize: Size,
+    width: Float,
+    height: Float,
+    startX: Int,
+    startY: Int,
+): CanvasRect {
+    val canvasCoords =
+        viewModel.convertToCanvasCoordinates(
+            canvasSize = canvasSize,
+            size = Size(width, height),
+            x = startX,
+            y = startY,
+        )
+    return CanvasRect(
+        topLeft = Offset(canvasCoords.second, canvasCoords.third - canvasCoords.first.height),
+        size = canvasCoords.first,
+    )
 }
 
 fun interpolateColor(
