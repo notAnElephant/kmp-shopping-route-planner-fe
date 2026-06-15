@@ -258,7 +258,6 @@ fun DepartmentControls(
     var departmentName by remember { mutableStateOf(TextFieldValue("")) }
     val departmentTypes = remember { mutableStateListOf<DepartmentType>() }
 
-    // Function to add a new departmenttype
     fun addDepartmentType(name: String) {
         val newColor =
             Color(
@@ -269,7 +268,6 @@ fun DepartmentControls(
         departmentTypes.add(DepartmentType(name, newColor))
     }
 
-    //  input field and add button
     Column(modifier = Modifier.fillMaxWidth()) {
         rememberMenuState(expanded = true)
 
@@ -288,7 +286,7 @@ fun DepartmentControls(
                 IconButton(onClick = {
                     if (departmentName.text.isNotEmpty()) {
                         addDepartmentType(departmentName.text)
-                        departmentName = TextFieldValue("") // Reset input
+                        departmentName = TextFieldValue("")
                         onDepartmentTypeSelected(departmentTypes.last())
                     }
                 }) {
@@ -304,8 +302,6 @@ fun DepartmentControls(
     }
 }
 
-// TODO app mas platformokon valo futtatasahoz
-// https://www.jetbrains.com/help/kotlin-multiplatform-dev/compose-multiplatform-create-first-app.html#next-step
 @Composable
 fun DepartmentTypeDropdown(
     departmentTypes: List<DepartmentType>,
@@ -313,12 +309,8 @@ fun DepartmentTypeDropdown(
     onDepartmentTypeSelected: (DepartmentType) -> Unit,
 ) {
     var expanded by remember { mutableStateOf(false) }
-
-    // Toggle the menu state
     val arrowIcon = if (expanded) FeatherIcons.ChevronUp else FeatherIcons.ChevronDown
 
-    // TODO disable this somehow when not the org.example.srpfe.model.Department is the selected function
-    // Use a custom Menu button with color and selected department label
     Box(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier =
@@ -346,17 +338,13 @@ fun DepartmentTypeDropdown(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 1,
             )
-            // Arrow icon (up or down based on dropdown state)
             Icon(
                 imageVector = arrowIcon,
                 contentDescription = "Dropdown Arrow",
                 modifier = Modifier.size(24.dp),
             )
-
-            // TODO checkbox to select/deselect departmenttype
         }
 
-        // Show the dropdown content
         DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
             if (departmentTypes.isNotEmpty()) {
                 departmentTypes.forEach { department ->
@@ -369,7 +357,6 @@ fun DepartmentTypeDropdown(
                                         .padding(vertical = 8.dp, horizontal = 4.dp),
                                 verticalAlignment = Alignment.CenterVertically,
                             ) {
-                                // org.example.srpfe.model.Department color box
                                 Box(
                                     modifier =
                                         Modifier
