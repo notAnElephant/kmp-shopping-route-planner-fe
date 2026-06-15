@@ -252,6 +252,279 @@ class ShopMapDrawerViewModel(
         }
     }
 
+    fun updateDepartmentRect(
+        departmentId: Int,
+        name: String,
+        width: Int,
+        height: Int,
+        startX: Int,
+        startY: Int,
+    ) {
+        viewModelScope.launch {
+            val existing =
+                _uiState.value.concreteDepartments.firstOrNull { it.id == departmentId } ?: run {
+                    _uiState.value = _uiState.value.copy(errorState = "Department is not loaded.")
+                    return@launch
+                }
+            val previousDepartments = _uiState.value.concreteDepartments
+            val optimisticDepartment =
+                existing.copy(
+                    name = name,
+                    width = width.toDouble(),
+                    height = height.toDouble(),
+                    startX = startX.toDouble(),
+                    startY = startY.toDouble(),
+                )
+            _uiState.value =
+                _uiState.value.copy(
+                    concreteDepartments =
+                        _uiState.value.concreteDepartments.map { department ->
+                            if (department.id == departmentId) optimisticDepartment else department
+                        },
+                )
+
+            runCatching {
+                apiRepository.updateDepartment(
+                    id = departmentId.toString(),
+                    department =
+                        Department(
+                            id = departmentId,
+                            mapId = existing.mapId,
+                            name = name,
+                            width = width.toDouble(),
+                            height = height.toDouble(),
+                            startX = startX.toDouble(),
+                            startY = startY.toDouble(),
+                        ),
+                )
+            }.onSuccess { updated ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        concreteDepartments =
+                            _uiState.value.concreteDepartments.map { department ->
+                                if (department.id == departmentId) {
+                                    updated.toModel(
+                                        color = existing.color,
+                                        isSelected = department.isSelected,
+                                    )
+                                } else {
+                                    department
+                                }
+                            },
+                    )
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        concreteDepartments = previousDepartments,
+                        errorState = error.message ?: "Could not update department.",
+                    )
+            }
+        }
+    }
+
+    fun deleteDepartment(departmentId: Int) {
+        viewModelScope.launch {
+            runCatching {
+                apiRepository.deleteDepartment(departmentId)
+            }.onSuccess {
+                _uiState.value =
+                    _uiState.value.copy(
+                        concreteDepartments =
+                            _uiState.value.concreteDepartments.filterNot { it.id == departmentId },
+                    )
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        errorState = error.message ?: "Could not delete department.",
+                    )
+            }
+        }
+    }
+
+    fun updateWallBlockRect(
+        wallBlockId: Int,
+        width: Int,
+        height: Int,
+        startX: Int,
+        startY: Int,
+    ) {
+        viewModelScope.launch {
+            val existing =
+                _uiState.value.wallBlocks.firstOrNull { it.id == wallBlockId } ?: run {
+                    _uiState.value = _uiState.value.copy(errorState = "Wall block is not loaded.")
+                    return@launch
+                }
+            val previousWallBlocks = _uiState.value.wallBlocks
+            _uiState.value =
+                _uiState.value.copy(
+                    wallBlocks =
+                        _uiState.value.wallBlocks.map { wallBlock ->
+                            if (wallBlock.id == wallBlockId) {
+                                wallBlock.copy(
+                                    width = width.toDouble(),
+                                    height = height.toDouble(),
+                                    startX = startX.toDouble(),
+                                    startY = startY.toDouble(),
+                                )
+                            } else {
+                                wallBlock
+                            }
+                        },
+                )
+
+            runCatching {
+                apiRepository.updateWallBlock(
+                    id = wallBlockId.toString(),
+                    wallBlock =
+                        existing.copy(
+                            width = width.toDouble(),
+                            height = height.toDouble(),
+                            startX = startX.toDouble(),
+                            startY = startY.toDouble(),
+                        ),
+                )
+            }.onSuccess { updated ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        wallBlocks =
+                            _uiState.value.wallBlocks.map { wallBlock ->
+                                if (wallBlock.id == wallBlockId) updated else wallBlock
+                            },
+                    )
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        wallBlocks = previousWallBlocks,
+                        errorState = error.message ?: "Could not update wall block.",
+                    )
+            }
+        }
+    }
+
+    fun deleteWallBlock(wallBlockId: Int) {
+        viewModelScope.launch {
+            runCatching {
+                apiRepository.deleteWallBlock(wallBlockId)
+            }.onSuccess {
+                _uiState.value =
+                    _uiState.value.copy(
+                        wallBlocks = _uiState.value.wallBlocks.filterNot { it.id == wallBlockId },
+                    )
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        errorState = error.message ?: "Could not delete wall block.",
+                    )
+            }
+        }
+    }
+
+    fun updateTillRect(
+        tillId: Int,
+        width: Int,
+        height: Int,
+        startX: Int,
+        startY: Int,
+    ) {
+        viewModelScope.launch {
+            val existing =
+                _uiState.value.tills.firstOrNull { it.id == tillId } ?: run {
+                    _uiState.value = _uiState.value.copy(errorState = "Till is not loaded.")
+                    return@launch
+                }
+            val previousTills = _uiState.value.tills
+            _uiState.value =
+                _uiState.value.copy(
+                    tills =
+                        _uiState.value.tills.map { till ->
+                            if (till.id == tillId) {
+                                till.copy(
+                                    width = width.toDouble(),
+                                    height = height.toDouble(),
+                                    startX = startX.toDouble(),
+                                    startY = startY.toDouble(),
+                                )
+                            } else {
+                                till
+                            }
+                        },
+                )
+
+            runCatching {
+                apiRepository.updateTill(
+                    id = tillId.toString(),
+                    till =
+                        existing.copy(
+                            width = width.toDouble(),
+                            height = height.toDouble(),
+                            startX = startX.toDouble(),
+                            startY = startY.toDouble(),
+                        ),
+                )
+            }.onSuccess { updated ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        tills =
+                            _uiState.value.tills.map { till ->
+                                if (till.id == tillId) updated else till
+                            },
+                    )
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        tills = previousTills,
+                        errorState = error.message ?: "Could not update till.",
+                    )
+            }
+        }
+    }
+
+    fun deleteTill(tillId: Int) {
+        viewModelScope.launch {
+            runCatching {
+                apiRepository.deleteTill(tillId)
+            }.onSuccess {
+                _uiState.value =
+                    _uiState.value.copy(
+                        tills = _uiState.value.tills.filterNot { it.id == tillId },
+                    )
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        errorState = error.message ?: "Could not delete till.",
+                    )
+            }
+        }
+    }
+
+    fun updateEntrancePosition(
+        startX: Int,
+        startY: Int,
+    ) {
+        updateMapAnchor(
+            errorMessage = "Could not update entrance.",
+        ) { map ->
+            map.copy(
+                entranceX = startX.toDouble(),
+                entranceY = startY.toDouble(),
+            )
+        }
+    }
+
+    fun updateExitPosition(
+        startX: Int,
+        startY: Int,
+    ) {
+        updateMapAnchor(
+            errorMessage = "Could not update exit.",
+        ) { map ->
+            map.copy(
+                exitX = startX.toDouble(),
+                exitY = startY.toDouble(),
+            )
+        }
+    }
+
     fun convertToBackendCoordinates(
         canvasSize: Size,
         size: Size,
@@ -302,5 +575,35 @@ class ShopMapDrawerViewModel(
         val green = ((hash shr 8) and 0x7F) + 64
         val blue = (hash and 0x7F) + 64
         return Color(red / 255f, green / 255f, blue / 255f)
+    }
+
+    private fun updateMapAnchor(
+        errorMessage: String,
+        transform: (Map) -> Map,
+    ) {
+        viewModelScope.launch {
+            val map = _uiState.value.map ?: run {
+                _uiState.value = _uiState.value.copy(errorState = "Map is not loaded.")
+                return@launch
+            }
+            val previousMap = map
+            val optimisticMap = transform(map)
+            _uiState.value = _uiState.value.copy(map = optimisticMap)
+
+            runCatching {
+                apiRepository.updateMap(
+                    id = (map.id ?: error("Map is not created yet")).toString(),
+                    map = optimisticMap,
+                )
+            }.onSuccess { updated ->
+                _uiState.value = _uiState.value.copy(map = updated)
+            }.onFailure { error ->
+                _uiState.value =
+                    _uiState.value.copy(
+                        map = previousMap,
+                        errorState = error.message ?: errorMessage,
+                    )
+            }
+        }
     }
 }
