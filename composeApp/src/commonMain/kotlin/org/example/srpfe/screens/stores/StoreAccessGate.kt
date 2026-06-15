@@ -28,7 +28,7 @@ internal fun StoreAccessGate(
         }
 
         authenticatedUser?.authSource != AuthSource.FIREBASE -> {
-            StoreAccessMessage("Store management is only available on the Firebase-backed mobile sign-in flow.")
+            StoreAccessMessage("Store management requires a Firebase-backed sign-in session.")
         }
 
         else -> content()

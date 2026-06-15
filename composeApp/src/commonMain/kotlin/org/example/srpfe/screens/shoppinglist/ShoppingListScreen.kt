@@ -60,7 +60,7 @@ fun ShoppingListScreen() {
             }
 
             authenticatedUser?.authSource != AuthSource.FIREBASE -> {
-                Text("Shopping list sync is only available on the Firebase-backed mobile sign-in flow.")
+                Text("Shopping list sync requires a Firebase-backed sign-in session.")
             }
 
             else -> {
