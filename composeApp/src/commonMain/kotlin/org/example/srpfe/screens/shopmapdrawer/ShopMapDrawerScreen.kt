@@ -6,6 +6,7 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -42,7 +43,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.scale
+import androidx.compose.ui.input.pointer.AwaitPointerEventScope
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.drawText
 import androidx.compose.ui.text.input.TextFieldValue
@@ -64,12 +69,11 @@ import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
 import kotlin.random.Random
 
-data class Rectangle(
-    val topLeft: Offset,
-    val size: Size,
-    val color: Color,
-    val name: String = "",
-)
+private val wallColor = Color.Black
+private val tillColor = Color(0xFF6D4C41)
+private val entranceColor = Color(0xFF1E88E5)
+private val exitColor = Color(0xFF757575)
+private val selectionColor = Color(0xFFFFC107)
 
 enum class FunctionType(
     val label: String,
