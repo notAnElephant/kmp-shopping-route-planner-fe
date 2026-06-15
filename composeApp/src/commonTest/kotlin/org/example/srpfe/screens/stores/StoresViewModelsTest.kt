@@ -8,13 +8,13 @@ import org.openapitools.client.models.CreateShoppingListItemRequest
 import org.openapitools.client.models.CreateShoppingListRequest
 import org.openapitools.client.models.Department
 import org.openapitools.client.models.Map
-import org.openapitools.client.models.PlaceDetailsResponse
 import org.openapitools.client.models.RoutePlanResponse
 import org.openapitools.client.models.RoutePlanningRequest
 import org.openapitools.client.models.SalesResponse
 import org.openapitools.client.models.ShoppingList
 import org.openapitools.client.models.Store
 import org.openapitools.client.models.StoreDetailsResponse
+import org.openapitools.client.models.StorePlaceDetailsResponse
 import org.openapitools.client.models.Till
 import org.openapitools.client.models.WallBlock
 import kotlin.test.Test
@@ -80,7 +80,7 @@ class StoresViewModelsTest {
             assertEquals("New place", repository.stores.single().location)
 
             viewModel.loadPlaceDetails()
-            assertEquals("google-place-10", viewModel.uiState.value.placeDetails?.id)
+            assertEquals("+36 1 555 00010", viewModel.uiState.value.placeDetails?.phoneNumber)
         }
 }
 
@@ -136,10 +136,13 @@ private class FakeStoreRepository(
         return updated
     }
 
-    override suspend fun getStorePlaceDetails(id: Int): PlaceDetailsResponse =
-        PlaceDetailsResponse(
-            id = "google-place-$id",
-            internationalPhoneNumber = "+36 1 555 000$id",
+    override suspend fun getStorePlaceDetails(id: Int): StorePlaceDetailsResponse =
+        StorePlaceDetailsResponse(
+            hasParking = true,
+            wheelchairAccessible = true,
+            openingHours = emptyList(),
+            imagePaths = emptyList(),
+            phoneNumber = "+36 1 555 000$id",
         )
 
     override suspend fun getStoreComponentDetails(id: Int): StoreDetailsResponse =
