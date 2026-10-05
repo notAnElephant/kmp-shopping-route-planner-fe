@@ -17,3 +17,19 @@ This is a Kotlin Multiplatform project targeting Android, iOS.
 
 
 Learn more about [Kotlin Multiplatform](https://www.jetbrains.com/help/kotlin-multiplatform-dev/get-started.html)…
+
+## Local service ports
+
+Copy `.env.example` to `.env`, then load it into the environment before launching the desktop app:
+
+```sh
+set -a
+source .env
+set +a
+./gradlew :composeApp:run
+```
+
+- `SHOPMAP_BACKEND_PORT` sets the backend API port. The default is `8082`.
+- `SHOPMAP_OAUTH_CALLBACK_PORT` sets the local desktop Google OAuth callback port. The default is `8083`. It must be free, and the matching `http://localhost:<port>/callback` URI must be registered on the Google OAuth client.
+
+The `.env` file is not loaded automatically by the app. For Android and iOS, set these in the app process environment through the platform's launch or build configuration. Invalid port values fail with a configuration error.

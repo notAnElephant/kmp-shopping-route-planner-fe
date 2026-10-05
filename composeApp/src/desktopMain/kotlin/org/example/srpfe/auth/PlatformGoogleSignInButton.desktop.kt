@@ -52,9 +52,10 @@ private object DesktopGoogleSignIn {
     suspend fun signIn(): AuthenticatedUser? {
         val state = generateRandomString()
         val nonce = generateRandomString()
-        val redirectUri = AuthConfig.GOOGLE_DESKTOP_REDIRECT_URI
+        val callbackPort = AuthConfig.GOOGLE_DESKTOP_CALLBACK_PORT
+        val redirectUri = "http://localhost:$callbackPort/callback"
         val callback = CompletableDeferred<TokenPayload>()
-        val server = startCallbackServer(state = state, callback = callback)
+        val server = startCallbackServer(state = state, callback = callback, port = callbackPort)
 
         try {
             openBrowser(buildAuthorizationUrl(state = state, nonce = nonce, redirectUri = redirectUri))
@@ -82,9 +83,10 @@ private object DesktopGoogleSignIn {
     private fun startCallbackServer(
         state: String,
         callback: CompletableDeferred<TokenPayload>,
+        port: Int,
     ): HttpServer =
         try {
-            HttpServer.create(InetSocketAddress("localhost", 8083), 0).apply {
+            HttpServer.create(InetSocketAddress("localhost", port), 0).apply {
                 createContext("/callback") { exchange ->
                     when {
                         exchange.requestURI.path == "/callback/token" -> {
@@ -99,7 +101,12 @@ private object DesktopGoogleSignIn {
                 start()
             }
         } catch (error: BindException) {
-            throw IllegalStateException("Desktop sign-in could not start the local callback server on port 8083.", error)
+            throw IllegalStateException(
+                "Desktop sign-in could not start its callback server on port $port. " +
+                    "Choose a free port with SHOPMAP_OAUTH_CALLBACK_PORT and allow " +
+                    "http://localhost:$port/callback in the Google OAuth client.",
+                error,
+            )
         }
 
     private fun handleTokenCallback(

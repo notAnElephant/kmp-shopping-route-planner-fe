@@ -31,6 +31,7 @@ replay_pid*
 xcuserdata
 !src/**/build/
 local.properties
+.env
 .idea
 .DS_Store
 captures
