@@ -1,16 +1,15 @@
 package org.example.srpfe.auth
 
-import dev.gitlive.firebase.Firebase
-import dev.gitlive.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.Flow
-import dev.gitlive.firebase.auth.auth
 
 actual object FirebaseAuthSessionBridge {
-    actual suspend fun currentUser(): FirebaseUser? = Firebase.auth.currentUser
+    actual suspend fun currentUser(): AuthenticatedUser? = DesktopFirebaseAuth.currentUser()
 
-    actual fun idTokenChanges(): Flow<FirebaseUser?> = Firebase.auth.idTokenChanged
+    actual suspend fun refreshCurrentUser(): AuthenticatedUser? = DesktopFirebaseAuth.refreshCurrentUser()
+
+    actual fun idTokenChanges(): Flow<AuthenticatedUser?> = DesktopFirebaseAuth.idTokenChanges()
 
     actual suspend fun signOut() {
-        Firebase.auth.signOut()
+        DesktopFirebaseAuth.signOut()
     }
 }

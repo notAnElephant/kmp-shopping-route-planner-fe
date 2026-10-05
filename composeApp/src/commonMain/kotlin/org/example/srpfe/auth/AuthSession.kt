@@ -1,6 +1,5 @@
 package org.example.srpfe.auth
 
-import dev.gitlive.firebase.auth.FirebaseUser
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,29 +12,19 @@ class AuthSession {
         _currentUser.value = user
     }
 
-    suspend fun syncFromFirebaseUser(firebaseUser: FirebaseUser?) {
-        _currentUser.value =
-            firebaseUser?.let { user ->
-                AuthenticatedUser(
-                    authSource = AuthSource.FIREBASE,
-                    uid = user.uid,
-                    idToken = user.getIdToken(forceRefresh = false),
-                    displayName = user.displayName,
-                    email = user.email,
-                    photoUrl = user.photoURL,
-                )
-            }
+    fun syncFromPlatformUser(user: AuthenticatedUser?) {
+        _currentUser.value = user
     }
 
     suspend fun syncFromPlatformAuth() {
-        syncFromFirebaseUser(FirebaseAuthSessionBridge.currentUser())
+        syncFromPlatformUser(FirebaseAuthSessionBridge.currentUser())
     }
 
     suspend fun requireBackendIdToken(): String {
         val refreshedUser =
             when (_currentUser.value?.authSource) {
                 AuthSource.FIREBASE -> {
-                    syncFromFirebaseUser(FirebaseAuthSessionBridge.currentUser())
+                    syncFromPlatformUser(FirebaseAuthSessionBridge.refreshCurrentUser())
                     _currentUser.value
                 }
 

@@ -42,7 +42,7 @@ fun App() {
     LaunchedEffect(authSession) {
         authSession.syncFromPlatformAuth()
         FirebaseAuthSessionBridge.idTokenChanges().collect { user ->
-            authSession.syncFromFirebaseUser(user)
+            authSession.syncFromPlatformUser(user)
             if (user != null) {
                 runCatching {
                     apiRepository.getCurrentUser()
