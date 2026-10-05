@@ -8,9 +8,14 @@ import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.request.forms.MultiPartFormDataContent
+import io.ktor.client.request.forms.formData
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpHeaders
+import io.ktor.http.Headers
+import io.ktor.http.HttpHeaders.ContentDisposition
+import io.ktor.http.HttpHeaders.ContentType
 import io.ktor.http.appendPathSegments
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
@@ -289,9 +294,28 @@ class DefaultApiRepository
 
         override suspend fun googleOcr(image: List<Base64ByteArray>): List<CreateShoppingListItemRequest> =
             withContext(Dispatchers.IO) {
-                api
-                    .ocrShoppingListPost(image)
-                    .requireSuccessBody(this@DefaultApiRepository::googleOcr.name)
+                require(image.size == 1) { "OCR requires exactly one image." }
+                val response =
+                    profileClient.post("${backendBaseUrl().trimEnd('/')}/ocr/shopping-list") {
+                        setBody(
+                            MultiPartFormDataContent(
+                                formData {
+                                    append(
+                                        "file",
+                                        image.single().value,
+                                        Headers.build {
+                                            append(ContentDisposition, "form-data; name=\"file\"; filename=\"image.jpg\"")
+                                            append(ContentType, "image/jpeg")
+                                        },
+                                    )
+                                },
+                            ),
+                        )
+                    }
+                if (!response.status.isSuccess()) {
+                    error("${this@DefaultApiRepository::googleOcr.name} failed: ${response.status} ${response.bodyAsText()}")
+                }
+                response.body()
             }
 
         override suspend fun calculateRoute(routePlanning: RoutePlanningRequest): RoutePlanResponse =
