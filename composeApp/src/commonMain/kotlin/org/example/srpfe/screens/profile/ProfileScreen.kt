@@ -45,6 +45,7 @@ fun ProfileScreen() {
                 null -> "Not signed in"
                 AuthSource.FIREBASE -> "Signed in. Syncing backend profile..."
                 AuthSource.GOOGLE -> "Signed in with Google. Backend sync is only enabled for Firebase-backed sign-in."
+                AuthSource.DEMO -> "Demo account active. Backend features are unavailable in demo mode."
             }
 
         if (authenticatedUser?.authSource == AuthSource.FIREBASE) {
@@ -99,6 +100,25 @@ fun ProfileScreen() {
                 fontSize = 19.sp,
             ) {
                 it()
+            }
+        }
+
+        if (!isMobile()) {
+            Spacer(modifier = Modifier.height(8.dp))
+            OutlinedButton(
+                onClick = {
+                    authSession.setCurrentUser(
+                        AuthenticatedUser(
+                            authSource = AuthSource.DEMO,
+                            uid = "demo-user",
+                            displayName = "Demo User",
+                            email = "demo@example.com",
+                        ),
+                    )
+                },
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text("Use demo account")
             }
         }
 

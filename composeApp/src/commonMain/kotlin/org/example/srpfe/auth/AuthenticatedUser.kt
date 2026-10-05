@@ -3,6 +3,7 @@ package org.example.srpfe.auth
 enum class AuthSource {
     FIREBASE,
     GOOGLE,
+    DEMO,
 }
 
 data class AuthenticatedUser(
