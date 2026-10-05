@@ -16,6 +16,7 @@ import java.security.SecureRandom
 import java.util.Base64
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import com.sun.net.httpserver.HttpServer
 import com.sun.net.httpserver.HttpExchange
 
@@ -57,7 +58,10 @@ private object DesktopGoogleSignIn {
 
         try {
             openBrowser(buildAuthorizationUrl(state = state, nonce = nonce, redirectUri = redirectUri))
-            val tokens = callback.await()
+            val tokens =
+                withTimeoutOrNull(120_000L) {
+                    callback.await()
+                } ?: error("Google sign-in timed out before the browser callback arrived.")
             val credential = GoogleAuthProvider.credential(tokens.idToken, tokens.accessToken)
             val user = Firebase.auth.signInWithCredential(credential).user
             return user?.let {
@@ -80,7 +84,7 @@ private object DesktopGoogleSignIn {
         callback: CompletableDeferred<TokenPayload>,
     ): HttpServer =
         try {
-            HttpServer.create(InetSocketAddress("127.0.0.1", 8080), 0).apply {
+            HttpServer.create(InetSocketAddress("localhost", 8083), 0).apply {
                 createContext("/callback") { exchange ->
                     when {
                         exchange.requestURI.path == "/callback/token" -> {
@@ -95,7 +99,7 @@ private object DesktopGoogleSignIn {
                 start()
             }
         } catch (error: BindException) {
-            throw IllegalStateException("Desktop sign-in could not start the local callback server on port 8080.", error)
+            throw IllegalStateException("Desktop sign-in could not start the local callback server on port 8083.", error)
         }
 
     private fun handleTokenCallback(
