@@ -36,7 +36,7 @@ fun SalesScreen() {
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
-        viewModel.loadStores()
+        viewModel.loadSalesForDefaultChain()
     }
 
     Column(
@@ -53,13 +53,13 @@ fun SalesScreen() {
         )
 
         Text(
-            text = "Select a store to load the current backend offers.",
+            text = "Select a retailer to load the current backend offers.",
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
 
         when {
-            uiState.isLoadingStores && uiState.stores.isEmpty() -> {
+            uiState.isLoadingSales && uiState.sales == null -> {
                 Box(
                     modifier = Modifier.fillMaxWidth(),
                     contentAlignment = Alignment.Center,
@@ -68,33 +68,22 @@ fun SalesScreen() {
                 }
             }
 
-            uiState.stores.isEmpty() -> {
-                EmptySalesState(
-                    message = uiState.errorMessage ?: "No stores are available.",
-                    onRetry = {
-                        coroutineScope.launch {
-                            viewModel.loadStores()
-                        }
-                    },
-                )
-            }
-
             else -> {
                 LazyRow(
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                 ) {
                     items(
-                        items = uiState.stores,
-                        key = { it.id ?: it.name },
+                        items = uiState.salesChains,
+                        key = { it },
                     ) { store ->
                         FilterChip(
                             onClick = {
                                 coroutineScope.launch {
-                                    viewModel.selectStore(store.name)
+                                    viewModel.selectStore(store)
                                 }
                             },
-                            selected = uiState.selectedStoreName == store.name,
-                            label = { Text(store.name) },
+                            selected = uiState.selectedStoreName == store,
+                            label = { Text(store) },
                         )
                     }
                 }
@@ -217,25 +206,5 @@ private fun OfferCard(offer: String) {
             modifier = Modifier.padding(16.dp),
             style = MaterialTheme.typography.bodyLarge,
         )
-    }
-}
-
-@Composable
-private fun EmptySalesState(
-    message: String,
-    onRetry: () -> Unit,
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-    ) {
-        Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-        ) {
-            Text(message)
-            Button(onClick = onRetry) {
-                Text("Retry")
-            }
-        }
     }
 }
