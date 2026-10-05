@@ -246,7 +246,9 @@ private fun ShoppingListCard(
                 text = shoppingList.name,
                 style = MaterialTheme.typography.titleMedium,
             )
-            Text("ID: ${shoppingList.id ?: "pending"}")
+            shoppingList.items.orEmpty().forEach { item ->
+                Text("${item.shoppingItemName} (${item.attributes})")
+            }
             Spacer(modifier = Modifier.height(4.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 Button(onClick = onEdit) {

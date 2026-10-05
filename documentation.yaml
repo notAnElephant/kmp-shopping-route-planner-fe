@@ -1074,6 +1074,28 @@ paths:
                     status: 400
                     timestamp: "null"
   /shopping-lists/{id}:
+    put:
+      description: "Replace a shopping list name and items."
+      parameters:
+        - name: "id"
+          in: "path"
+          required: true
+          schema:
+            type: "integer"
+            format: "int32"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateShoppingListRequest"
+        required: true
+      responses:
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/ShoppingList"
     delete:
       description: ""
       parameters:
@@ -2391,6 +2413,10 @@ components:
           format: "int32"
         name:
           type: "string"
+        items:
+          type: "array"
+          items:
+            $ref: "#/components/schemas/ShoppingListItemResponse"
       required:
         - "userId"
         - "name"

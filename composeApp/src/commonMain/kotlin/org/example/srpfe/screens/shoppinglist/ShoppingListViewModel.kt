@@ -100,7 +100,12 @@ class ShoppingListViewModel(
             _uiState.value.copy(
                 editingListId = shoppingList.id,
                 draftName = shoppingList.name,
-                draftItems = emptyList(),
+                draftItems = shoppingList.items.orEmpty().map { item ->
+                    CreateShoppingListItemRequest(
+                        shoppingItemName = item.shoppingItemName,
+                        attributes = item.attributes,
+                    )
+                },
                 draftItemName = "",
                 draftItemQuantity = "",
                 errorMessage = null,

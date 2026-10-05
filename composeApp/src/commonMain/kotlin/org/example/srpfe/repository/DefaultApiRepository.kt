@@ -7,6 +7,7 @@ import io.ktor.client.request.delete
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
+import io.ktor.client.request.put
 import io.ktor.client.request.setBody
 import io.ktor.client.request.forms.MultiPartFormDataContent
 import io.ktor.client.request.forms.formData
@@ -366,8 +367,11 @@ class DefaultApiRepository
             request: CreateShoppingListRequest,
         ): ShoppingList =
             withContext(Dispatchers.IO) {
-                deleteShoppingList(id)
-                createShoppingList(request)
+                profileClient
+                    .put("${backendBaseUrl()}/shopping-lists/$id") {
+                        header(HttpHeaders.Authorization, authedHeaderValue())
+                        setBody(request)
+                    }.requireSuccessBody(this@DefaultApiRepository::updateShoppingList.name)
             }
 
         override suspend fun deleteShoppingList(id: Int) {
